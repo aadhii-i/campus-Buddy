@@ -1,294 +1,267 @@
-<<<<<<< HEAD
-# 🏫 Campus Companion
+# 🎓 Campus Buddy
 
-A comprehensive campus management platform that brings students, faculty, and campus life together in one seamless application.
+> A modern all-in-one campus management platform designed to simplify student life, improve communication, and digitize everyday campus activities.
 
-![Campus Companion](https://img.shields.io/badge/React-18.2.0-blue)
-![Node.js](https://img.shields.io/badge/Node.js-18+-green)
-![MongoDB](https://img.shields.io/badge/Database-MongoDB-green)
-![License](https://img.shields.io/badge/License-MIT-yellow)
+![React](https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=for-the-badge&logo=react)
+![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?style=for-the-badge&logo=node.js)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248?style=for-the-badge&logo=mongodb)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
-## ✨ Features
+---
 
-### 🎉 **Event Management**
-- Browse and discover campus events
-- Real-time event registration and capacity tracking
-- Smart filtering by category, date, and search
-- Event creation and management for organizers
-- Interactive event cards with detailed information
+## 📖 Overview
 
-### 🔍 **Lost & Found System**
-- Report lost items with descriptions and photos
-- Search and browse found items
-- Category-based organization
-- Location tracking and contact information
+Campus Buddy is a centralized digital platform that helps students, faculty, and campus administrators stay connected through a single application.
 
-### 👥 **Community Hub**
-- Campus-wide discussion forums
-- Share updates and announcements
-- Real-time engagement and comments
-- User-generated content moderation
+The platform brings together essential campus services such as event management, community discussions, placement updates, lost & found reporting, resume analysis, and academic resources to create a smarter campus experience.
 
-### 💼 **Placement & Career News**
-- Latest job opportunities and internships
-- Company visit announcements
-- Career guidance and resources
-- Placement statistics and success stories
+---
 
-### 📄 **Resume Analyzer**
-- AI-powered resume analysis and feedback
+# ✨ Key Features
+
+## 📅 Smart Event Management
+
+- Discover upcoming campus events
+- Register for events instantly
+- Event capacity tracking
+- Smart event search & filtering
+- Organizer dashboard
+
+---
+
+## 🔎 Lost & Found Portal
+
+- Report lost belongings
+- Upload item images
+- Browse found items
+- Category-wise search
+- AI-assisted item matching
+
+---
+
+## 👨‍🎓 Student Community
+
+- Community discussion boards
+- Share announcements
+- Post updates
+- Interactive comments
+- Campus engagement
+
+---
+
+## 💼 Placement Hub
+
+- Internship updates
+- Company hiring news
+- Placement resources
+- Career guidance
+- Recruitment announcements
+
+---
+
+## 🤖 AI Resume Analyzer
+
+- Resume score analysis
+- Resume improvement suggestions
 - Skill gap identification
-- Improvement suggestions
-- Industry-specific recommendations
+- ATS-friendly recommendations
 
-### 🔐 **User Management**
-- Secure authentication system
-- Role-based access control
-- User profiles and preferences
-- Department and year-wise organization
-- Lost & Found system with AI matching
-- Community posts and interactions
-- Placement news and updates
-- AI-powered resume analysis
-- Real-time notifications
-- User authentication and profiles
+---
 
-## Setup Instructions
+## 👤 User Management
 
-### 1. Install Dependencies
+- Secure Login & Registration
+- JWT Authentication
+- Role-Based Access
+- Student Profiles
+- Department Management
 
-#### Client Dependencies
-```bash
-cd client
-npm install
-```
+---
 
-#### Server Dependencies
-```bash
-cd server
-npm install
-```
+## 🔔 Notifications
 
-### 2. Environment Configuration
+- Event reminders
+- Placement notifications
+- Community alerts
+- System announcements
 
-#### Server Environment (.env)
-- Copy the provided .env file to server/.env
-- Update the following variables with your actual values:
-  - MONGODB_URI: Your MongoDB connection string
-  - JWT_SECRET: Strong secret key for JWT tokens
-  - CLOUDINARY_*: Cloudinary credentials for file uploads
-  - EMAIL_*: Email service configuration for notifications
-  - OPENAI_API_KEY: OpenAI API key for AI features
+---
 
-#### Client Environment
-Create client/.env with:
-```
-VITE_API_URL=http://localhost:5000/api
-VITE_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-```
+# 🚀 Tech Stack
 
-### 3. Database Setup
+### Frontend
 
-#### MongoDB
-1. Install MongoDB locally or use MongoDB Atlas
-2. Create a database named 'campus_companion'
-3. The application will automatically create collections
+- React.js
+- Vite
+- HTML5
+- CSS3
+- JavaScript
 
-#### Optional: Seed Data
-```bash
-cd server
-npm run seed
-```
+### Backend
 
-### 4. Development Setup
+- Node.js
+- Express.js
 
-#### Start the development servers:
+### Database
 
-Terminal 1 (Server):
-```bash
-cd server
-npm run dev
-```
-
-Terminal 2 (Client):
-```bash
-cd client
-npm run dev
-```
-
-### 5. Production Build
-
-#### Build client:
-```bash
-cd client
-npm run build
-```
-
-#### Start production server:
-```bash
-cd server
-npm start
-```
-
-## Remaining Files to Create
-
-### Client Components
-1. `ItemCard.jsx` - Lost & found item display
-2. `RecommendationsList.jsx` - AI recommendations
-3. `ReportModal.jsx` - Reporting modal
-4. `ScoreDisplay.jsx` - Resume score visualization
-5. `SentimentIndicator.jsx` - Sentiment analysis display
-6. `StatCard.jsx` - Statistics display
-
-### Client Pages
-1. `LostFound.jsx` - Lost & found management
-2. `Community.jsx` - Community posts and interactions
-3. `PlacementNews.jsx` - Placement updates
-4. `Profile.jsx` - User profile management
-5. `ResumeAnalyzer.jsx` - Resume analysis interface
-
-### Server Controllers
-1. `eventController.js` - Event management logic
-2. `lostFoundController.js` - Lost & found operations
-3. `communityController.js` - Community features
-4. `placementController.js` - Placement news management
-5. `resumeController.js` - Resume analysis logic
-
-### Server Models
-1. `CommunityPost.js` - Community post schema
-2. `PlacementNews.js` - Placement news schema
-3. `Resume.js` - Resume analysis schema
-
-### Server Routes
-1. `events.js` - Event endpoints
-2. `lostFound.js` - Lost & found endpoints
-3. `community.js` - Community endpoints
-4. `placement.js` - Placement endpoints
-5. `resume.js` - Resume endpoints
-
-### Server Utilities
-1. `aiService.js` - AI integration (OpenAI, resume analysis)
-2. `scraper.js` - Web scraping for placement news
-3. `sentiment.js` - Sentiment analysis
-4. `email.js` - Email service
-5. `upload.js` - File upload handling
-6. `errorHandler.js` - Global error handling
-7. `notFound.js` - 404 handler
-
-### Server Middleware
-1. `upload.js` - File upload middleware
-2. `errorHandler.js` - Error handling middleware
-3. `notFound.js` - Not found middleware
-
-## Key Features Implementation
-
-### 1. Authentication System
-- JWT-based authentication
-- Role-based access control
-- Password hashing with bcrypt
-- Rate limiting for security
-
-### 2. File Upload System
-- Cloudinary integration for image storage
-- File type and size validation
-- Multiple file upload support
-
-### 3. AI Integration
-- OpenAI integration for resume analysis
-- Sentiment analysis for community posts
-- Smart matching for lost & found items
-
-### 4. Real-time Features
-- Socket.io for real-time notifications
-- Live updates for events and posts
-
-### 5. Security Features
-- Input sanitization
-- XSS protection
-- CORS configuration
-- Rate limiting
-- Helmet for security headers
-
-## API Endpoints Structure
+- MongoDB
 
 ### Authentication
-- POST /api/auth/register
-- POST /api/auth/login
-- GET /api/auth/me
-- PUT /api/auth/profile
-- POST /api/auth/refresh
 
-### Events
-- GET /api/events
-- POST /api/events
-- GET /api/events/:id
-- PUT /api/events/:id
-- DELETE /api/events/:id
-- POST /api/events/:id/register
+- JWT
+- bcrypt
 
-### Lost & Found
-- GET /api/lost-found
-- POST /api/lost-found
-- GET /api/lost-found/:id
-- PUT /api/lost-found/:id
-- DELETE /api/lost-found/:id
+### Cloud Services
 
-### Community
-- GET /api/community
-- POST /api/community
-- GET /api/community/:id
-- PUT /api/community/:id
-- DELETE /api/community/:id
+- Cloudinary
 
-### Placement
-- GET /api/placement
-- POST /api/placement
-- GET /api/placement/:id
+### AI
 
-### Resume
-- POST /api/resume/analyze
-- GET /api/resume/analysis/:id
+- OpenAI API
 
-## Testing
+---
 
-### Run Tests
+# 📂 Project Structure
+
+```
+Campus-Buddy
+│
+├── client/
+│   ├── src/
+│   ├── public/
+│   └── package.json
+│
+├── server/
+│   ├── controllers/
+│   ├── routes/
+│   ├── models/
+│   ├── middleware/
+│   └── package.json
+│
+└── README.md
+```
+
+---
+
+# ⚙️ Installation
+
+Clone the repository
+
 ```bash
-# Server tests
-cd server
-npm test
+git clone https://github.com/aadhii-i/campus-Buddy.git
+```
 
-# Client tests
+Go inside the project
+
+```bash
+cd campus-Buddy
+```
+
+Install dependencies
+
+Client
+
+```bash
 cd client
-npm test
+npm install
 ```
 
-## Deployment
+Server
 
-### Docker
 ```bash
-# Build and run with Docker Compose
-docker-compose up --build
+cd ../server
+npm install
 ```
 
-### Manual Deployment
-1. Build the client application
-2. Set production environment variables
-3. Deploy to your preferred hosting service
-4. Set up MongoDB in production
-5. Configure Cloudinary for file storage
+---
 
-## Contributing
+# ▶️ Run the Application
+
+Backend
+
+```bash
+cd server
+npm run dev
+```
+
+Frontend
+
+```bash
+cd client
+npm run dev
+```
+
+---
+
+# 🔒 Environment Variables
+
+Create a `.env` file inside the server directory.
+
+Example:
+
+```
+MONGODB_URI=
+JWT_SECRET=
+OPENAI_API_KEY=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+EMAIL_USER=
+EMAIL_PASS=
+```
+
+---
+
+# 🌟 Upcoming Features
+
+- AI Campus Assistant
+- QR Attendance System
+- Smart Timetable Planner
+- Digital Student ID
+- Campus Bus Tracking
+- Push Notifications
+- Hostel Complaint Portal
+- Faculty Dashboard
+- Mobile Application
+
+---
+
+# 📸 Screenshots
+
+_Add screenshots after deploying the project._
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome.
+
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
+2. Create a new branch
+3. Commit your changes
+4. Push your branch
+5. Open a Pull Request
+
+---
+
+# 📧 Support
+
+If you have any questions, suggestions, or feedback, feel free to reach out.
+
+**Developer:** Adhil Rahiman M
+
+📩 Email: **adhilriju111@gmail.com**
+
+GitHub: https://github.com/aadhii-i
+
+---
+
+# ⭐ Show Your Support
+
+If you found this project helpful, consider giving it a ⭐ on GitHub.
+
+---
 
 ## License
-MIT License - see LICENSE file for details
 
-## Support
-For support, please contact: support@campuscompanion.com
-=======
-# campus-companion
->>>>>>> 9b1bfeb7f2b842a34c8aaa6507f210fe078baca6
+This repository is distributed under the MIT License. See the `LICENSE` file for details.
