@@ -1,0 +1,7 @@
+build:
+  watch:
+    - "**/*.js"
+deploy:
+  startCommand: npm start
+  healthcheckPath: /health
+  healthcheckTimeout: 60s

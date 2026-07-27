@@ -1,0 +1,13 @@
+node_modules
+.git
+.github
+docs
+server
+api
+*.md
+.env
+.env.local
+.env.*.local
+dist
+build
+.DS_Store

@@ -1,0 +1,30 @@
+{
+  "name": "campus-companion",
+  "version": "1.0.0",
+  "description": "AI-powered campus management platform",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "client": "cd client && npm run dev",
+    "server": "cd server && npm run dev",
+    "build": "cd client && npm run build",
+    "install-deps": "npm install && cd client && npm install && cd ../server && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "keywords": [
+    "campus",
+    "ai",
+    "student",
+    "management"
+  ],
+  "author": "Sakshya Sinha",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "openai": "^6.8.1"
+  }
+}

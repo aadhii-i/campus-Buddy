@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "name": "campus-companion",
+  "builds": [
+    {
+      "src": "dist/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "VITE_API_URL": "@vite_api_url"
+  }
+}
