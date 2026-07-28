@@ -10,6 +10,7 @@ import Community from './pages/Community'
 import PlacementNews from './pages/PlacementNews'
 import Profile from './pages/Profile'
 import ResumeAnalyzer from './pages/ResumeAnalyzer'
+import ClubDetails from './pages/ClubDetails'
 import './App.css'
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
             <Route path="/placement-news" element={<PlacementNews />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/resume-analyzer" element={<ResumeAnalyzer />} />
+            <Route path="/clubs/:slug" element={<ClubDetails />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>

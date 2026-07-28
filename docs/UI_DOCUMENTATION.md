@@ -1,9 +1,9 @@
 # User Interface (UI) Documentation
-## Campus Companion - AI-Powered Campus Management Platform
+## Campus Buddy - AI-Powered Campus Management Platform
 
 **Version:** 1.0  
 **Date:** November 3, 2025  
-**Prepared by:** Sakshya Sinha  
+**Prepared by:** Adhil Rahiman  
 
 ---
 
@@ -23,7 +23,7 @@
 
 ### 1.1 Design Philosophy
 
-**Campus Companion** follows a modern, clean, and intuitive design approach:
+**Campus Buddy** follows a modern, clean, and intuitive design approach:
 
 - **Minimalist**: Clean interfaces with focus on content
 - **Responsive**: Mobile-first design approach
@@ -146,7 +146,7 @@ font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 ```
 ┌─────────────────────────────────────────────────────────┐
 │  NAVBAR                                    Login/Signup │
-│  [Logo] Campus Companion    [Home Events Community...] │
+│  [Logo] Campus Buddy    [Home Events Community...] │
 ├─────────────────────────────────────────────────────────┤
 │                                                          │
 │           HERO SECTION                                   │
@@ -176,7 +176,7 @@ font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 │                                                          │
 ├─────────────────────────────────────────────────────────┤
 │                    FOOTER                                │
-│         © 2025 Campus Companion. All rights reserved.   │
+│         © 2025 Campus Buddy. All rights reserved.   │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -418,7 +418,7 @@ font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 │  NAVBAR                                    [User Menu]  │
 ├─────────────────────────────────────────────────────────┤
 │                                                          │
-│  ┌──────────────┐  Sakshya Sinha                        │
+│  ┌──────────────┐  Adhil Rahiman                        │
 │  │              │  Student • CSE Department              │
 │  │ Profile Pic  │  Roll No: 12345678                     │
 │  │              │  Year: 3rd                             │
@@ -588,7 +588,7 @@ font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       <div className="flex items-center">
         <img src="/logo.png" alt="Logo" className="h-8 w-8" />
         <span className="ml-2 text-xl font-bold text-blue-600">
-          Campus Companion
+          Campus Buddy
         </span>
       </div>
       <div className="hidden md:flex items-center space-x-8">
@@ -781,8 +781,8 @@ For actual screenshots of the implemented UI, refer to:
 
 | Version | Date | Author | Description |
 |---------|------|--------|-------------|
-| 1.0 | Nov 3, 2025 | Sakshya Sinha | Initial UI documentation |
+| 1.0 | Nov 3, 2025 | Adhil Rahiman | Initial UI documentation |
 
 ---
 
-This UI documentation provides comprehensive details about the user interface design, components, and user experience of the Campus Companion platform.
+This UI documentation provides comprehensive details about the user interface design, components, and user experience of the Campus Buddy platform.

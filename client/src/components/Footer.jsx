@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react'
+import { Facebook, Twitter, Instagram, Linkedin, Mail } from 'lucide-react'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -37,28 +37,21 @@ const Footer = () => {
           <div className="col-span-1 lg:col-span-2">
             <div className="flex items-center mb-4">
               <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">CC</span>
+                <span className="text-white font-bold text-lg">CB</span>
               </div>
-              <span className="ml-2 text-xl font-bold">Campus Companion</span>
+              <span className="ml-2 text-xl font-bold">Campus Buddy</span>
             </div>
             <p className="text-gray-300 mb-6 max-w-md">
-              Your AI-powered campus companion for events, lost & found, placements, 
+              Your all-in-one campus companion for events, lost & found, placements,
               and community interactions. Making campus life easier and more connected.
             </p>
-            
+
             {/* Contact Info */}
             <div className="space-y-3">
               <div className="flex items-center text-gray-300">
                 <Mail className="h-5 w-5 mr-3" />
-                <span>sakshyasinha32@gmail.com</span>
-              </div>
-              <div className="flex items-center text-gray-300">
-                <Phone className="h-5 w-5 mr-3" />
-                <span>+91 9319070896</span>
-              </div>
-              <div className="flex items-center text-gray-300">
-                <MapPin className="h-5 w-5 mr-3" />
-                <span>KIIT CAMPUS, BHUBANESWAR, ODISHA</span>
+                <span>adhilriju111@gmail.com
+                </span>
               </div>
             </div>
           </div>
@@ -136,7 +129,7 @@ const Footer = () => {
         <div className="mt-8 pt-8 border-t border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
-              © {currentYear} Campus Companion. All rights reserved.
+              © {currentYear} Campus Buddy. All rights reserved.
             </p>
             <div className="flex items-center space-x-6 mt-4 md:mt-0">
               <a href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors duration-200">

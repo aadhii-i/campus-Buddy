@@ -6,6 +6,15 @@ import { Calendar, Search, Users, Briefcase, FileText, TrendingUp, Clock, Star }
 import { eventService } from '../services/eventService'
 import { lostFoundService } from '../services/lostFoundService'
 import { useAuth } from '../context/AuthContext'
+import ClubsSection from '../components/home/ClubsSection'
+import TimetableSection from '../components/home/TimetableSection'
+import AttendanceSection from '../components/home/AttendanceSection'
+import EventsCarouselSection from '../components/home/EventsCarouselSection'
+import PlacementHubSection from '../components/home/PlacementHubSection'
+import AIFeaturesSection from '../components/home/AIFeaturesSection'
+import CommunityFeedSection from '../components/home/CommunityFeedSection'
+import StudentSuccessSection from '../components/home/StudentSuccessSection'
+import DownloadAppSection from '../components/home/DownloadAppSection'
 
 const Home = () => {
   const [recentEvents, setRecentEvents] = useState([])
@@ -100,7 +109,7 @@ const Home = () => {
     {
       name: 'Priya Sharma',
       role: 'CS Student',
-      text: 'Campus Companion helped me find my lost laptop within hours! The community is so helpful.',
+      text: 'Campus Buddy helped me find my lost laptop within hours! The community is so helpful.',
       rating: 5
     },
     {
@@ -154,6 +163,18 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Discover Campus Clubs */}
+      <ClubsSection />
+
+      {/* Timetable Management */}
+      <TimetableSection />
+
+      {/* Attendance Tracker */}
+      <AttendanceSection />
+
+      {/* Upcoming Events Carousel */}
+      <EventsCarouselSection />
 
       {/* Recent Activity Section */}
       <section className="py-20 bg-white">
@@ -244,6 +265,12 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Placement Hub */}
+      <PlacementHubSection />
+
+      {/* AI Features */}
+      <AIFeaturesSection />
+
       {/* Testimonials Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -285,6 +312,15 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Campus Community */}
+      <CommunityFeedSection />
+
+      {/* Student Success */}
+      <StudentSuccessSection />
+
+      {/* Download App */}
+      <DownloadAppSection />
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">

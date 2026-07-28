@@ -157,6 +157,17 @@ export const apiService = {
     getStats: () => api.get('/placement/stats')
   },
 
+  // Clubs endpoints
+  clubs: {
+    getAll: (params = {}) => api.get('/clubs', { params }),
+    getBySlug: (slug) => api.get(`/clubs/${slug}`),
+    create: (clubData) => api.post('/clubs', clubData),
+    update: (id, clubData) => api.put(`/clubs/${id}`, clubData),
+    delete: (id) => api.delete(`/clubs/${id}`),
+    join: (id) => api.post(`/clubs/${id}/join`),
+    registerRecruitment: (id) => api.post(`/clubs/${id}/register-recruitment`)
+  },
+
   // Resume endpoints
   resume: {
     analyze: (resumeFile) => {

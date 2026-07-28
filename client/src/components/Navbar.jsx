@@ -33,9 +33,9 @@ const Navbar = () => {
             <div className="flex items-center">
               <Link to="/" className="flex items-center">
                 <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">CC</span>
+                  <span className="text-white font-bold text-lg">CB</span>
                 </div>
-                <span className="ml-2 text-xl font-bold text-gray-900">Campus Companion</span>
+                <span className="ml-2 text-xl font-bold text-gray-900">Campus Buddy</span>
               </Link>
             </div>
 

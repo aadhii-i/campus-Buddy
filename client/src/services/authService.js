@@ -26,7 +26,7 @@ export const authService = {
       const { token, user } = response.data
       
       localStorage.setItem('token', token)
-      toast.success(`Welcome to Campus Companion, ${user.name}!`)
+      toast.success(`Welcome to Campus Buddy, ${user.name}!`)
       
       return { token, user }
     } catch (error) {

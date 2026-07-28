@@ -1,4 +1,4 @@
-# Campus Companion - Development Guide
+# Campus Buddy - Development Guide
 
 ## Quick Start
 
@@ -38,7 +38,7 @@ cd client && npm run dev
 ## Project Structure
 
 ```
-campus_companion/
+campus_buddy/
 ├── client/                 # React frontend
 │   ├── public/            # Static assets
 │   ├── src/
@@ -62,7 +62,7 @@ campus_companion/
 ```env
 NODE_ENV=development
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/campus_companion
+MONGODB_URI=mongodb://localhost:27017/campus_buddy
 JWT_SECRET=your_super_secret_jwt_key_here
 CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
 CLOUDINARY_API_KEY=your_cloudinary_api_key

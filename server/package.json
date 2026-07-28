@@ -1,7 +1,7 @@
 {
-  "name": "campus-companion-server",
+  "name": "campus-buddy-server",
   "version": "1.0.0",
-  "description": "Backend server for Campus Companion platform",
+  "description": "Backend server for Campus Buddy platform",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -46,6 +46,6 @@
     "supertest": "^6.3.3"
   },
   "keywords": ["campus", "student", "ai", "management"],
-  "author": "Sakshya Sinha",
+  "author": "Adhil Rahiman",
   "license": "MIT"
 }

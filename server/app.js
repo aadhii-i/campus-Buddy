@@ -18,6 +18,7 @@ const lostFoundRoutes = require('./routes/lostFound')
 const communityRoutes = require('./routes/community')
 const placementRoutes = require('./routes/placement')
 const resumeRoutes = require('./routes/resume')
+const clubRoutes = require('./routes/clubs')
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler')
@@ -124,6 +125,7 @@ app.use('/api/lost-found', lostFoundRoutes)
 app.use('/api/community', communityRoutes)
 app.use('/api/placement', placementRoutes)
 app.use('/api/resume', resumeRoutes)
+app.use('/api/clubs', clubRoutes)
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
@@ -144,7 +146,7 @@ const connectDB = async (retries = 5) => {
   console.log('🔍 Attempting MongoDB connection...')
   console.log('🔍 URI:', process.env.MONGODB_URI ? 'Set ✓' : 'Missing ✗')
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/campus_companion', {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/campus_buddy', {
       maxPoolSize: parseInt(process.env.DB_POOL_SIZE) || 10,
       serverSelectionTimeoutMS: parseInt(process.env.DB_TIMEOUT) || 30000,
       socketTimeoutMS: 45000,
@@ -207,7 +209,7 @@ process.on('uncaughtException', (err) => {
 })
 
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 const HOST = process.env.HOST || 'localhost';
 
 app.listen(PORT, HOST, () => {

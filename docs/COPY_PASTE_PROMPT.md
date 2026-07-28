@@ -7,10 +7,10 @@ Just copy the text below and paste it into ChatGPT or Claude to generate your Po
 ## 📋 MAIN PROMPT (Copy Everything Below This Line)
 
 ```
-Create a PowerPoint presentation for my Campus Companion project. I need slide-by-slide content for an academic presentation.
+Create a PowerPoint presentation for my Campus Buddy project. I need slide-by-slide content for an academic presentation.
 
 PROJECT DETAILS:
-- Name: Campus Companion
+- Name: Campus Buddy
 - Type: AI-Powered Campus Management Web Platform
 - Stack: MERN (MongoDB, Express.js, React 18, Node.js)
 - AI: OpenAI GPT-4 integration
@@ -136,7 +136,7 @@ The AI will generate something like this:
 
 ```
 ---
-SLIDE 1: Campus Companion
+SLIDE 1: Campus Buddy
 AI-Powered Campus Management Platform
 
 • Comprehensive solution for modern campus operations
@@ -160,7 +160,7 @@ SLIDE 2: Problem Statement
 • Manual administrative processes waste time and resources
 
 [Visual Suggestion: Left side shows problem icons with X marks, right side 
-shows Campus Companion logo with checkmarks]
+shows Campus Buddy logo with checkmarks]
 
 [Speaker Notes: Explain the real pain points that students and administrators 
 face daily, setting up why this platform is necessary.]

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "campus-companion",
+  "name": "campus-buddy",
   "buildCommand": "cd client && npm install && npx vite build",
   "outputDirectory": "client/dist",
   "framework": "vite",

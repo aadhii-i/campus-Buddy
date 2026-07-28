@@ -1,9 +1,9 @@
 # Software Development Documentation
-## Campus Companion - AI-Powered Campus Management Platform
+## Campus Buddy - AI-Powered Campus Management Platform
 
 **Version:** 1.0  
 **Date:** November 3, 2025  
-**Prepared by:** Sakshya Sinha  
+**Prepared by:** Adhil Rahiman  
 
 ---
 
@@ -25,7 +25,7 @@
 
 ### 1.1 Project Information
 
-- **Project Name**: Campus Companion
+- **Project Name**: Campus Buddy
 - **Version**: 1.0.0
 - **Development Model**: Agile / Iterative
 - **Repository**: Git-based version control
@@ -33,7 +33,7 @@
 
 ### 1.2 Development Team Roles
 
-- **Full-Stack Developer**: Sakshya Sinha
+- **Full-Stack Developer**: Adhil Rahiman
 - **UI/UX Designer**: Integrated within development
 - **Project Manager**: Integrated within development
 - **QA/Tester**: Integrated within development
@@ -196,7 +196,7 @@ Git
 **Step 1: Clone Repository**
 ```bash
 git clone <repository-url>
-cd campus_companion
+cd campus_buddy
 ```
 
 **Step 2: Install Dependencies**
@@ -222,7 +222,7 @@ NODE_ENV=development
 PORT=5000
 
 # Database
-MONGODB_URI=mongodb://localhost:27017/campus_companion
+MONGODB_URI=mongodb://localhost:27017/campus_buddy
 
 # JWT
 JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
@@ -283,7 +283,7 @@ npm run dev
 ### 5.1 Project Directory Structure
 
 ```
-campus_companion/
+campus_buddy/
 │
 ├── client/                      # Frontend React application
 │   ├── public/                  # Static files
@@ -399,7 +399,7 @@ campus_companion/
 
 ```
 Development: http://localhost:5000/api
-Production: https://campus-companion-api.vercel.app/api
+Production: https://campus-buddy-api.vercel.app/api
 ```
 
 ### 6.2 Authentication
@@ -846,5 +846,5 @@ Update all `.env` files with production values:
 
 | Version | Date | Author | Description |
 |---------|------|--------|-------------|
-| 1.0 | Nov 3, 2025 | Sakshya Sinha | Initial development documentation |
+| 1.0 | Nov 3, 2025 | Adhil Rahiman | Initial development documentation |
 

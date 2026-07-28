@@ -88,7 +88,7 @@ const register = async (req, res) => {
     try {
       await sendEmail({
         to: user.email,
-        subject: 'Welcome to Campus Companion!',
+        subject: 'Welcome to Campus Buddy!',
         template: 'welcome',
         data: { name: user.name }
       })

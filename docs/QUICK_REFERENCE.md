@@ -1,8 +1,8 @@
-# Campus Companion - Quick Reference
+# Campus Buddy - Quick Reference
 ## Complete Documentation Index
 
-**Project:** Campus Companion - AI-Powered Campus Management Platform  
-**Author:** Sakshya Sinha  
+**Project:** Campus Buddy - AI-Powered Campus Management Platform  
+**Author:** Adhil Rahiman  
 **Date:** November 3, 2025  
 
 ---
@@ -24,7 +24,7 @@ Your complete presentation package is ready in the `docs/` folder:
 
 ## 🎯 Quick Project Summary
 
-### What is Campus Companion?
+### What is Campus Buddy?
 
 A comprehensive web platform for campus management featuring:
 
@@ -166,7 +166,7 @@ A comprehensive web platform for campus management featuring:
 ## 🌟 Key Talking Points
 
 ### 1. Problem Statement
-"Students face challenges finding campus events, tracking lost items, connecting with peers, and preparing for placements. Campus Companion solves all these with one integrated platform."
+"Students face challenges finding campus events, tracking lost items, connecting with peers, and preparing for placements. Campus Buddy solves all these with one integrated platform."
 
 ### 2. Innovation
 "We leverage AI in three ways:
@@ -361,7 +361,7 @@ You've built a comprehensive, AI-powered campus management platform with:
 
 **All documentation:**
 ```
-cd campus_companion/docs/
+cd campus_buddy/docs/
 ```
 
 **Start demo:**
@@ -388,6 +388,6 @@ cd client && npm run dev
 | Field | Value |
 |-------|-------|
 | Created | November 3, 2025 |
-| Author | Sakshya Sinha |
+| Author | Adhil Rahiman |
 | Purpose | Presentation Quick Reference |
 | Status | Ready ✅ |

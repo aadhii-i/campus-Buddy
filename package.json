@@ -1,5 +1,5 @@
 {
-  "name": "campus-companion",
+  "name": "campus-buddy",
   "version": "1.0.0",
   "description": "AI-powered campus management platform",
   "scripts": {
@@ -18,7 +18,7 @@
     "student",
     "management"
   ],
-  "author": "Sakshya Sinha",
+  "author": "Adhil Rahiman",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^2.2.0",

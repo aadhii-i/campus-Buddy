@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer')
 
 // Create reusable transporter object using the default SMTP transport
 const createTransporter = () => {
-  return nodemailer.createTransporter({
+  return nodemailer.createTransport({
     host: process.env.EMAIL_HOST || 'smtp.gmail.com',
     port: process.env.EMAIL_PORT || 587,
     secure: false, // true for 465, false for other ports
@@ -19,10 +19,10 @@ const createTransporter = () => {
 // Email templates
 const emailTemplates = {
   welcome: (data) => ({
-    subject: 'Welcome to Campus Companion!',
+    subject: 'Welcome to Campus Buddy!',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #2563eb;">Welcome to Campus Companion, ${data.name}!</h2>
+        <h2 style="color: #2563eb;">Welcome to Campus Buddy, ${data.name}!</h2>
         <p>Thank you for joining our campus community platform.</p>
         <p>You can now:</p>
         <ul>
@@ -33,7 +33,7 @@ const emailTemplates = {
           <li>Analyze your resume with AI</li>
         </ul>
         <p>Get started by exploring our platform!</p>
-        <p>Best regards,<br>The Campus Companion Team</p>
+        <p>Best regards,<br>The Campus Buddy Team</p>
       </div>
     `
   }),
@@ -53,7 +53,7 @@ const emailTemplates = {
         </div>
         <p>This link will expire in ${data.expiryTime}.</p>
         <p>If you didn't request this, please ignore this email.</p>
-        <p>Best regards,<br>The Campus Companion Team</p>
+        <p>Best regards,<br>The Campus Buddy Team</p>
       </div>
     `
   }),
@@ -72,7 +72,7 @@ const emailTemplates = {
           </a>
         </div>
         <p>This link will expire in ${data.expiryTime}.</p>
-        <p>Best regards,<br>The Campus Companion Team</p>
+        <p>Best regards,<br>The Campus Buddy Team</p>
       </div>
     `
   })
@@ -102,7 +102,7 @@ const sendEmail = async (options) => {
 
     // Mail options
     const mailOptions = {
-      from: `"Campus Companion" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
+      from: `"Campus Buddy" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
       to: options.to,
       subject: options.subject || subject,
       html: options.html || html

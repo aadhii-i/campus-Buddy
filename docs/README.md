@@ -1,6 +1,6 @@
-# 📚 Campus Companion - Documentation
+# 📚 Campus Buddy - Documentation
 
-Welcome to the comprehensive documentation for **Campus Companion**, an AI-powered campus management platform.
+Welcome to the comprehensive documentation for **Campus Buddy**, an AI-powered campus management platform.
 
 ---
 
@@ -210,8 +210,8 @@ This documentation package represents a **complete, production-ready software pr
 
 | Field | Value |
 |-------|-------|
-| **Project** | Campus Companion |
-| **Author** | Sakshya Sinha |
+| **Project** | Campus Buddy |
+| **Author** | Adhil Rahiman |
 | **Date** | November 3, 2025 |
 | **Version** | 1.0 |
 | **Status** | Complete and Ready for Presentation ✅ |

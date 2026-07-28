@@ -1,4 +1,4 @@
-# 🚀 Campus Companion - Production Deployment Guide
+# 🚀 Campus Buddy - Production Deployment Guide
 
 Your campus companion app is now **production-ready**! Here's what I've optimized:
 

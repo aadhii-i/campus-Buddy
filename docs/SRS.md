@@ -1,9 +1,9 @@
 # Software Requirements Specification (SRS)
-## Campus Companion - AI-Powered Campus Management Platform
+## Campus Buddy - AI-Powered Campus Management Platform
 
 **Version:** 1.0  
 **Date:** November 3, 2025  
-**Prepared by:** Sakshya Sinha  
+**Prepared by:** Adhil Rahiman  
 
 ---
 
@@ -21,10 +21,10 @@
 ## 1. Introduction
 
 ### 1.1 Purpose
-This document specifies the software requirements for Campus Companion, an AI-powered campus management platform designed to streamline campus operations, enhance student engagement, and provide intelligent services for academic institutions.
+This document specifies the software requirements for Campus Buddy, an AI-powered campus management platform designed to streamline campus operations, enhance student engagement, and provide intelligent services for academic institutions.
 
 ### 1.2 Scope
-Campus Companion is a comprehensive web application that provides:
+Campus Buddy is a comprehensive web application that provides:
 - Event management and registration system
 - Lost & Found tracking with AI matching
 - Community discussion forums
@@ -50,14 +50,14 @@ Campus Companion is a comprehensive web application that provides:
 - Cloudinary API Documentation
 
 ### 1.5 Overview
-This SRS describes the functional and non-functional requirements, system features, interfaces, and constraints for the Campus Companion platform.
+This SRS describes the functional and non-functional requirements, system features, interfaces, and constraints for the Campus Buddy platform.
 
 ---
 
 ## 2. Overall Description
 
 ### 2.1 Product Perspective
-Campus Companion is a standalone web application built on the MERN stack that integrates with:
+Campus Buddy is a standalone web application built on the MERN stack that integrates with:
 - MongoDB for data persistence
 - OpenAI API for AI-powered features
 - Cloudinary for file storage
@@ -479,7 +479,7 @@ The major functions include:
 
 ## Appendix A: Glossary
 
-- **Campus Companion**: The name of the platform
+- **Campus Buddy**: The name of the platform
 - **Event**: A campus activity or gathering
 - **Lost & Found**: System for tracking lost and found items
 - **Community Post**: User-generated content in discussion forums
@@ -502,7 +502,7 @@ Refer to separate documents:
 
 | Version | Date | Author | Description |
 |---------|------|--------|-------------|
-| 1.0 | Nov 3, 2025 | Sakshya Sinha | Initial SRS document |
+| 1.0 | Nov 3, 2025 | Adhil Rahiman | Initial SRS document |
 
 ---
 

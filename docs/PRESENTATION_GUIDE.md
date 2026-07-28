@@ -1,9 +1,9 @@
-# Campus Companion - Presentation Guide
+# Campus Buddy - Presentation Guide
 ## AI-Powered Campus Management Platform
 
 **Prepared for:** Academic Presentation  
 **Date:** November 3, 2025  
-**Presenter:** Sakshya Sinha  
+**Presenter:** Adhil Rahiman  
 
 ---
 
@@ -21,9 +21,9 @@ All required documentation is prepared:
 
 ## 🎯 Project Overview (2 minutes)
 
-### What is Campus Companion?
+### What is Campus Buddy?
 
-**Campus Companion** is a comprehensive, AI-powered web platform that modernizes campus management by integrating:
+**Campus Buddy** is a comprehensive, AI-powered web platform that modernizes campus management by integrating:
 
 - 🎉 Event Management & Registration
 - 🔍 Lost & Found System with AI Matching
@@ -580,7 +580,7 @@ Plus existing project docs:
 
 ## 🎯 Presentation Tips
 
-1. **Start strong** - Explain the problem Campus Companion solves
+1. **Start strong** - Explain the problem Campus Buddy solves
 2. **Show, don't just tell** - Live demo is powerful
 3. **Highlight AI features** - This is your differentiator
 4. **Emphasize testing** - Shows professionalism
@@ -612,8 +612,8 @@ Plus existing project docs:
 
 | Item | Details |
 |------|---------|
-| Project | Campus Companion |
-| Author | Sakshya Sinha |
+| Project | Campus Buddy |
+| Author | Adhil Rahiman |
 | Date | November 3, 2025 |
 | Version | 1.0 |
 | Status | Ready for Presentation |

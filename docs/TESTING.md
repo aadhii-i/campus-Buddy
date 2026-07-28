@@ -1,9 +1,9 @@
 # Testing Documentation
-## Campus Companion - AI-Powered Campus Management Platform
+## Campus Buddy - AI-Powered Campus Management Platform
 
 **Version:** 1.0  
 **Date:** November 3, 2025  
-**Prepared by:** Sakshya Sinha  
+**Prepared by:** Adhil Rahiman  
 
 ---
 
@@ -110,8 +110,8 @@
 | Environment | Purpose | URL |
 |-------------|---------|-----|
 | Development | Developer testing | localhost:5173 |
-| Staging | Pre-production testing | staging.campus-companion.com |
-| Production | Live environment | campus-companion.com |
+| Staging | Pre-production testing | staging.campus-buddy.com |
+| Production | Live environment | campus-buddy.com |
 
 ---
 
@@ -552,7 +552,7 @@ describe('Event Integration Tests', () => {
 
 **Collection Structure:**
 ```
-Campus Companion API Tests
+Campus Buddy API Tests
 ├── Authentication
 │   ├── Register User
 │   ├── Login User
@@ -983,8 +983,8 @@ Frontend:
 
 | Role | Name | Signature | Date |
 |------|------|-----------|------|
-| Developer/Tester | Sakshya Sinha | ✅ | Nov 3, 2025 |
-| Project Manager | Sakshya Sinha | ✅ | Nov 3, 2025 |
+| Developer/Tester | Adhil Rahiman | ✅ | Nov 3, 2025 |
+| Project Manager | Adhil Rahiman | ✅ | Nov 3, 2025 |
 
 ---
 
@@ -992,8 +992,8 @@ Frontend:
 
 | Version | Date | Author | Description |
 |---------|------|--------|-------------|
-| 1.0 | Nov 3, 2025 | Sakshya Sinha | Initial testing documentation |
+| 1.0 | Nov 3, 2025 | Adhil Rahiman | Initial testing documentation |
 
 ---
 
-This comprehensive testing documentation demonstrates thorough validation of the Campus Companion platform across all testing levels.
+This comprehensive testing documentation demonstrates thorough validation of the Campus Buddy platform across all testing levels.

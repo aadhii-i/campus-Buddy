@@ -1,16 +1,16 @@
 # AI Prompt for PowerPoint Generation
 
-Use this prompt with ChatGPT, Claude, or any AI assistant to generate PowerPoint content for your Campus Companion presentation.
+Use this prompt with ChatGPT, Claude, or any AI assistant to generate PowerPoint content for your Campus Buddy presentation.
 
 ---
 
 ## 📝 Copy-Paste Prompt for AI
 
 ```
-I need help creating a PowerPoint presentation for my Campus Companion project. I have complete documentation but need it formatted as PowerPoint slides with concise bullet points and visual suggestions.
+I need help creating a PowerPoint presentation for my Campus Buddy project. I have complete documentation but need it formatted as PowerPoint slides with concise bullet points and visual suggestions.
 
 PROJECT OVERVIEW:
-Campus Companion is an AI-powered campus management web application built with MERN stack featuring:
+Campus Buddy is an AI-powered campus management web application built with MERN stack featuring:
 - Event Management & Registration
 - AI-powered Lost & Found (with item matching)
 - Community Discussion Hub
@@ -90,7 +90,7 @@ Begin with a title slide and introduction, then proceed with SRS slides, followe
 ## 🎯 Alternative Shorter Prompt (If You Want Less Detail)
 
 ```
-Create PowerPoint slides for Campus Companion project presentation:
+Create PowerPoint slides for Campus Buddy project presentation:
 
 PROJECT: AI-powered campus management platform (MERN stack)
 FEATURES: Event Management, AI Lost & Found Matching, Community Hub, AI Resume Analyzer, Placement Services
@@ -126,7 +126,7 @@ Keep professional, technical, and suitable for 20-minute academic presentation.
 ## 🎨 Alternative: Prompt for Slide Visuals/Diagrams
 
 ```
-I need visual diagram suggestions for my Campus Companion PowerPoint:
+I need visual diagram suggestions for my Campus Buddy PowerPoint:
 
 CONTEXT: MERN stack campus management platform with AI features
 
@@ -164,7 +164,7 @@ When you use the main prompt above, the AI will generate something like:
 
 ```
 ---
-SLIDE 1: Campus Companion
+SLIDE 1: Campus Buddy
 AI-Powered Campus Management Platform
 
 Content:
@@ -187,7 +187,7 @@ Content:
 • Fragmented communication across campus
 • Manual processes increase administrative burden
 
-Visual: Problem icons on left, solution arrow pointing to Campus Companion logo
+Visual: Problem icons on left, solution arrow pointing to Campus Buddy logo
 
 Speaker Notes: Explain the pain points students face daily, setting up why this platform is needed.
 ---
@@ -300,7 +300,7 @@ Give extra emphasis to:
 
 ### For ChatGPT (Optimized):
 ```
-Act as a presentation designer. Create PowerPoint slides for Campus Companion 
+Act as a presentation designer. Create PowerPoint slides for Campus Buddy 
 (AI-powered MERN stack campus management platform). Need 15 slides total:
 - SRS: 9 slides (requirements, features, system design)
 - DFD: 6 slides (context, level 1, level 2 flows, data stores)
@@ -313,7 +313,7 @@ Professional, technical, academic presentation style.
 
 ### For Claude (Optimized):
 ```
-I need a structured PowerPoint presentation for my Campus Companion project.
+I need a structured PowerPoint presentation for my Campus Buddy project.
 
 Details:
 - AI-powered campus platform (MERN stack)

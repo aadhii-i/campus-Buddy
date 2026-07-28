@@ -2,9 +2,10 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  // Use root path for Vercel, /campus-companion/ for GitHub Pages
-  base: process.env.VERCEL ? '/' : '/campus-companion/',
+export default defineConfig(({ command }) => ({
+  // Dev server and standard hosts (Vercel/Render/Netlify) serve from root.
+  // Only a GitHub Pages build (GH_PAGES=true npm run build) needs the repo sub-path.
+  base: command === 'build' && process.env.GH_PAGES ? '/campus-buddy/' : '/',
   plugins: [react()],
   server: {
     port: 3000,
@@ -40,4 +41,4 @@ export default defineConfig({
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
   }
-})
+}))

@@ -1,9 +1,9 @@
 # Data Flow Diagrams (DFD)
-## Campus Companion - AI-Powered Campus Management Platform
+## Campus Buddy - AI-Powered Campus Management Platform
 
 **Version:** 1.0  
 **Date:** November 3, 2025  
-**Prepared by:** Sakshya Sinha  
+**Prepared by:** Adhil Rahiman  
 
 ---
 
@@ -18,7 +18,7 @@
 ## 1. Context Diagram (Level 0)
 
 ### Overview
-The context diagram shows the Campus Companion system as a single process with external entities.
+The context diagram shows the Campus Buddy system as a single process with external entities.
 
 ```
 ┌─────────────────┐
@@ -809,8 +809,8 @@ Analyze this resume and provide:
 
 | Version | Date | Author | Description |
 |---------|------|--------|-------------|
-| 1.0 | Nov 3, 2025 | Sakshya Sinha | Initial DFD documentation |
+| 1.0 | Nov 3, 2025 | Adhil Rahiman | Initial DFD documentation |
 
 ---
 
-This DFD documentation provides a comprehensive view of data flow in the Campus Companion system at multiple levels of abstraction.
+This DFD documentation provides a comprehensive view of data flow in the Campus Buddy system at multiple levels of abstraction.

@@ -1,9 +1,14 @@
-# 🚀 Campus Companion Deployment Guide
+# 🚀 Campus Buddy Deployment Guide
 
 ## Deployment Stack
 - **Frontend**: Vercel (React + Vite)
 - **Backend**: Railway (Node.js + Express)
-- **Database**: MongoDB Atlas (Already configured)
+- **Database**: MongoDB Atlas (bring your own free cluster at https://cloud.mongodb.com)
+
+> **Environment variables**: the full, authoritative list of variables each service needs lives in
+> [`server/.env.example`](server/.env.example) and [`client/.env.example`](client/.env.example).
+> Copy those to `.env`, fill in your own credentials, and never commit the real `.env` file.
+> The snippets below show only the subset relevant to each host's dashboard.
 
 ## 📦 Quick Deploy Instructions
 
@@ -13,14 +18,14 @@
 2. **Connect GitHub**: Link your GitHub account
 3. **Create New Project**: 
    - Choose "Deploy from GitHub repo"
-   - Select your campus-companion repository
+   - Select your campus-buddy repository
    - Choose the `server` folder as root directory
 
 4. **Environment Variables**: Add these in Railway dashboard:
    ```
    NODE_ENV=production
-   MONGODB_URI=mongodb+srv://sakshya:9971881011aA@@cluster0.nzha7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-   JWT_SECRET=your_super_secret_jwt_key_here_make_it_long_and_complex_production_2024
+   MONGODB_URI=mongodb+srv://<db_user>:<db_password>@<cluster>.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+   JWT_SECRET=<generate-your-own-long-random-secret>
    PORT=3001
    CORS_ORIGIN=*
    ```
@@ -32,7 +37,7 @@
 1. **Sign up for Vercel**: https://vercel.com/
 2. **Import Project**: 
    - Connect GitHub
-   - Import campus-companion repository
+   - Import campus-buddy repository
    - Set root directory to `client`
    - Framework preset: Vite
 
@@ -104,9 +109,9 @@ npm start
 
 ## 🔗 Expected URLs After Deployment
 
-- **Frontend**: https://campus-companion-xyz.vercel.app
-- **Backend**: https://campus-companion-abc.railway.app
-- **API**: https://campus-companion-abc.railway.app/api
+- **Frontend**: https://campus-buddy-xyz.vercel.app
+- **Backend**: https://campus-buddy-abc.railway.app
+- **API**: https://campus-buddy-abc.railway.app/api
 
 ## 🛠️ Troubleshooting
 
@@ -132,4 +137,4 @@ The app is already optimized for:
 
 ---
 
-Ready to deploy? Let's make your Campus Companion live! 🚀
+Ready to deploy? Let's make your Campus Buddy live! 🚀

@@ -1,8 +1,8 @@
-# 🆓 Free Deployment Guide - Campus Companion
+# 🆓 Free Deployment Guide - Campus Buddy
 
 ## 🎯 Completely FREE Deployment Options
 
-Your Campus Companion can be deployed 100% FREE using these platforms:
+Your Campus Buddy can be deployed 100% FREE using these platforms:
 
 ### Option 1: Render + Vercel (Recommended)
 - **Backend**: Render (750 hours/month free)
@@ -18,6 +18,10 @@ Your Campus Companion can be deployed 100% FREE using these platforms:
 
 ---
 
+> **Environment variables**: see [`server/.env.example`](server/.env.example) and
+> [`client/.env.example`](client/.env.example) for the full list. Never reuse the example
+> values below in a real deployment — generate your own secrets (e.g. `openssl rand -base64 48`).
+
 ## 🚀 Deploy to Render + Vercel (FREE)
 
 ### Backend: Render
@@ -26,7 +30,7 @@ Your Campus Companion can be deployed 100% FREE using these platforms:
 2. **New Web Service** → Connect GitHub
 3. **Settings**:
    ```
-   Repository: sakshyasinha/campus-companion
+   Repository: <your-github-username>/campus-buddy
    Root Directory: server
    Environment: Node
    Build Command: npm install
@@ -36,12 +40,12 @@ Your Campus Companion can be deployed 100% FREE using these platforms:
 4. **Environment Variables**:
    ```
    NODE_ENV=production
-   MONGODB_URI=mongodb+srv://sakshya:9971881011aA@@cluster0.nzha7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-   JWT_SECRET=campus_companion_super_secret_production_key_2024
+   MONGODB_URI=mongodb+srv://<db_user>:<db_password>@<cluster>.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+   JWT_SECRET=<generate-your-own-long-random-secret>
    PORT=10000
    ```
 
-5. **Deploy** → Get URL like: `https://campus-companion.onrender.com`
+5. **Deploy** → Get URL like: `https://campus-buddy.onrender.com`
 
 ### Frontend: Vercel
 
@@ -49,24 +53,24 @@ Your Campus Companion can be deployed 100% FREE using these platforms:
 2. **New Project** → Import from GitHub
 3. **Settings**:
    ```
-   Repository: sakshyasinha/campus-companion
+   Repository: <your-github-username>/campus-buddy
    Root Directory: client
    Framework: Vite
    ```
 
 4. **Environment Variables**:
    ```
-   VITE_API_URL=https://campus-companion.onrender.com/api
+   VITE_API_URL=https://campus-buddy.onrender.com/api
    ```
 
-5. **Deploy** → Get URL like: `https://campus-companion.vercel.app`
+5. **Deploy** → Get URL like: `https://campus-buddy.vercel.app`
 
 ---
 
 ## 🎉 Your App Will Be Live!
 
-**Backend**: `https://campus-companion.onrender.com`
-**Frontend**: `https://campus-companion.vercel.app`
+**Backend**: `https://campus-buddy.onrender.com`
+**Frontend**: `https://campus-buddy.vercel.app`
 
 ### Free Tier Limits:
 - **Render**: 750 hours/month (24/7 for 31 days!)
