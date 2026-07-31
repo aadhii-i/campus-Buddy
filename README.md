@@ -438,13 +438,7 @@ It motivates further development and helps others discover the project.
 
 ---
 
-## 📄 License
 
-This project is licensed under the MIT License.
-
-See the LICENSE file for details.
-
----
 
 <div align="center">
 
