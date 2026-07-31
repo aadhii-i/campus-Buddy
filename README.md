@@ -5,7 +5,13 @@
 # Campus Buddy
 ### AI-Powered Smart Campus Management Platform
 
-*A modern all-in-one platform designed to simplify campus life, enhance student engagement, and digitize everyday university activities.*
+*A modern all-in-one platform designed to simplify campus life, enhance student engagement, and digitize everyday university activities.
+## 🚀 Live Demo
+https://campus-buddy-1-aolw.onrender.com/
+
+## 📂 GitHub Repository
+https://github.com/aadhii-i/campus-Buddy
+
 
 ![React](https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=for-the-badge&logo=react)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite)
