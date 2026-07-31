@@ -210,13 +210,11 @@ process.on('uncaughtException', (err) => {
 
 
 const PORT = process.env.PORT || 3001;
-const HOST = process.env.HOST || 'localhost';
 
-app.listen(PORT, HOST, () => {
-  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
-  console.log(`📄 Environment: ${process.env.NODE_ENV}`);
-  console.log(`📊 Health check: http://${HOST}:${PORT}/health`);
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📄 Environment: ${process.env.NODE_ENV}`);
+    console.log(`📊 Health check: /health`);
 });
-
 module.exports = app
 // restart
