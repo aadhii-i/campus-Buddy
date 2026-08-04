@@ -38,12 +38,13 @@ app.use(helmet({
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:3002',
-      'http://localhost:5173',
-      process.env.FRONTEND_URL,
-      process.env.CORS_ORIGIN
-    ].filter(Boolean)
+  'http://localhost:3000',
+  'http://localhost:3002',
+  'http://localhost:5173',
+  'https://campus-buddy-1-aolw.onrender.com',
+  process.env.FRONTEND_URL,
+  process.env.CORS_ORIGIN
+].filter(Boolean)
     
     // Allow requests with no origin (mobile apps, etc.)
     if (!origin) return callback(null, true)
