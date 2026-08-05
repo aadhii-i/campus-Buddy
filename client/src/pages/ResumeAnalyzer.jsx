@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, FileText, Download, Check, AlertCircle, Star, TrendingUp, Users, Target } from 'lucide-react';
+import { generateReport } from "../utils/generateReport";
 
 const ResumeAnalyzer = () => {
   const [file, setFile] = useState(null);
@@ -11,7 +12,7 @@ const ResumeAnalyzer = () => {
   const handleDrop = (e) => {
     e.preventDefault();
     setDragActive(false);
-    
+
     const droppedFile = e.dataTransfer.files[0];
     if (droppedFile && droppedFile.type === 'application/pdf') {
       setFile(droppedFile);
@@ -27,9 +28,9 @@ const ResumeAnalyzer = () => {
 
   const analyzeResume = async () => {
     if (!file) return;
-    
+
     setAnalyzing(true);
-    
+
     // Simulate API call
     setTimeout(() => {
       setAnalysis({
@@ -114,8 +115,8 @@ const ResumeAnalyzer = () => {
             <div className="bg-white rounded-lg shadow-sm p-8">
               <div
                 className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                  dragActive 
-                    ? 'border-blue-500 bg-blue-50' 
+                  dragActive
+                    ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-300 hover:border-gray-400'
                 }`}
                 onDrop={handleDrop}
@@ -209,7 +210,7 @@ const ResumeAnalyzer = () => {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Overall Score</h2>
                 <p className="text-gray-600">Your resume has been analyzed across multiple criteria</p>
-                
+
                 <div className="flex justify-center gap-4 mt-6">
                   <button
                     onClick={resetAnalysis}
@@ -217,8 +218,11 @@ const ResumeAnalyzer = () => {
                   >
                     Analyze Another Resume
                   </button>
-                  <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                    <Download className="h-4 w-4 inline mr-2" />
+                  <button
+                    onClick={() => generateReport(analysis, file?.name || "Resume")}
+                    className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
                     Download Report
                   </button>
                 </div>
@@ -265,7 +269,7 @@ const ResumeAnalyzer = () => {
                   </div>
                   <p className="text-gray-600">ATS Optimization Score</p>
                 </div>
-                
+
                 <div className="space-y-4">
                   <div>
                     <h4 className="font-medium text-gray-900 mb-2">Found Keywords</h4>
@@ -277,7 +281,7 @@ const ResumeAnalyzer = () => {
                       ))}
                     </div>
                   </div>
-                  
+
                   <div>
                     <h4 className="font-medium text-gray-900 mb-2">Missing Keywords</h4>
                     <div className="flex flex-wrap gap-2">
