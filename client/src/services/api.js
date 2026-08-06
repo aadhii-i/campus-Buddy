@@ -183,13 +183,9 @@ export const apiService = {
 
   // Resume endpoints
   resume: {
-    analyze: (resumeFile) => {
-      const formData = new FormData()
-      formData.append('resume', resumeFile)
-      return api.post('/resume/analyze', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
-    },
+    // Runs the real, role-aware AI analysis against a resume already
+    // indexed via chatUpload() (sessionId links the two calls together)
+    analyze: (sessionId, targetRole) => api.post('/resume/analyze', { sessionId, targetRole }),
     getAnalysis: (id) => api.get(`/resume/analysis/${id}`),
     getRecommendations: (id) => api.get(`/resume/recommendations/${id}`),
     getUserAnalyses: () => api.get('/resume/user-analyses'),

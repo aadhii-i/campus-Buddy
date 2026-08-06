@@ -12,19 +12,45 @@ const upload = multer({
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000'
 
 
-// @desc    Analyze resume
+// @desc    Run the AI-powered, role-aware resume analysis for an already-indexed
+//          resume (call POST /api/resume/chat/upload first to get a sessionId)
 // @route   POST /api/resume/analyze
 // @access  Private
 router.post('/analyze', protect, async (req, res) => {
   try {
+    const { sessionId, targetRole } = req.body
+
+    if (!sessionId || !targetRole) {
+      return res.status(400).json({
+        success: false,
+        message: 'sessionId and targetRole are required'
+      })
+    }
+
+    const aiResponse = await fetch(`${AI_SERVICE_URL}/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId, target_role: targetRole })
+    })
+
+    const data = await aiResponse.json()
+
+    if (!aiResponse.ok) {
+      return res.status(aiResponse.status).json({
+        success: false,
+        message: data.detail || 'Failed to analyze resume'
+      })
+    }
+
     res.json({
       success: true,
-      message: 'Resume analysis endpoint working'
+      analysis: data.analysis
     })
   } catch (error) {
-    res.status(500).json({
+    console.error('Resume analyze error:', error)
+    res.status(502).json({
       success: false,
-      message: 'Server error'
+      message: 'AI service is unavailable. Please try again later.'
     })
   }
 })
