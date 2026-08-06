@@ -2,31 +2,13 @@ import { apiService } from './api'
 import toast from 'react-hot-toast'
 
 export const resumeService = {
-  // Analyze resume
-  async analyzeResume(resumeFile, onUploadProgress) {
+  // Run the real, role-aware AI analysis. Requires the resume to already be
+  // indexed via uploadForChat() (or chatUpload directly) so sessionId points
+  // at a saved, parseable PDF.
+  async analyzeResume(sessionId, targetRole) {
     try {
-      if (!resumeFile) {
-        throw new Error('Please select a resume file')
-      }
-
-      // Validate file type
-      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-      if (!allowedTypes.includes(resumeFile.type)) {
-        throw new Error('Please upload a PDF or Word document')
-      }
-
-      // Validate file size (max 5MB)
-      const maxSize = 5 * 1024 * 1024 // 5MB
-      if (resumeFile.size > maxSize) {
-        throw new Error('File size must be less than 5MB')
-      }
-
-      const formData = new FormData()
-      formData.append('resume', resumeFile)
-
-      const response = await apiService.uploadFile('/resume/analyze', formData, onUploadProgress)
-      toast.success('Resume analyzed successfully!')
-      return response.data
+      const response = await apiService.resume.analyze(sessionId, targetRole)
+      return response.data.analysis
     } catch (error) {
       const message = error.response?.data?.message || error.message || 'Failed to analyze resume'
       toast.error(message)

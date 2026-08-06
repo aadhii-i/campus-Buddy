@@ -28,11 +28,8 @@ export const generateReport = (analysis, fileName = "Resume") => {
   doc.setFontSize(12);
 
   doc.text(`Resume : ${fileName}`, 20, 40);
-  doc.text(
-    `Generated : ${new Date().toLocaleString()}`,
-    20,
-    48
-  );
+  doc.text(`Target Role : ${analysis.targetRole || "N/A"}`, 20, 48);
+  doc.text(`Generated : ${new Date().toLocaleString()}`, 20, 56);
 
   // ===============================
   // SCORES
@@ -40,37 +37,26 @@ export const generateReport = (analysis, fileName = "Resume") => {
 
   doc.setFontSize(18);
   doc.setTextColor(37, 99, 235);
-  doc.text("Overall Analysis", 20, 65);
+  doc.text("Overall Analysis", 20, 72);
 
   doc.setTextColor(0, 0, 0);
   doc.setFontSize(13);
 
-  doc.text(
-    `Overall Score : ${analysis.overallScore}/100`,
-    20,
-    78
-  );
-
-  doc.text(
-    `ATS Score : ${analysis.atsScore}%`,
-    20,
-    88
-  );
+  doc.text(`Overall Score : ${analysis.overallScore}/100`, 20, 85);
+  doc.text(`ATS Score : ${analysis.atsScore}%`, 20, 95);
 
   // ===============================
-  // SECTION TABLE
+  // CATEGORY TABLE
   // ===============================
 
   autoTable(doc, {
-    startY: 100,
-    head: [["Section", "Score", "Status"]],
-    body: Object.entries(analysis.sections).map(
-      ([section, value]) => [
-        section.toUpperCase(),
-        `${value.score}%`,
-        value.status,
-      ]
-    ),
+    startY: 105,
+    head: [["Category", "Score", "Status"]],
+    body: Object.values(analysis.categoryScores || {}).map((value) => [
+      value.label,
+      `${value.score}/${value.max}`,
+      value.status,
+    ]),
     headStyles: {
       fillColor: [37, 99, 235],
     },
@@ -91,13 +77,14 @@ export const generateReport = (analysis, fileName = "Resume") => {
   doc.setFontSize(11);
   doc.setTextColor(0, 0, 0);
 
-  analysis.strengths.forEach((item) => {
-    doc.text(`• ${item}`, 25, y);
-    y += 7;
+  (analysis.strengths || []).forEach((item) => {
+    const lines = doc.splitTextToSize(`• ${item}`, 170);
+    doc.text(lines, 25, y);
+    y += lines.length * 6 + 2;
   });
 
   // ===============================
-  // IMPROVEMENTS
+  // WEAKNESSES
   // ===============================
 
   y += 8;
@@ -111,16 +98,17 @@ export const generateReport = (analysis, fileName = "Resume") => {
   doc.setFontSize(11);
   doc.setTextColor(0, 0, 0);
 
-  analysis.improvements.forEach((item) => {
-    doc.text(`• ${item}`, 25, y);
-    y += 7;
+  (analysis.weaknesses || []).forEach((item) => {
+    const lines = doc.splitTextToSize(`• ${item}`, 170);
+    doc.text(lines, 25, y);
+    y += lines.length * 6 + 2;
   });
 
   // ===============================
   // KEYWORDS
   // ===============================
 
-  y += 8;
+  y += 10;
 
   doc.setFontSize(16);
   doc.setTextColor(37, 99, 235);
@@ -131,11 +119,7 @@ export const generateReport = (analysis, fileName = "Resume") => {
   doc.setFontSize(11);
   doc.setTextColor(0, 0, 0);
 
-  doc.text(
-    analysis.keywords.join(", "),
-    25,
-    y
-  );
+  doc.text(doc.splitTextToSize((analysis.foundKeywords || []).join(", ") || "None found", 170), 25, y);
 
   y += 15;
 
@@ -148,14 +132,54 @@ export const generateReport = (analysis, fileName = "Resume") => {
   doc.setFontSize(11);
   doc.setTextColor(0, 0, 0);
 
-  doc.text(
-    analysis.missingKeywords.join(", "),
-    25,
-    y
-  );
+  doc.text(doc.splitTextToSize((analysis.missingKeywords || []).join(", ") || "None", 170), 25, y);
 
   // ===============================
-  // NEW PAGE
+  // NEW PAGE — SUMMARY & READINESS
+  // ===============================
+
+  doc.addPage();
+
+  doc.setFontSize(20);
+  doc.setTextColor(37, 99, 235);
+  doc.text("Resume Summary", 20, 20);
+
+  doc.setFontSize(11);
+  doc.setTextColor(0, 0, 0);
+  let sy = 32;
+  doc.text(doc.splitTextToSize(analysis.resumeSummary || "Not available.", 170), 20, sy);
+
+  sy += doc.splitTextToSize(analysis.resumeSummary || "", 170).length * 6 + 15;
+
+  doc.setFontSize(16);
+  doc.setTextColor(37, 99, 235);
+  doc.text("Career Readiness", 20, sy);
+
+  sy += 8;
+
+  doc.setFontSize(11);
+  doc.setTextColor(0, 0, 0);
+  doc.text(doc.splitTextToSize(analysis.careerReadiness || "Not available.", 170), 20, sy);
+
+  if ((analysis.missingInformation || []).length > 0) {
+    sy += doc.splitTextToSize(analysis.careerReadiness || "", 170).length * 6 + 15;
+
+    doc.setFontSize(16);
+    doc.setTextColor(217, 119, 6);
+    doc.text("Missing Information", 20, sy);
+
+    sy += 8;
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    analysis.missingInformation.forEach((item) => {
+      const lines = doc.splitTextToSize(`• ${item}`, 170);
+      doc.text(lines, 25, sy);
+      sy += lines.length * 6 + 2;
+    });
+  }
+
+  // ===============================
+  // NEW PAGE — RECOMMENDATIONS
   // ===============================
 
   doc.addPage();
@@ -166,7 +190,7 @@ export const generateReport = (analysis, fileName = "Resume") => {
 
   let yy = 40;
 
-  analysis.recommendations.forEach((rec, index) => {
+  (analysis.recommendations || []).forEach((rec, index) => {
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 0);
 
@@ -183,6 +207,22 @@ export const generateReport = (analysis, fileName = "Resume") => {
     yy += lines.length * 7 + 10;
   });
 
+  if ((analysis.suggestedImprovements || []).length > 0) {
+    yy += 5;
+    doc.setFontSize(16);
+    doc.setTextColor(34, 197, 94);
+    doc.text("Suggested Next Steps", 20, yy);
+
+    yy += 8;
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    analysis.suggestedImprovements.forEach((item) => {
+      const lines = doc.splitTextToSize(`• ${item}`, 170);
+      doc.text(lines, 25, yy);
+      yy += lines.length * 6 + 2;
+    });
+  }
+
   // ===============================
   // FOOTER
   // ===============================
@@ -190,17 +230,8 @@ export const generateReport = (analysis, fileName = "Resume") => {
   doc.setFontSize(10);
   doc.setTextColor(120);
 
-  doc.text(
-    "Generated by Campus Buddy AI",
-    20,
-    285
-  );
-
-  doc.text(
-    "Version 1.0",
-    170,
-    285
-  );
+  doc.text("Generated by Campus Buddy AI", 20, 285);
+  doc.text("Version 1.0", 170, 285);
 
   doc.save("CampusBuddy_Resume_Report.pdf");
 };

@@ -1,12 +1,36 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Upload, FileText, Download, Check, AlertCircle, Star, TrendingUp, Users, Target } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { Upload, FileText, Download, Check, AlertCircle, Star, TrendingUp, Users, Target, Briefcase, Compass, Info } from 'lucide-react';
 import { generateReport } from "../utils/generateReport";
 import { resumeService } from '../services/resumeService';
 import ResumeChat from '../components/ResumeChat';
 
+const TARGET_ROLES = [
+  'Software Engineer',
+  'Full Stack Developer',
+  'Backend Developer',
+  'Data Scientist',
+  'Machine Learning Engineer',
+  'Data Analyst'
+];
+
+// Category keys returned by the AI analyzer -> badge color for the
+// recommendations list. Falls back to gray for anything unrecognized.
+const CATEGORY_BADGE_COLOR = {
+  atsCompatibility: 'bg-blue-100 text-blue-800',
+  structure: 'bg-purple-100 text-purple-800',
+  skillsMatch: 'bg-green-100 text-green-800',
+  projects: 'bg-indigo-100 text-indigo-800',
+  experience: 'bg-orange-100 text-orange-800',
+  achievements: 'bg-pink-100 text-pink-800',
+  keywordMatch: 'bg-cyan-100 text-cyan-800',
+  writingQuality: 'bg-yellow-100 text-yellow-800'
+};
+
 const ResumeAnalyzer = () => {
   const [file, setFile] = useState(null);
+  const [targetRole, setTargetRole] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const [dragActive, setDragActive] = useState(false);
@@ -30,65 +54,24 @@ const ResumeAnalyzer = () => {
   };
 
   const analyzeResume = async () => {
-    if (!file) return;
+    if (!file || !targetRole) return;
 
     setAnalyzing(true);
 
-    // Index the resume for the AI chat assistant in the background. This is
-    // independent of the ATS analysis below — if the AI service is offline,
-    // the chat card simply stays disabled and nothing else is affected.
-    resumeService
-      .uploadForChat(file)
-      .then(({ sessionId }) => setChatSessionId(sessionId))
-      .catch((error) => console.error('Failed to index resume for chat:', error));
+    try {
+      // Parse + index the resume (also powers the AI chat assistant below).
+      const { sessionId } = await resumeService.uploadForChat(file);
+      setChatSessionId(sessionId);
 
-    // Simulate API call
-    setTimeout(() => {
-      setAnalysis({
-        overallScore: 75,
-        strengths: [
-          'Strong technical skills section',
-          'Good project descriptions',
-          'Clear education details',
-          'Professional formatting'
-        ],
-        improvements: [
-          'Add more quantifiable achievements',
-          'Include relevant certifications',
-          'Improve work experience descriptions',
-          'Add keywords for ATS optimization'
-        ],
-        sections: {
-          contact: { score: 90, status: 'excellent' },
-          summary: { score: 65, status: 'good' },
-          experience: { score: 70, status: 'good' },
-          education: { score: 85, status: 'excellent' },
-          skills: { score: 80, status: 'excellent' },
-          projects: { score: 75, status: 'good' }
-        },
-        atsScore: 68,
-        keywords: ['JavaScript', 'React', 'Node.js', 'Python', 'MongoDB'],
-        missingKeywords: ['AWS', 'Docker', 'Kubernetes', 'Machine Learning'],
-        recommendations: [
-          {
-            type: 'format',
-            title: 'Use action verbs',
-            description: 'Start bullet points with strong action verbs like "Developed", "Implemented", "Optimized"'
-          },
-          {
-            type: 'content',
-            title: 'Quantify achievements',
-            description: 'Add numbers and percentages to show impact (e.g., "Improved performance by 30%")'
-          },
-          {
-            type: 'keywords',
-            title: 'Add relevant keywords',
-            description: 'Include industry-specific keywords to improve ATS compatibility'
-          }
-        ]
-      });
+      // Real, role-aware AI analysis — never hardcoded, varies per resume and per role.
+      const result = await resumeService.analyzeResume(sessionId, targetRole);
+      setAnalysis(result);
+    } catch (error) {
+      console.error('Resume analysis failed:', error);
+      toast.error(error.response?.data?.message || error.message || 'Failed to analyze resume. Please try again.');
+    } finally {
       setAnalyzing(false);
-    }, 3000);
+    }
   };
 
   const getScoreColor = (score) => {
@@ -125,6 +108,27 @@ const ResumeAnalyzer = () => {
           <div className="max-w-2xl mx-auto">
             {/* Upload Section */}
             <div className="bg-white rounded-lg shadow-sm p-8">
+              {/* Target Role Selector — required before analysis */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Briefcase className="h-4 w-4 inline mr-1.5 -mt-0.5" />
+                  Target Role <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={targetRole}
+                  onChange={(e) => setTargetRole(e.target.value)}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Select the role you're targeting...</option>
+                  {TARGET_ROLES.map((role) => (
+                    <option key={role} value={role}>{role}</option>
+                  ))}
+                </select>
+                <p className="text-xs text-gray-400 mt-1">
+                  Your resume is scored specifically against this role's expected skills and keywords.
+                </p>
+              </div>
+
               <div
                 className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                   dragActive
@@ -146,7 +150,8 @@ const ResumeAnalyzer = () => {
                     <div className="flex gap-4 justify-center">
                       <button
                         onClick={analyzeResume}
-                        disabled={analyzing}
+                        disabled={analyzing || !targetRole}
+                        title={!targetRole ? 'Select a target role first' : undefined}
                         className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {analyzing ? (
@@ -165,6 +170,9 @@ const ResumeAnalyzer = () => {
                         Remove File
                       </button>
                     </div>
+                    {!targetRole && (
+                      <p className="text-sm text-amber-600">Select a target role above to enable analysis.</p>
+                    )}
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -221,7 +229,25 @@ const ResumeAnalyzer = () => {
                   </span>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Overall Score</h2>
-                <p className="text-gray-600">Your resume has been analyzed across multiple criteria</p>
+                <p className="text-gray-600">
+                  Analyzed for <span className="font-semibold text-gray-800">{analysis.targetRole}</span> · {analysis.overallScore}/100
+                </p>
+
+                {analysis.resumeSummary && (
+                  <p className="text-gray-600 max-w-2xl mx-auto mt-4 text-sm leading-relaxed">
+                    {analysis.resumeSummary}
+                  </p>
+                )}
+
+                {analysis.careerReadiness && (
+                  <div className="max-w-2xl mx-auto mt-4 bg-blue-50 border border-blue-100 rounded-lg p-4 text-left flex items-start gap-3">
+                    <Compass className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-semibold text-blue-900">Career Readiness</p>
+                      <p className="text-sm text-blue-800">{analysis.careerReadiness}</p>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex justify-center gap-4 mt-6">
                   <button
@@ -242,31 +268,37 @@ const ResumeAnalyzer = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Section Scores */}
+              {/* Category Scores */}
               <div className="bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Section Analysis</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Category Analysis</h3>
                 <div className="space-y-4">
-                  {Object.entries(analysis.sections).map(([section, data]) => (
-                    <div key={section} className="flex items-center justify-between">
-                      <span className="font-medium text-gray-700 capitalize">
-                        {section.replace(/([A-Z])/g, ' $1')}
-                      </span>
-                      <div className="flex items-center gap-3">
-                        <div className="w-24 bg-gray-200 rounded-full h-2">
-                          <div
-                            className={`h-2 rounded-full ${
-                              data.score >= 80 ? 'bg-green-500' :
-                              data.score >= 60 ? 'bg-yellow-500' : 'bg-red-500'
-                            }`}
-                            style={{ width: `${data.score}%` }}
-                          ></div>
+                  {Object.entries(analysis.categoryScores).map(([key, data]) => {
+                    const percent = Math.round((data.score / data.max) * 100);
+                    return (
+                      <div key={key} title={data.explanation}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-medium text-gray-700">{data.label}</span>
+                          <div className="flex items-center gap-3">
+                            <div className="w-24 bg-gray-200 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full ${
+                                  percent >= 80 ? 'bg-green-500' :
+                                  percent >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                                }`}
+                                style={{ width: `${percent}%` }}
+                              ></div>
+                            </div>
+                            <span className={`font-semibold ${getScoreColor(percent)}`}>
+                              {data.score}/{data.max}
+                            </span>
+                          </div>
                         </div>
-                        <span className={`font-semibold ${getScoreColor(data.score)}`}>
-                          {data.score}%
-                        </span>
+                        {data.explanation && (
+                          <p className="text-xs text-gray-400">{data.explanation}</p>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
@@ -286,7 +318,7 @@ const ResumeAnalyzer = () => {
                   <div>
                     <h4 className="font-medium text-gray-900 mb-2">Found Keywords</h4>
                     <div className="flex flex-wrap gap-2">
-                      {analysis.keywords.map((keyword, index) => (
+                      {analysis.foundKeywords.map((keyword, index) => (
                         <span key={index} className="px-2 py-1 bg-green-100 text-green-800 text-sm rounded">
                           {keyword}
                         </span>
@@ -331,7 +363,7 @@ const ResumeAnalyzer = () => {
                   Areas for Improvement
                 </h3>
                 <ul className="space-y-3">
-                  {analysis.improvements.map((improvement, index) => (
+                  {analysis.weaknesses.map((improvement, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-yellow-600 rounded-full mt-2"></div>
                       <span className="text-gray-700">{improvement}</span>
@@ -358,17 +390,53 @@ const ResumeAnalyzer = () => {
                   >
                     <h4 className="font-semibold text-gray-900 mb-2">{rec.title}</h4>
                     <p className="text-gray-600">{rec.description}</p>
-                    <span className={`inline-block mt-2 px-2 py-1 text-xs rounded-full ${
-                      rec.type === 'format' ? 'bg-blue-100 text-blue-800' :
-                      rec.type === 'content' ? 'bg-green-100 text-green-800' :
-                      'bg-purple-100 text-purple-800'
-                    }`}>
-                      {rec.type}
-                    </span>
+                    {rec.category && (
+                      <span className={`inline-block mt-2 px-2 py-1 text-xs rounded-full ${
+                        CATEGORY_BADGE_COLOR[rec.category] || 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {analysis.categoryScores[rec.category]?.label || rec.category}
+                      </span>
+                    )}
                   </motion.div>
                 ))}
               </div>
             </div>
+
+            {/* Suggested Improvements */}
+            {analysis.suggestedImprovements?.length > 0 && (
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-green-600" />
+                  Suggested Improvements
+                </h3>
+                <ul className="space-y-3">
+                  {analysis.suggestedImprovements.map((item, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <div className="w-2 h-2 bg-green-600 rounded-full mt-2"></div>
+                      <span className="text-gray-700">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Missing Information */}
+            {analysis.missingInformation?.length > 0 && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-amber-900 mb-4 flex items-center gap-2">
+                  <Info className="h-5 w-5 text-amber-600" />
+                  Missing Information
+                </h3>
+                <ul className="space-y-2">
+                  {analysis.missingInformation.map((item, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <div className="w-2 h-2 bg-amber-500 rounded-full mt-2"></div>
+                      <span className="text-amber-800">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* AI Chat Assistant */}
             <ResumeChat sessionId={chatSessionId} />
