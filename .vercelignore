@@ -3,7 +3,6 @@ node_modules
 .github
 docs
 server
-api
 *.md
 .env
 .env.local

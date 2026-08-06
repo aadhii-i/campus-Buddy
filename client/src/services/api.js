@@ -1,9 +1,17 @@
 import axios from 'axios'
 import toast from 'react-hot-toast'
 
+// Normalize the configured API URL so a dashboard value that's missing the
+// trailing "/api" segment (e.g. "https://backend.onrender.com" instead of
+// "https://backend.onrender.com/api") doesn't silently 404 every request.
+const resolveBaseURL = () => {
+  const raw = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/+$/, '')
+  return raw.endsWith('/api') ? raw : `${raw}/api`
+}
+
 // Create axios instance with production-ready configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api',
+  baseURL: resolveBaseURL(),
   timeout: 15000, // Increased timeout for production
   headers: {
     'Content-Type': 'application/json'
@@ -108,7 +116,7 @@ export const apiService = {
     getCurrentUser: () => api.get('/auth/me'),
     refreshToken: () => api.post('/auth/refresh'),
     forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
-    resetPassword: (token, password) => api.post('/auth/reset-password', { token, password })
+    resetPassword: (token, password) => api.put(`/auth/reset-password/${token}`, { password })
   },
 
   // Events endpoints

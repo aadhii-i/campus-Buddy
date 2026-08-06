@@ -38,4 +38,38 @@ router.get('/analysis/:id', protect, async (req, res) => {
   }
 })
 
+// @desc    Get recommendations for an analysis
+// @route   GET /api/resume/recommendations/:id
+// @access  Private
+router.get('/recommendations/:id', protect, async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      recommendations: []
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    })
+  }
+})
+
+// @desc    Get current user's resume analyses
+// @route   GET /api/resume/user-analyses
+// @access  Private
+router.get('/user-analyses', protect, async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      analyses: []
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    })
+  }
+})
+
 module.exports = router

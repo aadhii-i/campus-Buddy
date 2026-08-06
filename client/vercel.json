@@ -1,19 +1,11 @@
 {
   "version": 2,
   "name": "campus-buddy",
-  "builds": [
+  "framework": "vite",
+  "rewrites": [
     {
-      "src": "dist/**/*",
-      "use": "@vercel/static"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
-  "env": {
-    "VITE_API_URL": "@vite_api_url"
-  }
+  ]
 }

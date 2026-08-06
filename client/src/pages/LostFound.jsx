@@ -26,7 +26,7 @@ const LostFound = () => {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      const response = await lostFoundService.getItems();
+      const response = await lostFoundService.getAllItems();
       setItems(response.data || []);
     } catch (error) {
       console.error('Error fetching items:', error);

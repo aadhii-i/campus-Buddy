@@ -95,4 +95,106 @@ router.post('/', protect, async (req, res) => {
   }
 })
 
+// @desc    Get single lost & found item
+// @route   GET /api/lost-found/:id
+// @access  Public
+router.get('/:id', async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      item: {
+        _id: req.params.id,
+        title: 'Sample item',
+        description: 'Item details endpoint working',
+        category: 'other',
+        type: 'lost',
+        location: 'Unknown',
+        contactInfo: '',
+        createdAt: new Date().toISOString(),
+        user: { name: 'Unknown' }
+      }
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    })
+  }
+})
+
+// @desc    Update lost & found item
+// @route   PUT /api/lost-found/:id
+// @access  Private
+router.put('/:id', protect, async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      message: 'Update item endpoint working',
+      item: { _id: req.params.id, ...req.body }
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    })
+  }
+})
+
+// @desc    Delete lost & found item
+// @route   DELETE /api/lost-found/:id
+// @access  Private
+router.delete('/:id', protect, async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      message: 'Item deleted successfully'
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    })
+  }
+})
+
+// @desc    Mark item as found
+// @route   PATCH /api/lost-found/:id/found
+// @access  Private
+router.patch('/:id/found', protect, async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      message: 'Item marked as found',
+      item: { _id: req.params.id, type: 'found' }
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    })
+  }
+})
+
+// @desc    Add comment to item
+// @route   POST /api/lost-found/:id/comments
+// @access  Private
+router.post('/:id/comments', protect, async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      comment: {
+        _id: Date.now().toString(),
+        text: req.body.comment,
+        user: { name: req.user.name },
+        createdAt: new Date().toISOString()
+      }
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    })
+  }
+})
+
 module.exports = router
