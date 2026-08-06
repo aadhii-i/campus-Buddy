@@ -1,20 +1,27 @@
 import { apiService } from './api'
 import toast from 'react-hot-toast'
 
+// express-validator failures come back as { message: 'Validation failed', errors: [{ msg, param }] }.
+// Surface the first field-level message instead of the generic wrapper so
+// users (and future debugging) actually see what's wrong.
+const extractErrorMessage = (error, fallback) => {
+  const fieldError = error.response?.data?.errors?.[0]?.msg
+  return fieldError || error.response?.data?.message || fallback
+}
+
 export const authService = {
   // Login user
   async login(credentials) {
     try {
       const response = await apiService.auth.login(credentials)
       const { token, user } = response.data
-      
+
       localStorage.setItem('token', token)
       toast.success(`Welcome back, ${user.name}!`)
-      
+
       return { token, user }
     } catch (error) {
-      const message = error.response?.data?.message || 'Login failed'
-      toast.error(message)
+      toast.error(extractErrorMessage(error, 'Login failed'))
       throw error
     }
   },
@@ -24,14 +31,13 @@ export const authService = {
     try {
       const response = await apiService.auth.register(userData)
       const { token, user } = response.data
-      
+
       localStorage.setItem('token', token)
       toast.success(`Welcome to Campus Buddy, ${user.name}!`)
-      
+
       return { token, user }
     } catch (error) {
-      const message = error.response?.data?.message || 'Registration failed'
-      toast.error(message)
+      toast.error(extractErrorMessage(error, 'Registration failed'))
       throw error
     }
   },

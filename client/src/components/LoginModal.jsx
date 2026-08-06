@@ -6,13 +6,15 @@ import toast from 'react-hot-toast'
 
 const LoginModal = ({ isOpen, onClose }) => {
   const [isLogin, setIsLogin] = useState(true)
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     email: '',
     password: '',
     name: '',
+    studentId: '',
     department: '',
     year: ''
-  })
+  }
+  const [formData, setFormData] = useState(initialFormData)
   const [loading, setLoading] = useState(false)
   const { login, register } = useAuth()
 
@@ -25,7 +27,7 @@ const LoginModal = ({ isOpen, onClose }) => {
         await login({ email: formData.email, password: formData.password })
         toast.success('Login successful!')
       } else {
-        await register(formData)
+        await register({ ...formData, year: formData.year ? Number(formData.year) : undefined })
         toast.success('Registration successful!')
       }
       onClose()
@@ -45,13 +47,7 @@ const LoginModal = ({ isOpen, onClose }) => {
 
   const toggleMode = () => {
     setIsLogin(!isLogin)
-    setFormData({
-      email: '',
-      password: '',
-      name: '',
-      department: '',
-      year: ''
-    })
+    setFormData(initialFormData)
   }
 
   return (
@@ -144,6 +140,26 @@ const LoginModal = ({ isOpen, onClose }) => {
                 <>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Student ID
+                    </label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type="text"
+                        name="studentId"
+                        value={formData.studentId}
+                        onChange={handleChange}
+                        required={!isLogin}
+                        minLength={3}
+                        maxLength={20}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="e.g. CS21B001"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Department
                     </label>
                     <div className="relative">
@@ -156,12 +172,13 @@ const LoginModal = ({ isOpen, onClose }) => {
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
                         <option value="">Select Department</option>
-                        <option value="Computer Science">Computer Science</option>
-                        <option value="Electronics">Electronics</option>
-                        <option value="Mechanical">Mechanical</option>
-                        <option value="Civil">Civil</option>
-                        <option value="Business">Business</option>
-                        <option value="Other">Other</option>
+                        <option value="CSE">Computer Science (CSE)</option>
+                        <option value="ECE">Electronics (ECE)</option>
+                        <option value="ME">Mechanical (ME)</option>
+                        <option value="CE">Civil (CE)</option>
+                        <option value="EE">Electrical (EE)</option>
+                        <option value="IT">Information Technology (IT)</option>
+                        <option value="OTHER">Other</option>
                       </select>
                     </div>
                   </div>
@@ -180,11 +197,10 @@ const LoginModal = ({ isOpen, onClose }) => {
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
                         <option value="">Select Year</option>
-                        <option value="1st Year">1st Year</option>
-                        <option value="2nd Year">2nd Year</option>
-                        <option value="3rd Year">3rd Year</option>
-                        <option value="4th Year">4th Year</option>
-                        <option value="Graduate">Graduate</option>
+                        <option value="1">1st Year</option>
+                        <option value="2">2nd Year</option>
+                        <option value="3">3rd Year</option>
+                        <option value="4">4th Year</option>
                       </select>
                     </div>
                   </div>
