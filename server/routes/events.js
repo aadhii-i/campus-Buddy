@@ -206,6 +206,41 @@ router.get('/', async (req, res) => {
   }
 })
 
+// @desc    Get single event
+// @route   GET /api/events/:id
+// @access  Public
+router.get('/:id', async (req, res) => {
+  try {
+    const mongoose = require('mongoose')
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found'
+      })
+    }
+
+    const event = await Event.findById(req.params.id)
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found'
+      })
+    }
+
+    res.json({
+      success: true,
+      event
+    })
+  } catch (error) {
+    console.error('Get event error:', error)
+    res.status(404).json({
+      success: false,
+      message: 'Event not found'
+    })
+  }
+})
+
 // @desc    Create new event
 // @route   POST /api/events
 // @access  Private
@@ -217,6 +252,63 @@ router.post('/', protect, async (req, res) => {
       data: event
     })
   } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    })
+  }
+})
+
+// @desc    Update event
+// @route   PUT /api/events/:id
+// @access  Private
+router.put('/:id', protect, async (req, res) => {
+  try {
+    const event = await Event.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    })
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found'
+      })
+    }
+
+    res.json({
+      success: true,
+      event
+    })
+  } catch (error) {
+    console.error('Update event error:', error)
+    res.status(500).json({
+      success: false,
+      message: error.message
+    })
+  }
+})
+
+// @desc    Delete event
+// @route   DELETE /api/events/:id
+// @access  Private
+router.delete('/:id', protect, async (req, res) => {
+  try {
+    const event = await Event.findByIdAndDelete(req.params.id)
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found'
+      })
+    }
+
+    res.json({
+      success: true,
+      message: 'Event deleted successfully'
+    })
+  } catch (error) {
+    console.error('Delete event error:', error)
     res.status(500).json({
       success: false,
       message: error.message
