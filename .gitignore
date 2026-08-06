@@ -112,6 +112,15 @@ dump.rdb
 uploads/
 public/uploads/
 
+# Python / AI service (ai/)
+ai/__pycache__/
+**/__pycache__/
+*.pyc
+ai/venv/
+ai/.venv/
+ai/vector_db/*
+ai/uploads/*
+
 # Backup files
 *.bak
 *.backup
