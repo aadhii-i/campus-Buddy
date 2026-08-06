@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, FileText, Download, Check, AlertCircle, Star, TrendingUp, Users, Target } from 'lucide-react';
 import { generateReport } from "../utils/generateReport";
+import { resumeService } from '../services/resumeService';
+import ResumeChat from '../components/ResumeChat';
 
 const ResumeAnalyzer = () => {
   const [file, setFile] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+  const [chatSessionId, setChatSessionId] = useState(null);
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -30,6 +33,14 @@ const ResumeAnalyzer = () => {
     if (!file) return;
 
     setAnalyzing(true);
+
+    // Index the resume for the AI chat assistant in the background. This is
+    // independent of the ATS analysis below — if the AI service is offline,
+    // the chat card simply stays disabled and nothing else is affected.
+    resumeService
+      .uploadForChat(file)
+      .then(({ sessionId }) => setChatSessionId(sessionId))
+      .catch((error) => console.error('Failed to index resume for chat:', error));
 
     // Simulate API call
     setTimeout(() => {
@@ -96,6 +107,7 @@ const ResumeAnalyzer = () => {
     setFile(null);
     setAnalysis(null);
     setAnalyzing(false);
+    setChatSessionId(null);
   };
 
   return (
@@ -357,6 +369,9 @@ const ResumeAnalyzer = () => {
                 ))}
               </div>
             </div>
+
+            {/* AI Chat Assistant */}
+            <ResumeChat sessionId={chatSessionId} />
           </div>
         )}
       </div>

@@ -55,13 +55,18 @@ api.interceptors.response.use(
     
     // Handle different status codes
     if (error.response?.status === 401) {
-      // Only force logout if not an event creation (or other allowed fallback)
+      // Only force logout if not an event creation or a background resume-chat
+      // call (both are allowed to fail quietly without booting the user out
+      // of whatever page they're on).
       const isEventCreate = originalRequest?.url?.includes('/events') && originalRequest?.method === 'post';
-      if (!isEventCreate) {
+      const isResumeChat = originalRequest?.url?.includes('/resume/chat');
+      if (!isEventCreate && !isResumeChat) {
         localStorage.removeItem('token')
         localStorage.removeItem('user')
         window.location.href = '/'
         toast.error('Session expired. Please log in again.')
+      } else if (isResumeChat) {
+        toast.error('Sign in to use the AI resume chat assistant.')
       } else {
         toast.error('Not authorized to create event. Using local fallback.')
       }
@@ -187,7 +192,18 @@ export const apiService = {
     },
     getAnalysis: (id) => api.get(`/resume/analysis/${id}`),
     getRecommendations: (id) => api.get(`/resume/recommendations/${id}`),
-    getUserAnalyses: () => api.get('/resume/user-analyses')
+    getUserAnalyses: () => api.get('/resume/user-analyses'),
+
+    // RAG chat: index the uploaded resume, then ask questions about it
+    chatUpload: (resumeFile, sessionId) => {
+      const formData = new FormData()
+      formData.append('resume', resumeFile)
+      if (sessionId) formData.append('sessionId', sessionId)
+      return api.post('/resume/chat/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+    },
+    chatAsk: (sessionId, question) => api.post('/resume/chat', { sessionId, question })
   }
 }
 

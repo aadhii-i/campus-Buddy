@@ -139,5 +139,23 @@ export const resumeService = {
       console.error('Failed to calculate job match score:', error)
       throw error
     }
+  },
+
+  // Index the uploaded resume in the RAG AI service so it can be chatted with.
+  // Returns a sessionId that scopes every subsequent question to this resume.
+  async uploadForChat(resumeFile) {
+    const response = await apiService.resume.chatUpload(resumeFile)
+    return response.data // { success, sessionId, chunksIndexed }
+  },
+
+  // Ask a question about the resume indexed under sessionId
+  async askResumeQuestion(sessionId, question) {
+    try {
+      const response = await apiService.resume.chatAsk(sessionId, question)
+      return response.data.answer
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to get an answer'
+      throw new Error(message)
+    }
   }
 }
