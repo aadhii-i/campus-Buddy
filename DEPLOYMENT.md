@@ -18,7 +18,7 @@ Python/FastAPI service in `ai/`. If that service is not deployed (or Express's
 | Setting | Value |
 |---|---|
 | Root Directory | `ai` |
-| Runtime | Python 3 (`runtime.txt` pins 3.11.9) |
+| Runtime | Python 3.11 — pinned by `.python-version` (repo root **and** `ai/`). Render ignores `runtime.txt`. **3.11 is required**: numpy / pydantic-core / faiss only ship wheels up to cp313, so 3.14 triggers a source build that fails on Render. |
 | Build Command | `pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt` (requirements.txt pins the CPU build of `torch==2.9.0`) |
 | Start Command | `uvicorn app:app --host 0.0.0.0 --port $PORT` |
 | Health Check Path | `/health` |
@@ -30,8 +30,10 @@ GEMINI_API_KEY=<from https://aistudio.google.com/app/apikey>   # server-side sec
 GEMINI_MODEL=gemini-1.5-flash
 EMBEDDING_MODEL=all-MiniLM-L6-v2
 ALLOWED_ORIGINS=https://<your-frontend-domain>,http://localhost:3000,http://localhost:5173
-PYTHON_VERSION=3.11.9
 ```
+> Python version comes from the `.python-version` files (`3.11`), not an env var.
+> Only set `PYTHON_VERSION=3.11.16` in the dashboard if the `.python-version`
+> file is somehow not being picked up (env var has higher precedence).
 
 **Then point the backend at it** — set on the Express service:
 ```

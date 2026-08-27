@@ -17,14 +17,22 @@ services:
                                       # CHAT (sentence-transformers/torch) OOMs.
     autoDeploy: true
     healthCheckPath: /health
+    # Python version is pinned by the `.python-version` files (repo root AND
+    # ai/) containing `3.11` — Render reads `.python-version`, NOT runtime.txt.
+    # Python 3.11 is required: pydantic-core / numpy / faiss only ship binary
+    # wheels up to cp313, so 3.14 forces a Rust/C source build that fails on
+    # Render's read-only build FS.
+    #
     # requirements.txt carries `--extra-index-url https://download.pytorch.org/whl/cpu`
     # and pins `torch==2.9.0+cpu` on Linux, so a plain install pulls the CPU
     # build (no ~3GB nvidia-cuda-* packages). No special torch step needed.
     buildCommand: pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
     startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
     envVars:
+      # Belt-and-suspenders for BLUEPRINT-managed services (the `.python-version`
+      # file covers manually-created services). Env var has highest precedence.
       - key: PYTHON_VERSION
-        value: 3.11.9               # also pinned in ai/runtime.txt
+        value: "3.11.16"
       - key: GEMINI_API_KEY
         sync: false                 # set this in the Render dashboard (secret)
       - key: GEMINI_MODEL
