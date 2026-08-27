@@ -1,8 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { User, Mail, Phone, MapPin, Calendar, Edit3, Save, X, Camera, Award, BookOpen, Briefcase } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+
+const DEPARTMENT_LABELS = {
+  CSE: 'Computer Science', ECE: 'Electronics', ME: 'Mechanical',
+  CE: 'Civil', EE: 'Electrical', IT: 'Information Technology', OTHER: 'Other'
+};
+
+const ordinalYear = (year) => {
+  const n = Number(year);
+  if (!n) return '';
+  const suffix = ['th', 'st', 'nd', 'rd'][n] || 'th';
+  return `${n}${suffix} Year`;
+};
 
 const Profile = () => {
+  const { user } = useAuth();
+
+  // Seed from the signed-in user; fall back to sample content for fields the
+  // backend user model does not carry yet (location, achievements, courses).
   const [profile, setProfile] = useState({
     name: 'John Doe',
     email: 'john.doe@example.com',
@@ -32,9 +49,25 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    // In a real app, fetch profile data from API
     setEditForm(profile);
   }, [profile]);
+
+  // Merge the authenticated user's real details over the sample profile.
+  useEffect(() => {
+    if (!user) return;
+    setProfile((prev) => ({
+      ...prev,
+      name: user.name || prev.name,
+      email: user.email || prev.email,
+      phone: user.profile?.phone || prev.phone,
+      rollNumber: user.studentId || prev.rollNumber,
+      branch: DEPARTMENT_LABELS[user.department] || user.department || prev.branch,
+      year: ordinalYear(user.year) || prev.year,
+      bio: user.profile?.bio || prev.bio,
+      avatar: user.avatar || prev.avatar,
+      skills: user.profile?.skills?.length ? user.profile.skills : prev.skills,
+    }));
+  }, [user]);
 
   const handleEdit = () => {
     setIsEditing(true);

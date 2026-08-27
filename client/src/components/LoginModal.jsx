@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Mail, Lock, User, GraduationCap, Building } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import toast from 'react-hot-toast'
+import GoogleSignInButton from './GoogleSignInButton'
 
 const LoginModal = ({ isOpen, onClose }) => {
   const [isLogin, setIsLogin] = useState(true)
@@ -16,7 +16,20 @@ const LoginModal = ({ isOpen, onClose }) => {
   }
   const [formData, setFormData] = useState(initialFormData)
   const [loading, setLoading] = useState(false)
-  const { login, register } = useAuth()
+  const { login, register, loginWithGoogle } = useAuth()
+
+  const handleGoogleCredential = useCallback(async (idToken) => {
+    setLoading(true)
+    try {
+      await loginWithGoogle(idToken)
+      onClose()
+    } catch {
+      // authService.loginWithGoogle already surfaces a specific toast
+      // (credentials vs. network); nothing else to do here.
+    } finally {
+      setLoading(false)
+    }
+  }, [loginWithGoogle, onClose])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -25,14 +38,13 @@ const LoginModal = ({ isOpen, onClose }) => {
     try {
       if (isLogin) {
         await login({ email: formData.email, password: formData.password })
-        toast.success('Login successful!')
       } else {
         await register({ ...formData, year: formData.year ? Number(formData.year) : undefined })
-        toast.success('Registration successful!')
       }
       onClose()
-    } catch (error) {
-      toast.error(error.message || 'Authentication failed')
+    } catch {
+      // authService already surfaced the precise reason (invalid credentials,
+      // validation error, or network/server failure) via toast.
     } finally {
       setLoading(false)
     }
@@ -215,6 +227,16 @@ const LoginModal = ({ isOpen, onClose }) => {
                 {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Create Account'}
               </button>
             </form>
+
+            <div className="mt-4 flex items-center gap-3">
+              <div className="flex-1 h-px bg-gray-200" />
+              <span className="text-xs text-gray-400 uppercase tracking-wide">or</span>
+              <div className="flex-1 h-px bg-gray-200" />
+            </div>
+
+            <div className="mt-4">
+              <GoogleSignInButton onCredential={handleGoogleCredential} />
+            </div>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">

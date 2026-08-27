@@ -21,9 +21,25 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
+    // Google-authenticated accounts never set a local password — only
+    // require one for accounts created through email/password registration.
+    required: [
+      function () { return !this.googleId },
+      'Password is required'
+    ],
     minlength: [8, 'Password must be at least 8 characters long'],
     select: false
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true, // allows many docs with no googleId while still enforcing uniqueness among those that have one
+    select: false
+  },
+  authProvider: {
+    type: String,
+    enum: ['local', 'google'],
+    default: 'local'
   },
   studentId: {
     type: String,

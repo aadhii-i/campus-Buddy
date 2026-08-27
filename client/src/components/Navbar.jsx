@@ -6,9 +6,8 @@ import LoginModal from './LoginModal'
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [showLoginModal, setShowLoginModal] = useState(false)
   const location = useLocation()
-  const { user, isAuthenticated, logout } = useAuth()
+  const { user, isAuthenticated, logout, showLoginModal, openLoginModal, closeLoginModal } = useAuth()
 
   const navigation = [
     { name: 'Home', href: '/', icon: Home },
@@ -85,7 +84,7 @@ const Navbar = () => {
                 </div>
               ) : (
                 <button
-                  onClick={() => setShowLoginModal(true)}
+                  onClick={openLoginModal}
                   className="flex items-center space-x-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <LogIn className="w-4 h-4" />
@@ -151,7 +150,7 @@ const Navbar = () => {
                 <div className="border-t border-gray-200 pt-4">
                   <button
                     onClick={() => {
-                      setShowLoginModal(true)
+                      openLoginModal()
                       setIsMenuOpen(false)
                     }}
                     className="flex items-center w-full px-3 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
@@ -168,7 +167,7 @@ const Navbar = () => {
 
       <LoginModal
         isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
+        onClose={closeLoginModal}
       />
     </>
   )

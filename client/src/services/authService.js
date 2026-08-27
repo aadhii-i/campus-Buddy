@@ -9,19 +9,44 @@ const extractErrorMessage = (error, fallback) => {
   return fieldError || error.response?.data?.message || fallback
 }
 
+// Distinguish "the server said no" (wrong password, validation) from "the
+// request never got a proper response" (server down, DNS, CORS, timeout).
+// The two need different messages and are tested separately.
+const reportAuthError = (error, credentialFallback) => {
+  if (error.response) {
+    toast.error(extractErrorMessage(error, credentialFallback))
+  } else if (error.code === 'ECONNABORTED') {
+    toast.error('The server took too long to respond. Please try again.')
+  } else {
+    toast.error('Cannot reach the server. Check your connection and that the backend is running.')
+  }
+}
+
+const persistSession = ({ token, refreshToken, user }) => {
+  if (token) localStorage.setItem('token', token)
+  if (refreshToken) localStorage.setItem('refreshToken', refreshToken)
+  if (user) localStorage.setItem('user', JSON.stringify(user))
+}
+
+const clearSession = () => {
+  localStorage.removeItem('token')
+  localStorage.removeItem('refreshToken')
+  localStorage.removeItem('user')
+}
+
 export const authService = {
   // Login user
   async login(credentials) {
     try {
       const response = await apiService.auth.login(credentials)
-      const { token, user } = response.data
+      const { token, refreshToken, user } = response.data
 
-      localStorage.setItem('token', token)
+      persistSession({ token, refreshToken, user })
       toast.success(`Welcome back, ${user.name}!`)
 
       return { token, user }
     } catch (error) {
-      toast.error(extractErrorMessage(error, 'Login failed'))
+      reportAuthError(error, 'Login failed')
       throw error
     }
   },
@@ -30,14 +55,30 @@ export const authService = {
   async register(userData) {
     try {
       const response = await apiService.auth.register(userData)
-      const { token, user } = response.data
+      const { token, refreshToken, user } = response.data
 
-      localStorage.setItem('token', token)
+      persistSession({ token, refreshToken, user })
       toast.success(`Welcome to Campus Buddy, ${user.name}!`)
 
       return { token, user }
     } catch (error) {
-      toast.error(extractErrorMessage(error, 'Registration failed'))
+      reportAuthError(error, 'Registration failed')
+      throw error
+    }
+  },
+
+  // Sign in with a Google Identity Services credential (ID token)
+  async loginWithGoogle(idToken) {
+    try {
+      const response = await apiService.auth.googleLogin(idToken)
+      const { token, refreshToken, user } = response.data
+
+      persistSession({ token, refreshToken, user })
+      toast.success(`Welcome, ${user.name}!`)
+
+      return { token, user }
+    } catch (error) {
+      reportAuthError(error, 'Google sign-in failed')
       throw error
     }
   },
@@ -49,7 +90,7 @@ export const authService = {
     } catch (error) {
       console.error('Logout error:', error)
     } finally {
-      localStorage.removeItem('token')
+      clearSession()
       toast.success('Logged out successfully')
     }
   },
@@ -58,9 +99,15 @@ export const authService = {
   async getCurrentUser() {
     try {
       const response = await apiService.auth.getCurrentUser()
-      return response.data.user
+      const user = response.data.user
+      localStorage.setItem('user', JSON.stringify(user))
+      return user
     } catch (error) {
-      localStorage.removeItem('token')
+      // Only drop the stored session if the server actively rejected the
+      // token. A network blip must not log the user out.
+      if (error.response?.status === 401) {
+        clearSession()
+      }
       throw error
     }
   },

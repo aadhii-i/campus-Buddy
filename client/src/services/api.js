@@ -41,9 +41,18 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
     const message = error.response?.data?.message || error.message || 'An error occurred'
-    
-    // Handle network errors with retry
-    if (!error.response && !originalRequest._retry) {
+
+    // Auth endpoints (login / register / Google / password reset) own their
+    // own error messaging via authService. A 400/401/403 here means "bad
+    // credentials" or "validation failed" on a form the user is looking at —
+    // NOT an expired session, so it must never trigger the logout+redirect
+    // below. Let the error propagate untouched to the calling component.
+    const AUTH_ENDPOINTS = ['/auth/login', '/auth/register', '/auth/google', '/auth/forgot-password', '/auth/reset-password']
+    const isAuthRequest = AUTH_ENDPOINTS.some((path) => originalRequest?.url?.includes(path))
+
+    // Handle network errors with retry (skip the retry for auth submits — a
+    // login should not be silently replayed).
+    if (!error.response && !originalRequest._retry && !isAuthRequest) {
       originalRequest._retry = true
       try {
         return await api.request(originalRequest)
@@ -52,7 +61,11 @@ api.interceptors.response.use(
         return Promise.reject(retryError)
       }
     }
-    
+
+    if (isAuthRequest) {
+      return Promise.reject(error)
+    }
+
     // Handle different status codes
     if (error.response?.status === 401) {
       // Only force logout if not an event creation or a background resume-chat
@@ -62,6 +75,7 @@ api.interceptors.response.use(
       const isResumeChat = originalRequest?.url?.includes('/resume/chat');
       if (!isEventCreate && !isResumeChat) {
         localStorage.removeItem('token')
+        localStorage.removeItem('refreshToken')
         localStorage.removeItem('user')
         window.location.href = '/'
         toast.error('Session expired. Please log in again.')
@@ -117,6 +131,7 @@ export const apiService = {
   auth: {
     login: (credentials) => api.post('/auth/login', credentials),
     register: (userData) => api.post('/auth/register', userData),
+    googleLogin: (idToken) => api.post('/auth/google', { idToken }),
     logout: () => api.post('/auth/logout'),
     getCurrentUser: () => api.get('/auth/me'),
     refreshToken: () => api.post('/auth/refresh'),

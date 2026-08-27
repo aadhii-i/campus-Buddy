@@ -3,6 +3,7 @@ const { body } = require('express-validator')
 const {
   register,
   login,
+  googleAuth,
   getMe,
   updateProfile,
   changePassword,
@@ -12,8 +13,13 @@ const {
   resetPassword
 } = require('../controllers/authController')
 const { protect } = require('../middleware/auth')
+const requireDbConnection = require('../middleware/db')
 
 const router = express.Router()
+
+// Every route below touches MongoDB; fail with a clear 503 up front rather
+// than a confusing leaked driver error if the DB isn't connected.
+router.use(requireDbConnection)
 
 // Validation rules
 const registerValidation = [
@@ -106,6 +112,7 @@ const resetPasswordValidation = [
 // Public routes
 router.post('/register', registerValidation, register)
 router.post('/login', loginValidation, login)
+router.post('/google', googleAuth)
 router.post('/refresh', refreshToken)
 router.post('/forgot-password', forgotPasswordValidation, forgotPassword)
 router.put('/reset-password/:token', resetPasswordValidation, resetPassword)

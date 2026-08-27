@@ -4,6 +4,16 @@ const crypto = require('crypto')
 const { validationResult } = require('express-validator')
 const User = require('../models/User')
 const sendEmail = require('../utils/email')
+const { verifyGoogleIdToken } = require('../utils/googleAuth')
+
+// Errors User.findByCredentials/register are expected to throw for genuine
+// credential problems — safe to show verbatim. Anything else (a DB error,
+// a driver timeout, etc.) is an infrastructure problem, not the user's
+// fault, and showing its raw message as a 401 would be actively misleading.
+const KNOWN_AUTH_ERRORS = new Set([
+  'Invalid login credentials',
+  'Account is temporarily locked due to too many failed login attempts'
+])
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -154,9 +164,111 @@ const login = async (req, res) => {
 
   } catch (error) {
     console.error('Login error:', error)
-    res.status(401).json({
+    if (KNOWN_AUTH_ERRORS.has(error.message)) {
+      return res.status(401).json({
+        success: false,
+        message: error.message
+      })
+    }
+    // Not a recognized credential error (e.g. a DB/driver error) — this is
+    // a server-side problem, not a wrong password, so don't call it one.
+    res.status(500).json({
       success: false,
-      message: error.message || 'Invalid credentials'
+      message: 'Something went wrong while logging in. Please try again.'
+    })
+  }
+}
+
+// @desc    Sign in (or sign up) with a Google Identity Services ID token
+// @route   POST /api/auth/google
+// @access  Public
+const googleAuth = async (req, res) => {
+  try {
+    const { idToken } = req.body
+    if (!idToken) {
+      return res.status(400).json({
+        success: false,
+        message: 'Google ID token is required'
+      })
+    }
+
+    let profile
+    try {
+      profile = await verifyGoogleIdToken(idToken)
+    } catch (verifyError) {
+      console.error('Google token verification failed:', verifyError.message)
+      return res.status(401).json({
+        success: false,
+        message: 'Google sign-in verification failed'
+      })
+    }
+
+    // Prefer an account already linked to this Google ID. Otherwise, fall
+    // back to an existing local account with the same email — Google has
+    // already verified that email belongs to this person (email_verified
+    // checked in verifyGoogleIdToken), so linking it is safe and prevents
+    // ending up with two separate accounts for the same person.
+    let user = await User.findOne({ googleId: profile.googleId })
+    if (!user) {
+      user = await User.findOne({ email: profile.email })
+      if (user) {
+        user.googleId = profile.googleId
+        if (!user.avatar) user.avatar = profile.picture
+        await user.save()
+      }
+    }
+
+    if (!user) {
+      // studentId/department aren't collected by the Google button — seed a
+      // placeholder the user can edit afterwards from the existing Profile
+      // page, same as any other profile field.
+      user = await User.create({
+        name: profile.name,
+        email: profile.email,
+        googleId: profile.googleId,
+        authProvider: 'google',
+        avatar: profile.picture,
+        studentId: `G-${profile.googleId.slice(-10)}`,
+        department: 'OTHER',
+        emailVerified: true
+      })
+    }
+
+    if (!user.isActive) {
+      return res.status(403).json({
+        success: false,
+        message: 'This account has been deactivated.'
+      })
+    }
+
+    const token = generateToken(user._id)
+    const refreshToken = generateRefreshToken(user._id)
+
+    user.lastLogin = new Date()
+    await user.save()
+
+    res.json({
+      success: true,
+      message: 'Google sign-in successful',
+      token,
+      refreshToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        studentId: user.studentId,
+        department: user.department,
+        year: user.year,
+        role: user.role,
+        avatar: user.avatar,
+        lastLogin: user.lastLogin
+      }
+    })
+  } catch (error) {
+    console.error('Google auth error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Google sign-in failed. Please try again.'
     })
   }
 }
@@ -472,6 +584,7 @@ const resetPassword = async (req, res) => {
 module.exports = {
   register,
   login,
+  googleAuth,
   getMe,
   updateProfile,
   changePassword,
