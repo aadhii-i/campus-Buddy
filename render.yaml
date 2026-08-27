@@ -17,13 +17,10 @@ services:
                                       # CHAT (sentence-transformers/torch) OOMs.
     autoDeploy: true
     healthCheckPath: /health
-    # torch is installed from the PyTorch CPU index FIRST so pip never pulls the
-    # ~2GB CUDA build. Then the rest of requirements.txt (which pins the same
-    # torch==2.2.2, already satisfied) installs from PyPI.
-    buildCommand: >-
-      pip install --upgrade pip &&
-      pip install --no-cache-dir torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu &&
-      pip install --no-cache-dir -r requirements.txt
+    # requirements.txt carries `--extra-index-url https://download.pytorch.org/whl/cpu`
+    # and pins `torch==2.9.0+cpu` on Linux, so a plain install pulls the CPU
+    # build (no ~3GB nvidia-cuda-* packages). No special torch step needed.
+    buildCommand: pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
     startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION

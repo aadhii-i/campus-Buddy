@@ -19,7 +19,7 @@ Python/FastAPI service in `ai/`. If that service is not deployed (or Express's
 |---|---|
 | Root Directory | `ai` |
 | Runtime | Python 3 (`runtime.txt` pins 3.11.9) |
-| Build Command | `pip install --upgrade pip && pip install --no-cache-dir torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu && pip install --no-cache-dir -r requirements.txt` |
+| Build Command | `pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt` (requirements.txt pins the CPU build of `torch==2.9.0`) |
 | Start Command | `uvicorn app:app --host 0.0.0.0 --port $PORT` |
 | Health Check Path | `/health` |
 | Instance type | `Starter` is enough for analysis; use `Standard` (2 GB) for reliable Resume **Chat** (embeddings load ~700 MB) |

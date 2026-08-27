@@ -1,21 +1,30 @@
-# ── Web framework ──────────────────────────────────────────────────────────
+# ── PyTorch: CPU-only wheels ──────────────────────────────────────────────
+# Render web services have no GPU. This extra index makes pip pull the
+# `+cpu` build of torch, which has NONE of the ~3 GB nvidia-cuda-* / triton
+# dependencies the default PyPI wheel drags in on Linux. `pip install -r
+# requirements.txt` alone is enough — no special build command needed.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# ── Web framework ─────────────────────────────────────────────────────────
 fastapi==0.115.6
 uvicorn[standard]==0.32.1
-python-multipart==0.0.19          # required by FastAPI for multipart/form-data (PDF upload)
+python-multipart==0.0.19          # FastAPI needs this for multipart/form-data (PDF upload)
 pydantic==2.10.3
 python-dotenv==1.0.1
 
-# ── PDF parsing ───────────────────────────────────────────────────────────
-PyMuPDF==1.24.14
+# ── PDF parsing ──────────────────────────────────────────────────────────
+PyMuPDF==1.26.3                    # cp39-abi3 wheels → works on Python 3.9–3.14
 
-# ── Embeddings + vector search (resume chat / RAG) ────────────────────────
-# torch is pinned to the CPU build. Render's build command installs it from
-# the PyTorch CPU index first (see render.yaml) so the ~2GB CUDA wheel is
-# never downloaded; this line just documents/locks the version.
-torch==2.2.2
-sentence-transformers==3.3.1
-faiss-cpu==1.9.0
-numpy==1.26.4                     # keep <2 for faiss-cpu / torch 2.2 compatibility
+# ── Embeddings + vector search (resume chat / RAG) ───────────────────────
+# torch 2.9.0 is the oldest release still published on the PyTorch CPU index
+# (older ones, incl. 2.2.x, were removed — that is what broke the build).
+# sentence-transformers 5.1.1 is bumped to match; it stays on transformers 4.x
+# (torch>=1.11 requirement satisfied) so no model / API behaviour changes.
+torch==2.9.0+cpu; sys_platform == "linux"
+torch==2.9.0; sys_platform != "linux"   # macOS / Windows dev machines (already CPU-only)
+sentence-transformers==5.1.1
+faiss-cpu==1.12.0                 # numpy<3,>=1.25 · cp39–cp314 wheels
+numpy==2.1.3                      # torch 2.9 is built against numpy 2.x
 
-# ── LLM ───────────────────────────────────────────────────────────────────
+# ── LLM (Gemini) ─────────────────────────────────────────────────────────
 google-generativeai==0.8.3
