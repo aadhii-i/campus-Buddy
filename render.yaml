@@ -36,7 +36,7 @@ services:
       - key: GEMINI_API_KEY
         sync: false                 # set this in the Render dashboard (secret)
       - key: GEMINI_MODEL
-        value: gemini-1.5-flash
+        value: gemini-2.0-flash      # gemini-1.5-* was retired by Google (404s)
       - key: EMBEDDING_MODEL
         value: all-MiniLM-L6-v2
       # Comma-separated origins allowed to call the AI service directly in a

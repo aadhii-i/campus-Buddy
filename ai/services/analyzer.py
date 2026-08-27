@@ -11,13 +11,17 @@ Job Description Matching or an AI Career Coach later without touching the
 FastAPI layer.
 """
 import json
+import logging
 import re
 from typing import Any, Dict
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 from config import GEMINI_API_KEY, GEMINI_MODEL
 from services.roles import get_role_keywords
+
+log = logging.getLogger(__name__)
 
 # Category -> max points. Must sum to 100.
 CATEGORY_MAX = {
@@ -95,10 +99,10 @@ class ResumeAnalyzer:
             raise RuntimeError(
                 "GEMINI_API_KEY is not configured. Set it in ai/.env before analyzing resumes."
             )
-        genai.configure(api_key=GEMINI_API_KEY)
-        self.model = genai.GenerativeModel(
-            GEMINI_MODEL,
-            generation_config={"response_mime_type": "application/json"},
+        # google-genai SDK: one Client per key; the model is chosen per request.
+        self._client = genai.Client(api_key=GEMINI_API_KEY)
+        self._generate_config = types.GenerateContentConfig(
+            response_mime_type="application/json",
         )
 
     def analyze(self, resume_text: str, target_role: str) -> Dict[str, Any]:
@@ -109,7 +113,21 @@ class ResumeAnalyzer:
             resume_text=resume_text,
         )
 
-        response = self.model.generate_content(prompt)
+        try:
+            response = self._client.models.generate_content(
+                model=GEMINI_MODEL,
+                contents=prompt,
+                config=self._generate_config,
+            )
+        except Exception as exc:  # google.genai.errors.APIError and transport errors
+            # Log the real cause (bad model name, quota, key, network) so Render
+            # logs show it instead of a bare 502.
+            log.error(
+                "Gemini generate_content failed (model=%r): %s: %s",
+                GEMINI_MODEL, type(exc).__name__, exc,
+            )
+            raise RuntimeError(f"Gemini request failed ({type(exc).__name__}): {exc}") from exc
+
         raw = self._extract_json(response.text)
         return self._normalize(raw, target_role)
 

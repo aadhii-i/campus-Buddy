@@ -171,8 +171,10 @@ def analyze_resume(payload: AnalyzeRequest):
         analyzer = ResumeAnalyzer()
         result = analyzer.analyze(resume_text, payload.target_role)
     except RuntimeError as exc:
-        # Config problem (missing GEMINI_API_KEY) — not the user's fault.
-        log.error("analyze: config error: %s", exc)
+        # Missing GEMINI_API_KEY, or the Gemini API call itself failed (bad
+        # model, invalid key, quota, upstream error). The analyzer already
+        # logged the specific cause with the model name.
+        log.error("analyze: gemini/config error: %s", exc)
         raise HTTPException(status_code=500, detail=str(exc)) from exc
     except ValueError as exc:
         # Model returned something unparseable / empty.
