@@ -2,8 +2,43 @@
 
 ## Deployment Stack
 - **Frontend**: Vercel (React + Vite)
-- **Backend**: Railway (Node.js + Express)
+- **Backend**: Railway / Render (Node.js + Express)
+- **AI service**: Render (Python + FastAPI, folder `ai/`) — powers the Resume Analyzer + Resume Chat
 - **Database**: MongoDB Atlas (bring your own free cluster at https://cloud.mongodb.com)
+
+## AI Service (Resume Analyzer) — Render
+
+The Express backend does not analyze resumes itself; it forwards them to the
+Python/FastAPI service in `ai/`. If that service is not deployed (or Express's
+`AI_SERVICE_URL` is wrong) the Resume Analyzer shows
+*"The AI service is currently unavailable."*
+
+**Deploy it (Render → New → Blueprint, or a manual Web Service):**
+
+| Setting | Value |
+|---|---|
+| Root Directory | `ai` |
+| Runtime | Python 3 (`runtime.txt` pins 3.11.9) |
+| Build Command | `pip install --upgrade pip && pip install --no-cache-dir torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu && pip install --no-cache-dir -r requirements.txt` |
+| Start Command | `uvicorn app:app --host 0.0.0.0 --port $PORT` |
+| Health Check Path | `/health` |
+| Instance type | `Starter` is enough for analysis; use `Standard` (2 GB) for reliable Resume **Chat** (embeddings load ~700 MB) |
+
+**Environment variables (AI service):**
+```
+GEMINI_API_KEY=<from https://aistudio.google.com/app/apikey>   # server-side secret, never in the frontend
+GEMINI_MODEL=gemini-1.5-flash
+EMBEDDING_MODEL=all-MiniLM-L6-v2
+ALLOWED_ORIGINS=https://<your-frontend-domain>,http://localhost:3000,http://localhost:5173
+PYTHON_VERSION=3.11.9
+```
+
+**Then point the backend at it** — set on the Express service:
+```
+AI_SERVICE_URL=https://campus-buddy-ai.onrender.com     # NO trailing slash, NO /api suffix
+```
+Verify: `curl https://campus-buddy-ai.onrender.com/health` → `{"status":"ok",...}`
+and `curl https://<backend>/api/resume/ai-health` → shows the resolved `aiServiceUrl` + `geminiConfigured`.
 
 > **Environment variables**: the full, authoritative list of variables each service needs lives in
 > [`server/.env.example`](server/.env.example) and [`client/.env.example`](client/.env.example).

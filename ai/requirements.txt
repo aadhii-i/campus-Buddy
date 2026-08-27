@@ -1,12 +1,21 @@
+# ── Web framework ──────────────────────────────────────────────────────────
 fastapi==0.115.6
 uvicorn[standard]==0.32.1
-python-multipart==0.0.19
+python-multipart==0.0.19          # required by FastAPI for multipart/form-data (PDF upload)
 pydantic==2.10.3
 python-dotenv==1.0.1
 
+# ── PDF parsing ───────────────────────────────────────────────────────────
 PyMuPDF==1.24.14
+
+# ── Embeddings + vector search (resume chat / RAG) ────────────────────────
+# torch is pinned to the CPU build. Render's build command installs it from
+# the PyTorch CPU index first (see render.yaml) so the ~2GB CUDA wheel is
+# never downloaded; this line just documents/locks the version.
+torch==2.2.2
 sentence-transformers==3.3.1
 faiss-cpu==1.9.0
-numpy==1.26.4
+numpy==1.26.4                     # keep <2 for faiss-cpu / torch 2.2 compatibility
 
+# ── LLM ───────────────────────────────────────────────────────────────────
 google-generativeai==0.8.3

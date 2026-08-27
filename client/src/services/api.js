@@ -57,7 +57,9 @@ api.interceptors.response.use(
       try {
         return await api.request(originalRequest)
       } catch (retryError) {
-        toast.error('Network error. Please check your connection.')
+        if (!originalRequest.silent) {
+          toast.error('Network error. Please check your connection.')
+        }
         return Promise.reject(retryError)
       }
     }
@@ -66,21 +68,28 @@ api.interceptors.response.use(
       return Promise.reject(error)
     }
 
+    // Resume Analyzer / Resume Chat calls (marked `silent`) own ALL of their
+    // error messaging at the call site so the user sees exactly one clear
+    // message. The one exception is a 401 (not logged in) — handled just below
+    // with its own prompt — since the call site can't re-open the login modal.
+    const isResumeApi = originalRequest?.url?.includes('/resume/')
+    if (isResumeApi && error.response && error.response.status !== 401) {
+      return Promise.reject(error)
+    }
+
     // Handle different status codes
     if (error.response?.status === 401) {
-      // Only force logout if not an event creation or a background resume-chat
-      // call (both are allowed to fail quietly without booting the user out
-      // of whatever page they're on).
+      // Only force logout if not an event creation or a resume call (both are
+      // allowed to fail quietly without booting the user out of the page).
       const isEventCreate = originalRequest?.url?.includes('/events') && originalRequest?.method === 'post';
-      const isResumeChat = originalRequest?.url?.includes('/resume/chat');
-      if (!isEventCreate && !isResumeChat) {
+      if (!isEventCreate && !isResumeApi) {
         localStorage.removeItem('token')
         localStorage.removeItem('refreshToken')
         localStorage.removeItem('user')
         window.location.href = '/'
         toast.error('Session expired. Please log in again.')
-      } else if (isResumeChat) {
-        toast.error('Sign in to use the AI resume chat assistant.')
+      } else if (isResumeApi) {
+        toast.error('Please log in to use the Resume Analyzer.')
       } else {
         toast.error('Not authorized to create event. Using local fallback.')
       }
@@ -91,9 +100,16 @@ api.interceptors.response.use(
     } else if (error.response?.status === 429) {
       toast.error('Too many requests. Please wait a moment.')
     } else if (error.response?.status >= 500) {
-      toast.error('Server error. Please try again later.')
+      // `silent` callers (e.g. the Resume Analyzer) render their own single,
+      // specific message instead of this generic one — avoids stacking two or
+      // three toasts for the same failure.
+      if (!originalRequest.silent) {
+        toast.error('Server error. Please try again later.')
+      }
     } else if (error.code === 'ECONNABORTED') {
-      toast.error('Request timeout. Please try again.')
+      if (!originalRequest.silent) {
+        toast.error('Request timeout. Please try again.')
+      }
     } else {
       // Only show toast for non-silent errors
       if (!originalRequest.silent) {
@@ -197,13 +213,18 @@ export const apiService = {
   },
 
   // Resume endpoints
+  // `silent: true` — the Resume Analyzer / Resume Chat show ONE specific error
+  // (from the response body) at the call site, so the global interceptor must
+  // not also fire a generic "Server error" / "Network error" toast.
   resume: {
     // Runs the real, role-aware AI analysis against a resume already
     // indexed via chatUpload() (sessionId links the two calls together)
-    analyze: (sessionId, targetRole) => api.post('/resume/analyze', { sessionId, targetRole }),
+    analyze: (sessionId, targetRole) =>
+      api.post('/resume/analyze', { sessionId, targetRole }, { silent: true }),
     getAnalysis: (id) => api.get(`/resume/analysis/${id}`),
     getRecommendations: (id) => api.get(`/resume/recommendations/${id}`),
     getUserAnalyses: () => api.get('/resume/user-analyses'),
+    aiHealth: () => api.get('/resume/ai-health', { silent: true }),
 
     // RAG chat: index the uploaded resume, then ask questions about it
     chatUpload: (resumeFile, sessionId) => {
@@ -211,10 +232,12 @@ export const apiService = {
       formData.append('resume', resumeFile)
       if (sessionId) formData.append('sessionId', sessionId)
       return api.post('/resume/chat/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        silent: true
       })
     },
-    chatAsk: (sessionId, question) => api.post('/resume/chat', { sessionId, question })
+    chatAsk: (sessionId, question) =>
+      api.post('/resume/chat', { sessionId, question }, { silent: true })
   }
 }
 

@@ -8,13 +8,18 @@ the rest of the app never has to worry about model lifecycle.
 from typing import List
 
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
 from config import EMBEDDING_MODEL
 
 
 class EmbeddingModel:
     def __init__(self, model_name: str = EMBEDDING_MODEL):
+        # Imported lazily: sentence-transformers pulls in torch (~hundreds of MB
+        # of RSS). Only the resume-chat path (/upload, /chat) needs it, so the
+        # /health and /analyze paths — and process startup — never pay that
+        # cost. Keeps the service bootable on a 512MB instance.
+        from sentence_transformers import SentenceTransformer
+
         self.model = SentenceTransformer(model_name)
 
     def embed_texts(self, texts: List[str]) -> np.ndarray:

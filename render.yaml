@@ -1,0 +1,50 @@
+# Render Blueprint — Campus Buddy AI service (Python / FastAPI)
+# ---------------------------------------------------------------------------
+# This file only declares the AI microservice. The Node/Express + React app is
+# deployed separately (existing service at campus-buddy-1-aolw.onrender.com)
+# and is intentionally NOT managed here so a blueprint sync can't disturb it.
+#
+# To deploy:  Render Dashboard → New → Blueprint → pick this repo.
+# Then set GEMINI_API_KEY (marked sync:false below) in the service's
+# Environment tab. Nothing else is required for the analyze flow.
+services:
+  - type: web
+    name: campus-buddy-ai
+    runtime: python
+    rootDir: ai                       # build/run from the ai/ folder
+    plan: starter                     # 512MB. Enough for /health + /analyze.
+                                      # Bump to "standard" (2GB) if the resume
+                                      # CHAT (sentence-transformers/torch) OOMs.
+    autoDeploy: true
+    healthCheckPath: /health
+    # torch is installed from the PyTorch CPU index FIRST so pip never pulls the
+    # ~2GB CUDA build. Then the rest of requirements.txt (which pins the same
+    # torch==2.2.2, already satisfied) installs from PyPI.
+    buildCommand: >-
+      pip install --upgrade pip &&
+      pip install --no-cache-dir torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu &&
+      pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9               # also pinned in ai/runtime.txt
+      - key: GEMINI_API_KEY
+        sync: false                 # set this in the Render dashboard (secret)
+      - key: GEMINI_MODEL
+        value: gemini-1.5-flash
+      - key: EMBEDDING_MODEL
+        value: all-MiniLM-L6-v2
+      # Comma-separated origins allowed to call the AI service directly in a
+      # browser. Express (server-to-server) does not need CORS, but keep the
+      # deployed frontend here for local testing / future direct calls.
+      - key: ALLOWED_ORIGINS
+        value: https://campus-buddy-1-aolw.onrender.com,http://localhost:3000,http://localhost:5173
+      # Optional: persist uploaded PDFs + FAISS indexes across restarts so a
+      # cold start between "upload" and "analyze" can't lose the session.
+      # Requires a paid instance. To enable: uncomment DATA_DIR + the disk block.
+      # - key: DATA_DIR
+      #   value: /var/data
+    # disk:
+    #   name: ai-data
+    #   mountPath: /var/data
+    #   sizeGB: 1

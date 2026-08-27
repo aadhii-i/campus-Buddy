@@ -13,8 +13,13 @@ load_dotenv()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # --- Storage ---
-UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
-VECTOR_DB_DIR = os.path.join(BASE_DIR, "vector_db")
+# DATA_DIR lets a deployment point uploads + the vector index at a mounted
+# persistent disk (Render disk, Docker volume, ...) so a restart between
+# "upload" and "analyze" doesn't lose the session. Defaults to the repo folder
+# for local dev, where it doesn't matter.
+DATA_DIR = os.getenv("DATA_DIR", BASE_DIR)
+UPLOAD_DIR = os.path.join(DATA_DIR, "uploads")
+VECTOR_DB_DIR = os.path.join(DATA_DIR, "vector_db")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(VECTOR_DB_DIR, exist_ok=True)
 

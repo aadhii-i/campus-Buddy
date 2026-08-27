@@ -5,14 +5,24 @@ export const resumeService = {
   // Run the real, role-aware AI analysis. Requires the resume to already be
   // indexed via uploadForChat() (or chatUpload directly) so sessionId points
   // at a saved, parseable PDF.
+  // NOTE: errors are surfaced by the single catch in ResumeAnalyzer.jsx (which
+  // covers both the upload and analyze steps) — deliberately no toast here, to
+  // avoid duplicate error messages for one failed "Analyze Resume" click.
   async analyzeResume(sessionId, targetRole) {
+    const response = await apiService.resume.analyze(sessionId, targetRole)
+    return response.data.analysis
+  },
+
+  // Ping the AI service through Express. Returns { ok, aiServiceUrl, detail }.
+  async checkAiHealth() {
     try {
-      const response = await apiService.resume.analyze(sessionId, targetRole)
-      return response.data.analysis
+      const response = await apiService.resume.aiHealth()
+      return { ok: true, ...response.data }
     } catch (error) {
-      const message = error.response?.data?.message || error.message || 'Failed to analyze resume'
-      toast.error(message)
-      throw error
+      return {
+        ok: false,
+        detail: error.response?.data?.message || error.message || 'AI service unreachable'
+      }
     }
   },
 

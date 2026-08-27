@@ -67,8 +67,27 @@ const ResumeAnalyzer = () => {
       const result = await resumeService.analyzeResume(sessionId, targetRole);
       setAnalysis(result);
     } catch (error) {
-      console.error('Resume analysis failed:', error);
-      toast.error(error.response?.data?.message || error.message || 'Failed to analyze resume. Please try again.');
+      // Single, specific message for the whole flow (upload + analyze). The API
+      // layer is `silent` for these calls, so this is the only toast — except a
+      // 401, which the api interceptor already reports ("please log in").
+      const status = error.response?.status;
+      const serverMessage = error.response?.data?.message;
+      const requestId = error.response?.data?.requestId;
+      console.error(
+        `Resume analysis failed${requestId ? ` [${requestId}]` : ''}:`,
+        status,
+        serverMessage || error.message
+      );
+
+      if (status === 401) return; // handled by the api interceptor
+
+      let message = serverMessage;
+      if (!message) {
+        if (status === 429) message = 'The server is busy right now. Please wait a minute and try again.';
+        else if (!error.response) message = 'Cannot reach the server. Check your connection and try again.';
+        else message = 'Could not analyze your resume right now. Please try again.';
+      }
+      toast.error(message);
     } finally {
       setAnalyzing(false);
     }
