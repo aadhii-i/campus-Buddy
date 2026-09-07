@@ -40,6 +40,9 @@ TOP_K = int(os.getenv("TOP_K", "5"))
 # the GEMINI_MODEL env var.
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
+# Used only when GEMINI_MODEL keeps failing with a transient 429/503 after
+# retries — a different current Flash model, not a retried/older one.
+GEMINI_FALLBACK_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-3.5-flash")
 
 # --- Server ---
 PORT = int(os.getenv("PORT", "8000"))

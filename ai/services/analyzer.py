@@ -18,7 +18,8 @@ from typing import Any, Dict
 from google import genai
 from google.genai import types
 
-from config import GEMINI_API_KEY, GEMINI_MODEL
+from config import GEMINI_API_KEY, GEMINI_FALLBACK_MODEL, GEMINI_MODEL
+from services.gemini_retry import generate_content_with_retry
 from services.roles import get_role_keywords
 
 log = logging.getLogger(__name__)
@@ -114,10 +115,13 @@ class ResumeAnalyzer:
         )
 
         try:
-            response = self._client.models.generate_content(
+            response = generate_content_with_retry(
+                self._client,
                 model=GEMINI_MODEL,
                 contents=prompt,
                 config=self._generate_config,
+                fallback_model=GEMINI_FALLBACK_MODEL,
+                log_context="analyze",
             )
         except Exception as exc:  # google.genai.errors.APIError and transport errors
             # Log the real cause (bad model name, quota, key, network) so Render

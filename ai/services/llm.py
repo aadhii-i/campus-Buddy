@@ -9,7 +9,8 @@ import logging
 
 from google import genai
 
-from config import GEMINI_API_KEY, GEMINI_MODEL
+from config import GEMINI_API_KEY, GEMINI_FALLBACK_MODEL, GEMINI_MODEL
+from services.gemini_retry import generate_content_with_retry
 
 log = logging.getLogger(__name__)
 
@@ -42,9 +43,12 @@ class GeminiClient:
         prompt = SYSTEM_PROMPT_TEMPLATE.format(context=context, question=question)
 
         try:
-            response = self._client.models.generate_content(
+            response = generate_content_with_retry(
+                self._client,
                 model=GEMINI_MODEL,
                 contents=prompt,
+                fallback_model=GEMINI_FALLBACK_MODEL,
+                log_context="chat",
             )
         except Exception as exc:  # google.genai.errors.APIError and transport errors
             log.error(

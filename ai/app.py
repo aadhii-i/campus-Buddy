@@ -82,8 +82,17 @@ def gemini_health():
     """Prove the AI service can actually reach the configured Gemini model with
     a minimal generate-content call BEFORE anyone tries a real resume analysis
     (req #5). Lightweight — no PDF, no torch. Returns the real upstream error
-    verbatim on failure so Render logs pinpoint key vs. model vs. quota."""
+    verbatim on failure so Render logs pinpoint key vs. model vs. quota.
+
+    Goes through the same retry+fallback path as /analyze (services.gemini_retry)
+    so a transient 429/503 reports the same outcome a real analysis would get,
+    instead of flagging "unhealthy" for a blip /analyze would have survived.
+    Not Render's healthCheckPath (that's the cheap /health above), so this
+    doesn't affect service uptime — it's a manual deep-check endpoint.
+    """
     import time
+
+    from services.gemini_retry import generate_content_with_retry
 
     if not config.GEMINI_API_KEY:
         raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not configured on the AI service.")
@@ -93,7 +102,13 @@ def gemini_health():
     started = time.monotonic()
     try:
         client = genai.Client(api_key=config.GEMINI_API_KEY)
-        resp = client.models.generate_content(model=config.GEMINI_MODEL, contents="ping")
+        resp = generate_content_with_retry(
+            client,
+            model=config.GEMINI_MODEL,
+            contents="ping",
+            fallback_model=config.GEMINI_FALLBACK_MODEL,
+            log_context="health",
+        )
         latency_ms = round((time.monotonic() - started) * 1000)
         log.info("[AI] gemini/health ok model=%s latency=%dms", config.GEMINI_MODEL, latency_ms)
         return {
