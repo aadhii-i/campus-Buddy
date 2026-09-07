@@ -8,8 +8,9 @@ it — swapping Gemini for another model later only touches this file.
 import logging
 
 from google import genai
+from google.genai import types
 
-from config import GEMINI_API_KEY, GEMINI_FALLBACK_MODEL, GEMINI_MODEL
+from config import GEMINI_API_KEY, GEMINI_FALLBACK_MODEL, GEMINI_MODEL, GEMINI_TIMEOUT_MS
 from services.gemini_retry import generate_content_with_retry
 
 log = logging.getLogger(__name__)
@@ -36,7 +37,10 @@ class GeminiClient:
                 "GEMINI_API_KEY is not configured. Set it in ai/.env before asking questions."
             )
         # google-genai SDK: one Client per key; the model is chosen per request.
-        self._client = genai.Client(api_key=GEMINI_API_KEY)
+        self._client = genai.Client(
+            api_key=GEMINI_API_KEY,
+            http_options=types.HttpOptions(timeout=GEMINI_TIMEOUT_MS),
+        )
 
     def generate_answer(self, context_chunks: list[str], question: str) -> str:
         context = "\n\n---\n\n".join(context_chunks)
@@ -58,3 +62,8 @@ class GeminiClient:
             raise RuntimeError(f"Gemini request failed ({type(exc).__name__}): {exc}") from exc
 
         return (response.text or "").strip()
+
+    def close(self) -> None:
+        """Release the underlying HTTP session. Called when a cached
+        RAGEngine (see services.rag) is evicted."""
+        self._client.close()

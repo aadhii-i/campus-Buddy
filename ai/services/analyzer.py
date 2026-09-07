@@ -13,12 +13,13 @@ FastAPI layer.
 import json
 import logging
 import re
-from typing import Any, Dict
+import threading
+from typing import Any, Dict, Optional
 
 from google import genai
 from google.genai import types
 
-from config import GEMINI_API_KEY, GEMINI_FALLBACK_MODEL, GEMINI_MODEL
+from config import GEMINI_API_KEY, GEMINI_FALLBACK_MODEL, GEMINI_MODEL, GEMINI_TIMEOUT_MS
 from services.gemini_retry import generate_content_with_retry
 from services.roles import get_role_keywords
 
@@ -101,7 +102,10 @@ class ResumeAnalyzer:
                 "GEMINI_API_KEY is not configured. Set it in ai/.env before analyzing resumes."
             )
         # google-genai SDK: one Client per key; the model is chosen per request.
-        self._client = genai.Client(api_key=GEMINI_API_KEY)
+        self._client = genai.Client(
+            api_key=GEMINI_API_KEY,
+            http_options=types.HttpOptions(timeout=GEMINI_TIMEOUT_MS),
+        )
         self._generate_config = types.GenerateContentConfig(
             response_mime_type="application/json",
         )
@@ -199,3 +203,20 @@ class ResumeAnalyzer:
             "suggestedImprovements": raw.get("suggestedImprovements") or [],
             "missingInformation": raw.get("missingInformation") or [],
         }
+
+
+_analyzer_instance: Optional[ResumeAnalyzer] = None
+_analyzer_lock = threading.Lock()
+
+
+def get_resume_analyzer() -> ResumeAnalyzer:
+    """Process-wide singleton so the Gemini client (and its underlying HTTP
+    session) is built once, not on every /analyze request. ResumeAnalyzer
+    holds no per-request mutable state — analyze() only touches locals — so
+    sharing one instance across concurrent requests is safe."""
+    global _analyzer_instance
+    if _analyzer_instance is None:
+        with _analyzer_lock:
+            if _analyzer_instance is None:
+                _analyzer_instance = ResumeAnalyzer()
+    return _analyzer_instance

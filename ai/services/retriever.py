@@ -6,6 +6,7 @@ the store for the nearest chunks.
 """
 from typing import List
 
+from config import TOP_K
 from services.embeddings import EmbeddingModel
 from services.vector_store import VectorStore
 
@@ -15,6 +16,6 @@ class Retriever:
         self.store = store
         self.embedder = embedder
 
-    def retrieve(self, question: str, top_k: int = 5) -> List[str]:
+    def retrieve(self, question: str, top_k: int = TOP_K) -> List[str]:
         query_embedding = self.embedder.embed_query(question)
         return self.store.search(query_embedding, top_k=top_k)

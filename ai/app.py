@@ -14,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 import config
-from services.analyzer import ResumeAnalyzer
+from services.analyzer import get_resume_analyzer
 from services.parser import extract_text_from_pdf
 from services.roles import is_valid_role, list_roles
 
@@ -98,10 +98,14 @@ def gemini_health():
         raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not configured on the AI service.")
 
     from google import genai
+    from google.genai import types
 
     started = time.monotonic()
     try:
-        client = genai.Client(api_key=config.GEMINI_API_KEY)
+        client = genai.Client(
+            api_key=config.GEMINI_API_KEY,
+            http_options=types.HttpOptions(timeout=config.GEMINI_TIMEOUT_MS),
+        )
         resp = generate_content_with_retry(
             client,
             model=config.GEMINI_MODEL,
@@ -136,9 +140,11 @@ def get_roles():
 
 def _index_resume(session_id: str, file_path: str) -> int:
     """Build the FAISS index for the resume chat. Returns chunk count."""
-    from services.rag import RAGEngine  # lazy: pulls torch, see module note
+    from services.rag import get_rag_engine  # lazy: pulls torch, see module note
 
-    engine = RAGEngine(namespace=_resume_namespace(session_id))
+    # Cached: if the user opens chat right after this, /chat reuses this same
+    # engine (already holding the index in memory) instead of reloading it.
+    engine = get_rag_engine(_resume_namespace(session_id))
     return engine.ingest_document(file_path)
 
 
@@ -248,7 +254,7 @@ def analyze_resume(payload: AnalyzeRequest):
     )
 
     try:
-        analyzer = ResumeAnalyzer()
+        analyzer = get_resume_analyzer()
         log.info("[AI] Gemini request started: session=%s model=%s", payload.session_id, config.GEMINI_MODEL)
         result = analyzer.analyze(resume_text, payload.target_role)
         log.info("[AI] Gemini response received: session=%s", payload.session_id)
@@ -280,9 +286,19 @@ def analyze_resume(payload: AnalyzeRequest):
 
 @app.post("/chat")
 def chat(payload: ChatRequest):  # sync: embedding + Gemini calls block, see /analyze note
-    from services.rag import RAGEngine  # lazy: pulls torch, see module note
+    from services.rag import get_rag_engine  # lazy: pulls torch, see module note
 
-    engine = RAGEngine(namespace=_resume_namespace(payload.session_id))
+    # Cached per session (namespace): reuses the already-loaded FAISS index
+    # and Gemini client across every message in this conversation instead of
+    # reloading the index off disk and rebuilding the client on each one.
+    try:
+        engine = get_rag_engine(_resume_namespace(payload.session_id))
+    except Exception as exc:  # noqa: BLE001 — vector store load / FAISS read failure
+        log.exception("[CHAT] vector store init failed: session=%s", payload.session_id)
+        raise HTTPException(
+            status_code=503,
+            detail="The resume chat assistant is temporarily unavailable. Your analysis above is unaffected.",
+        ) from exc
 
     # If /upload couldn't build the index earlier (small instance, transient
     # error), build it now from the saved PDF instead of dead-ending the chat.
@@ -294,10 +310,14 @@ def chat(payload: ChatRequest):  # sync: embedding + Gemini calls block, see /an
                 detail="No resume found for this session. Please upload a resume first.",
             )
         try:
-            log.info("chat: session=%s index missing, building on demand", payload.session_id)
+            log.info("[CHAT] session=%s index missing, building on demand", payload.session_id)
             engine.ingest_document(pdf_path)
-        except Exception as exc:  # noqa: BLE001
-            log.exception("chat: on-demand indexing failed for session=%s", payload.session_id)
+        except ValueError as exc:
+            # PDF genuinely has no indexable content — real client error.
+            log.error("[CHAT] indexing: no extractable content: session=%s %s", payload.session_id, exc)
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except Exception as exc:  # noqa: BLE001 — embedding model / vector store failure
+            log.exception("[CHAT] on-demand indexing failed (embedding/vector-store): session=%s", payload.session_id)
             raise HTTPException(
                 status_code=503,
                 detail="The resume chat assistant is temporarily unavailable. Your analysis above is unaffected.",
@@ -306,10 +326,13 @@ def chat(payload: ChatRequest):  # sync: embedding + Gemini calls block, see /an
     try:
         answer = engine.answer(payload.question, top_k=config.TOP_K)
     except RuntimeError as exc:
-        log.error("chat: LLM error: %s", exc)
+        # Gemini call exhausted retries + fallback. The real status
+        # (429/503/auth/model) was already logged in services/gemini_retry.py
+        # and services/llm.py with the model name attached.
+        log.error("[CHAT] Gemini call failed: session=%s %s", payload.session_id, exc)
         raise HTTPException(status_code=500, detail=str(exc)) from exc
-    except Exception as exc:  # noqa: BLE001
-        log.exception("chat: unexpected failure")
+    except Exception as exc:  # noqa: BLE001 — retrieval / vector-store / parsing failure
+        log.exception("[CHAT] unexpected failure (retrieval/vector-store): session=%s", payload.session_id)
         raise HTTPException(status_code=502, detail="The AI assistant failed to answer. Please try again.") from exc
 
     return {"success": True, "answer": answer}

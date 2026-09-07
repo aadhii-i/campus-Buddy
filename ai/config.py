@@ -43,6 +43,10 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
 # Used only when GEMINI_MODEL keeps failing with a transient 429/503 after
 # retries — a different current Flash model, not a retried/older one.
 GEMINI_FALLBACK_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-3.5-flash")
+# Per-request timeout so a stuck Gemini call can't hold a FastAPI worker
+# thread indefinitely. Comfortably below Express's AI_SERVICE_TIMEOUT_MS
+# (120s) even across 3 retries + 1 fallback attempt with backoff.
+GEMINI_TIMEOUT_MS = int(os.getenv("GEMINI_TIMEOUT_MS", "20000"))
 
 # --- Server ---
 PORT = int(os.getenv("PORT", "8000"))
