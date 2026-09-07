@@ -2,448 +2,337 @@
 
 <div align="center">
 
+<img src="assets/screenshots/home.png" alt="Campus Buddy Homepage" width="100%">
+
+<br>
+<br>
+
 # Campus Buddy
+
 ### AI-Powered Smart Campus Management Platform
 
-*A modern all-in-one platform designed to simplify campus life, enhance student engagement, and digitize everyday university activities.
-## 🚀 Live Demo
-https://campus-buddy-1-aolw.onrender.com/
+**Your campus. One intelligent companion.**
 
-## 📂 GitHub Repository
-https://github.com/aadhii-i/campus-Buddy
+A modern all-in-one platform that brings campus events, clubs, academics,
+placements, lost & found, community, and AI-powered career tools together
+in one connected experience.
 
+<br>
 
-![React](https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=for-the-badge&logo=react)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite)
-![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?style=for-the-badge&logo=node.js)
-![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express)
-![MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248?style=for-the-badge&logo=mongodb)
-![JWT](https://img.shields.io/badge/Auth-JWT-orange?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
+[![Live Demo](https://img.shields.io/badge/🌐%20Live%20Demo-Visit%20Campus%20Buddy-6C4FF6?style=for-the-badge)](YOUR_LIVE_DEMO_URL)
+[![GitHub](https://img.shields.io/badge/💻%20GitHub-Repository-181717?style=for-the-badge&logo=github)](YOUR_GITHUB_URL)
+
+<br>
+<br>
+
+![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white)
+![OpenAI](https://img.shields.io/badge/AI-OpenAI-412991?style=flat-square&logo=openai&logoColor=white)
 
 </div>
 
 ---
 
-# 🌟 Overview
+## 🌟 Why Campus Buddy?
 
-Campus Buddy is an AI-powered campus ecosystem that centralizes academic, extracurricular, and administrative services into one seamless platform.
+University life is often spread across multiple disconnected platforms.
 
-Instead of using multiple disconnected systems, students, faculty, clubs, and administrators can collaborate through one intelligent application.
+One place for events.
 
-The platform combines:
+Another for attendance.
 
-- 📅 Event Management
-- 👥 Club Management
-- 🗓 Timetable Management
-- 📊 Attendance Tracking
-- 🔎 Lost & Found
-- 💼 Placement Hub
-- 🤖 AI Resume Analyzer
-- 📢 Community Feed
-- 🔔 Smart Notifications
+Another for clubs.
 
-into one modern experience inspired by premium SaaS applications.
+Another for placements.
+
+And somewhere else, students search for lost items or career guidance.
+
+**Campus Buddy brings these experiences together.**
+
+It is designed as a unified digital campus ecosystem where students,
+clubs, faculty, and administrators can interact through a single modern
+platform.
+
+### One platform. Multiple campus experiences.
+
+| 📅 Events | 👥 Clubs | 🗓 Timetable |
+|:---:|:---:|:---:|
+| Discover and register for campus events | Discover and join student organizations | Manage weekly academic schedules |
+
+| 📊 Attendance | 🔎 Lost & Found | 💼 Placements |
+|:---:|:---:|:---:|
+| Track attendance and projected percentage | Report, search, and recover items | Explore internships and opportunities |
+
+| 🤖 AI Resume Coach | 📢 Community | 🔔 Notifications |
+|:---:|:---:|:---:|
+| Analyze resumes and improve job readiness | Campus discussions and announcements | Stay updated with important activity |
 
 ---
 
-# ✨ Features
+# ✨ Product Experience
 
-## 🏠 Premium Homepage
+Campus Buddy is built around a simple idea:
 
-- Modern Apple-inspired UI
-- Smooth scrolling experience
-- Glassmorphism
-- Floating cards
-- Scroll animations
-- Interactive sections
-- Responsive design
+> **Make everyday campus life easier from one place.**
+
+---
+
+## 🏠 A Modern Campus Homepage
+
+The homepage acts as the central entry point into the campus ecosystem.
+
+It provides quick access to the most important student experiences while
+maintaining a clean, modern interface.
+
+<p align="center">
+  <img src="assets/screenshots/home.png" alt="Campus Buddy Homepage" width="95%">
+</p>
+
+### Design highlights
+
+- ✨ Modern SaaS-inspired interface
+- 🎨 Clean visual hierarchy
+- 🧊 Glassmorphism-inspired UI elements
+- 🎞 Smooth animations
+- 📱 Responsive design
+- 🧭 Clear navigation between campus services
+
+---
+
+# 🚀 Core Campus Features
+
+## 📅 Smart Event Management
+
+Discover what is happening around campus and register for events
+without switching between different platforms.
+
+<p align="center">
+  <img src="assets/screenshots/events.png" alt="Campus Events" width="95%">
+</p>
+
+### Features
+
+- Event discovery
+- Online registration
+- Event categories
+- Seat availability
+- Event countdowns
+- Event posters
+- Organizer management
 
 ---
 
 ## 👥 Club Management
 
-Discover and join student organizations.
+Campus Buddy provides a dedicated space for student organizations.
 
-Features include:
+Students can discover clubs, explore their activities, and participate
+in campus communities.
 
-- Club Profiles
-- Faculty Coordinators
-- Club Gallery
-- Member Count
-- Upcoming Events
-- Club Recruitment
-- Join Club
-- Club Achievements
+<p align="center">
+  <img src="assets/screenshots/clubs.png" alt="Club Management" width="95%">
+</p>
 
-Example Clubs
+### Club capabilities
 
-- Trendles
-- Wildbeats
-- Beta Labs
-- IEEE
-- GDSC
-- NSS
-- IEDC
-- Photography Club
-- Robotics Club
+- Club profiles
+- Faculty coordinators
+- Member counts
+- Club galleries
+- Upcoming events
+- Recruitment
+- Join club functionality
+- Club achievements
 
----
+### Example campus organizations
 
-## 📅 Smart Event Management
-
-- Discover Events
-- Register Online
-- Event Countdown
-- Seat Availability
-- Event Categories
-- Event Posters
-- Organizer Dashboard
-
----
-
-## 🗓 Timetable Management
-
-- Weekly Timetable
-- Today's Classes
-- Faculty Information
-- Classroom Details
-- Download Timetable
-- Calendar Integration
-
----
-
-## 📊 Attendance Tracker
-
-- Subject-wise Attendance
-- Attendance Percentage
-- Safe Leave Calculator
-- Projected Attendance
-- Circular Progress Dashboard
+`Trendles` · `Wildbeats` · `Beta Labs` · `IEEE` · `GDSC` · `NSS` · `IEDC`
 
 ---
 
 ## 🔎 Lost & Found
 
-- Report Lost Items
-- Upload Images
-- Search Found Items
-- AI Matching
-- Categories
-- Claim Requests
+A dedicated campus marketplace for recovering lost belongings.
+
+<p align="center">
+  <img src="assets/screenshots/lost_found.png" alt="Lost and Found" width="95%">
+</p>
+
+### Features
+
+- Report lost items
+- Upload item images
+- Search found items
+- Categorize items
+- Claim requests
+- AI-assisted matching
+
+The goal is simple:
+
+**Make it easier for a lost item to find its owner.**
 
 ---
 
-## 👨‍🎓 Community
+## 🎓 Placement Hub
 
-- Student Posts
-- Discussions
-- Comments
-- Announcements
-- Trending Topics
-- Campus Feed
+A centralized career and placement space for students.
 
----
+<p align="center">
+  <img src="assets/screenshots/campus_placement.png" alt="Campus Placement" width="95%">
+</p>
 
-## 💼 Placement Hub
+### Features
 
-- Internship Updates
-- Company Drives
-- Placement Resources
-- Career Guidance
-- Recruitment News
+- Internship updates
+- Company drives
+- Placement resources
+- Recruitment information
+- Career guidance
+- Opportunity discovery
 
 ---
 
-## 🤖 AI Features
+# 📚 Academic Tools
 
-- Resume Analyzer
-- ATS Score
-- Resume Suggestions
-- Interview Coach
-- Career Roadmap
-- Project Suggestions
-- Skill Gap Analysis
-- AI Campus Assistant *(Upcoming)*
+Campus Buddy also brings everyday academic utilities into the same
+student experience.
 
 ---
 
-## 🔔 Notifications
+## 🗓 Timetable Management
 
-- Event Reminders
-- Placement Alerts
-- Club Announcements
-- Community Updates
-- System Notifications
+Students can quickly access their academic schedule and classroom
+information.
 
----
+<p align="center">
+  <img src="assets/screenshots/time_table.png" alt="Timetable Management" width="95%">
+</p>
 
-## 🔐 Authentication
+### Features
 
-- JWT Authentication
-- Secure Login
-- Student Registration
-- Role-Based Access
-- Protected Routes
-
----
-
-# 🚀 Tech Stack
-
-## Frontend
-
-- React.js
-- Vite
-- JavaScript
-- HTML5
-- CSS3
-- Tailwind CSS
-- Framer Motion
-- React Icons
-
-## Backend
-
-- Node.js
-- Express.js
-
-## Database
-
-- MongoDB Atlas
-- Mongoose
-
-## Authentication
-
-- JWT
-- bcrypt
-
-## Cloud
-
-- Cloudinary
-
-## AI
-
-- OpenAI API
+- Weekly timetable
+- Today's classes
+- Faculty information
+- Classroom details
+- Timetable download
+- Calendar integration
 
 ---
 
-# 📂 Project Structure
+## 📊 Attendance Tracker
 
-```
-Campus-Buddy
-│
-├── client
-│   ├── src
-│   ├── assets
-│   ├── components
-│   ├── pages
-│   ├── hooks
-│   ├── utils
-│   └── package.json
-│
-├── server
-│   ├── controllers
-│   ├── middleware
-│   ├── models
-│   ├── routes
-│   ├── utils
-│   ├── app.js
-│   └── package.json
-│
-├── docs
-│
-└── README.md
-```
+Track attendance without manually calculating percentages.
+
+<p align="center">
+  <img src="assets/screenshots/attendance.png" alt="Attendance Dashboard" width="95%">
+</p>
+
+### Features
+
+- Subject-wise attendance
+- Attendance percentage
+- Safe leave calculation
+- Projected attendance
+- Visual progress indicators
 
 ---
 
-# ⚙️ Installation
+# 🤖 AI-Powered Career Intelligence
 
-Clone the repository
+One of the core differentiators of Campus Buddy is its AI-powered
+career tooling.
 
-```bash
-git clone https://github.com/aadhii-i/campus-Buddy.git
-```
-
-Navigate into the project
-
-```bash
-cd campus-Buddy
-```
-
-Install frontend
-
-```bash
-cd client
-npm install
-```
-
-Install backend
-
-```bash
-cd ../server
-npm install
-```
+Instead of simply displaying information, the platform can analyze
+student data and provide actionable feedback.
 
 ---
 
-# ▶️ Running the Project
+## 📄 AI Resume Analyzer
 
-Backend
+Students can upload their resumes and receive structured AI-powered
+feedback.
 
-```bash
-cd server
-npm run dev
-```
+<p align="center">
+  <img src="assets/screenshots/resume_analyzer.png" alt="AI Resume Analyzer" width="95%">
+</p>
 
-Frontend
+The analyzer focuses on areas such as:
 
-```bash
-cd client
-npm run dev
-```
-
-Open
-
-```
-Frontend
-http://localhost:3000
-```
-
-```
-Backend
-http://localhost:3001
-```
+- ATS compatibility
+- Resume structure
+- Skills
+- Projects
+- Experience
+- Keywords
+- Job-readiness
 
 ---
 
-# 🔒 Environment Variables
+## 📊 Detailed Resume Analysis
 
-Create
+The analysis view turns the resume into a structured evaluation.
 
-```
-server/.env
-```
+<p align="center">
+  <img src="assets/screenshots/resume_analyzer_2.png" alt="Resume Analysis Results" width="95%">
+</p>
 
-Example
+### Example evaluation areas
 
-```env
-PORT=3001
+| Category | Purpose |
+|---|---|
+| ATS Compatibility | Evaluate how easily applicant tracking systems can parse the resume |
+| Resume Structure | Check organization and standard resume sections |
+| Skills Match | Identify relevant technical skills |
+| Projects | Evaluate practical project experience |
+| Experience | Assess professional experience |
+| Keywords | Identify relevant or missing terminology |
 
-MONGODB_URI=
+The goal is not just to give a score.
 
-JWT_SECRET=
-
-JWT_REFRESH_SECRET=
-
-OPENAI_API_KEY=
-
-CLOUDINARY_CLOUD_NAME=
-
-CLOUDINARY_API_KEY=
-
-CLOUDINARY_API_SECRET=
-
-EMAIL_USER=
-
-EMAIL_PASS=
-```
+**It is to help students understand what they can improve.**
 
 ---
 
-# 📸 Screenshots
+## 🧠 AI-Powered Observations
 
-Coming Soon
+AI-generated observations provide additional context around the student's
+career readiness and potential improvements.
 
-- Homepage
-- Club Management
-- Attendance Dashboard
-- Timetable
-- Placement Portal
-- Community
-- AI Resume Analyzer
+<p align="center">
+  <img src="assets/screenshots/ai_observation.png" alt="AI Resume Observations" width="95%">
+</p>
 
----
-
-# 🛣 Roadmap
-
-### Phase 1 ✅
-
-- Modern Homepage
-- Event Module
-- Community
-- Resume Analyzer
-- Lost & Found
-- Placement Hub
-- Authentication
-
-### Phase 2 🚧
-
-- Club Management
-- Attendance Tracking
-- Timetable Management
-- QR Event Check-in
-- Student Dashboard
-
-### Phase 3 🔮
-
-- AI Campus Assistant
-- Smart Bus Tracking
-- Hostel Complaint Portal
-- Digital Student ID
-- Mobile App
-- Faculty Dashboard
-- Parent Portal
+This turns resume analysis from a simple checker into a more useful
+career feedback experience.
 
 ---
 
-# 🤝 Contributing
+# 🌐 Campus Ecosystem
 
-Contributions are welcome.
+Campus Buddy is designed to connect different parts of student life
+rather than treating them as isolated modules.
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push your branch
-5. Open a Pull Request
+### The ecosystem
 
----
-
-# 📧 Contact
-
-## Developer
-
-**Adhil Rahiman M**
-
-Computer Science Engineering Student
-
-Indian Institute of Information Technology Kottayam
-
-📩 **Email**
-
-adhilriju111@gmail.com
-
-💻 **GitHub**
-
-https://github.com/aadhii-i
-
----
-
-# ⭐ Support
-
-If you found this project useful,
-
-please consider giving the repository a ⭐ on GitHub.
-
-It motivates further development and helps others discover the project.
-
----
-
-
-
-<div align="center">
-
-### 🚀 Building the Future of Smart Campus Management
-
-Made with ❤️ by **Adhil Rahiman M**
-
-</div>
+```text
+                         ┌───────────────────┐
+                         │   CAMPUS BUDDY    │
+                         │   AI PLATFORM     │
+                         └─────────┬─────────┘
+                                   │
+          ┌────────────────────────┼────────────────────────┐
+          │                        │                        │
+          ▼                        ▼                        ▼
+     📚 Academics             🎯 Careers              👥 Community
+          │                        │                        │
+     ┌────┴────┐              ┌────┴────┐           ┌─────┴─────┐
+     │         │              │         │           │           │
+ Timetable Attendance       Resume   Placements   Clubs       Events
+     │         │              │         │           │           │
+     └─────────┴──────────────┴─────────┴───────────┴───────────┘
+                                   │
+                                   ▼
+                              🔎 Lost & Found
