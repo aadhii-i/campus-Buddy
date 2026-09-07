@@ -34,11 +34,12 @@ CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "50"))  # overlapping words betwe
 TOP_K = int(os.getenv("TOP_K", "5"))
 
 # --- Gemini ---
-# gemini-1.5-* models were retired by Google (Sept 2025) and now 404 on the
-# generateContent endpoint. gemini-2.0-flash is the current GA Flash model:
-# fast, cheap, supports JSON output. Override via the GEMINI_MODEL env var.
+# gemini-1.5-* (retired Sept 2025) and gemini-2.0-flash (retired 2026) both now
+# 404 on the generateContent endpoint. gemini-3.6-flash is the current GA Flash
+# model on the same (still fully supported) generateContent API. Override via
+# the GEMINI_MODEL env var.
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
 
 # --- Server ---
 PORT = int(os.getenv("PORT", "8000"))

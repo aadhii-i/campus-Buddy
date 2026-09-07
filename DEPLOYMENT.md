@@ -27,7 +27,7 @@ Python/FastAPI service in `ai/`. If that service is not deployed (or Express's
 **Environment variables (AI service):**
 ```
 GEMINI_API_KEY=<from https://aistudio.google.com/app/apikey>   # server-side secret, never in the frontend
-GEMINI_MODEL=gemini-2.0-flash        # gemini-1.5-* was retired by Google and now 404s
+GEMINI_MODEL=gemini-3.6-flash        # gemini-1.5-* and gemini-2.0-flash were retired by Google and now 404
 EMBEDDING_MODEL=all-MiniLM-L6-v2
 ALLOWED_ORIGINS=https://<your-frontend-domain>,http://localhost:3000,http://localhost:5173
 ```
