@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Mail, Lock, User, GraduationCap, Building } from 'lucide-react'
+import { X, Mail, Lock, User, GraduationCap, Building, Sparkles } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import GoogleSignInButton from './GoogleSignInButton'
 
@@ -69,185 +69,171 @@ const LoginModal = ({ isOpen, onClose }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-midnight-950/60 p-4 backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            className="bg-white rounded-xl shadow-xl max-w-md w-full p-6"
+            initial={{ scale: 0.96, opacity: 0, y: 12 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.96, opacity: 0 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white shadow-card-hover"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">
-                {isLogin ? 'Welcome Back' : 'Create Account'}
-              </h2>
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="w-5 h-5" />
+            <div className="flex items-center justify-between border-b border-midnight-100 px-6 py-5">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700">
+                  <Sparkles className="h-4.5 w-4.5 text-white" />
+                </div>
+                <h2 className="text-lg font-bold text-midnight-900">
+                  {isLogin ? 'Welcome back' : 'Create your account'}
+                </h2>
+              </div>
+              <button onClick={onClose} className="rounded-full p-1.5 text-midnight-400 transition-colors hover:bg-midnight-100">
+                <X className="h-4.5 w-4.5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required={!isLogin}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your full name"
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter your email"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter your password"
-                  />
-                </div>
-              </div>
-
-              {!isLogin && (
-                <>
+            <div className="px-6 py-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {!isLogin && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Student ID
-                    </label>
+                    <label className="form-label">Full name</label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
                       <input
                         type="text"
-                        name="studentId"
-                        value={formData.studentId}
+                        name="name"
+                        value={formData.name}
                         onChange={handleChange}
                         required={!isLogin}
-                        minLength={3}
-                        maxLength={20}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="e.g. CS21B001"
+                        className="form-input pl-10"
+                        placeholder="Enter your full name"
                       />
                     </div>
                   </div>
+                )}
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Department
-                    </label>
-                    <div className="relative">
-                      <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <select
-                        name="department"
-                        value={formData.department}
-                        onChange={handleChange}
-                        required={!isLogin}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">Select Department</option>
-                        <option value="CSE">Computer Science (CSE)</option>
-                        <option value="ECE">Electronics (ECE)</option>
-                        <option value="ME">Mechanical (ME)</option>
-                        <option value="CE">Civil (CE)</option>
-                        <option value="EE">Electrical (EE)</option>
-                        <option value="IT">Information Technology (IT)</option>
-                        <option value="OTHER">Other</option>
-                      </select>
-                    </div>
+                <div>
+                  <label className="form-label">Email address</label>
+                  <div className="relative">
+                    <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="form-input pl-10"
+                      placeholder="you@university.edu"
+                    />
                   </div>
+                </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Year
-                    </label>
-                    <div className="relative">
-                      <GraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <select
-                        name="year"
-                        value={formData.year}
-                        onChange={handleChange}
-                        required={!isLogin}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">Select Year</option>
-                        <option value="1">1st Year</option>
-                        <option value="2">2nd Year</option>
-                        <option value="3">3rd Year</option>
-                        <option value="4">4th Year</option>
-                      </select>
-                    </div>
+                <div>
+                  <label className="form-label">Password</label>
+                  <div className="relative">
+                    <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
+                    <input
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                      className="form-input pl-10"
+                      placeholder="Enter your password"
+                    />
                   </div>
-                </>
-              )}
+                </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Create Account'}
-              </button>
-            </form>
+                {!isLogin && (
+                  <>
+                    <div>
+                      <label className="form-label">Student ID</label>
+                      <div className="relative">
+                        <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
+                        <input
+                          type="text"
+                          name="studentId"
+                          value={formData.studentId}
+                          onChange={handleChange}
+                          required={!isLogin}
+                          minLength={3}
+                          maxLength={20}
+                          className="form-input pl-10"
+                          placeholder="e.g. CS21B001"
+                        />
+                      </div>
+                    </div>
 
-            <div className="mt-4 flex items-center gap-3">
-              <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs text-gray-400 uppercase tracking-wide">or</span>
-              <div className="flex-1 h-px bg-gray-200" />
-            </div>
+                    <div>
+                      <label className="form-label">Department</label>
+                      <div className="relative">
+                        <Building className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
+                        <select
+                          name="department"
+                          value={formData.department}
+                          onChange={handleChange}
+                          required={!isLogin}
+                          className="form-select pl-10"
+                        >
+                          <option value="">Select department</option>
+                          <option value="CSE">Computer Science (CSE)</option>
+                          <option value="ECE">Electronics (ECE)</option>
+                          <option value="ME">Mechanical (ME)</option>
+                          <option value="CE">Civil (CE)</option>
+                          <option value="EE">Electrical (EE)</option>
+                          <option value="IT">Information Technology (IT)</option>
+                          <option value="OTHER">Other</option>
+                        </select>
+                      </div>
+                    </div>
 
-            <div className="mt-4">
-              <GoogleSignInButton onCredential={handleGoogleCredential} />
-            </div>
+                    <div>
+                      <label className="form-label">Year</label>
+                      <div className="relative">
+                        <GraduationCap className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
+                        <select
+                          name="year"
+                          value={formData.year}
+                          onChange={handleChange}
+                          required={!isLogin}
+                          className="form-select pl-10"
+                        >
+                          <option value="">Select year</option>
+                          <option value="1">1st Year</option>
+                          <option value="2">2nd Year</option>
+                          <option value="3">3rd Year</option>
+                          <option value="4">4th Year</option>
+                        </select>
+                      </div>
+                    </div>
+                  </>
+                )}
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
-                {isLogin ? "Don't have an account?" : "Already have an account?"}
-                <button
-                  onClick={toggleMode}
-                  className="ml-1 text-blue-600 hover:text-blue-700 font-medium"
-                >
-                  {isLogin ? 'Sign up' : 'Sign in'}
+                <button type="submit" disabled={loading} className="btn-primary w-full !py-3">
+                  {loading ? 'Loading…' : isLogin ? 'Sign in' : 'Create account'}
                 </button>
-              </p>
+              </form>
+
+              <div className="mt-5 flex items-center gap-3">
+                <div className="h-px flex-1 bg-midnight-100" />
+                <span className="text-xs uppercase tracking-wide text-midnight-400">or</span>
+                <div className="h-px flex-1 bg-midnight-100" />
+              </div>
+
+              <div className="mt-5">
+                <GoogleSignInButton onCredential={handleGoogleCredential} />
+              </div>
+
+              <div className="mt-6 text-center">
+                <p className="text-sm text-midnight-500">
+                  {isLogin ? "Don't have an account?" : 'Already have an account?'}
+                  <button onClick={toggleMode} className="ml-1 font-semibold text-brand-600 hover:text-brand-700">
+                    {isLogin ? 'Sign up' : 'Sign in'}
+                  </button>
+                </p>
+              </div>
             </div>
           </motion.div>
         </motion.div>

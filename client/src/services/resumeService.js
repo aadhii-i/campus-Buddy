@@ -133,10 +133,20 @@ export const resumeService = {
     }
   },
 
+  // Save the uploaded resume to the AI service for analysis WITHOUT eagerly
+  // building the FAISS chat index (that loads torch/sentence-transformers and
+  // OOM-kills a small AI dyno, which would take the whole analyze flow down).
+  // /analyze re-parses the saved PDF itself; the chat indexes on demand later.
+  // Returns a sessionId that links this resume to the analyze + chat calls.
+  async uploadForAnalysis(resumeFile) {
+    const response = await apiService.resume.chatUpload(resumeFile, undefined, { index: false })
+    return response.data // { success, sessionId, chunksIndexed: 0, chatReady: false }
+  },
+
   // Index the uploaded resume in the RAG AI service so it can be chatted with.
   // Returns a sessionId that scopes every subsequent question to this resume.
   async uploadForChat(resumeFile) {
-    const response = await apiService.resume.chatUpload(resumeFile)
+    const response = await apiService.resume.chatUpload(resumeFile, undefined, { index: true })
     return response.data // { success, sessionId, chunksIndexed }
   },
 

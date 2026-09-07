@@ -19,6 +19,12 @@ const newRequestId = () => crypto.randomBytes(4).toString('hex')
 // Never leak stack traces or internal detail strings to the browser.
 const sendAiError = (res, requestId, error, fallbackMessage) => {
   if (error instanceof AiServiceError) {
+    // The browser gets the safe `error.message`; the Render log gets the REAL
+    // upstream cause (bad Gemini key, model 404, AI timeout, PDF error, ...) so
+    // a failure is diagnosable without turning everything into a generic string.
+    console.error(
+      `[RESUME][${requestId}] AI failure status=${error.status} kind=${error.kind} detail=${JSON.stringify(error.detail) || '(none)'}`
+    )
     return res.status(error.status).json({
       success: false,
       code: error.kind,
@@ -26,7 +32,7 @@ const sendAiError = (res, requestId, error, fallbackMessage) => {
       message: error.message
     })
   }
-  console.error(`[resume][${requestId}] Unexpected error:`, error)
+  console.error(`[RESUME][${requestId}] Unexpected error:`, error)
   return res.status(500).json({
     success: false,
     code: 'express_error',
@@ -49,6 +55,22 @@ router.get('/ai-health', async (req, res) => {
   }
 })
 
+// @desc    Deep check: confirm the AI service can actually reach the configured
+//          Gemini model (a real 1-token generateContent). Use this BEFORE
+//          debugging a failing analysis — it isolates "Gemini key/model/quota"
+//          from everything else. Slower than /ai-health (makes an LLM call).
+// @route   GET /api/resume/gemini-health
+// @access  Public
+router.get('/gemini-health', async (req, res) => {
+  const requestId = newRequestId()
+  try {
+    const data = await callAiService('/gemini/health', { method: 'GET', requestId })
+    res.json({ success: true, aiServiceUrl: AI_BASE_URL, gemini: data })
+  } catch (error) {
+    sendAiError(res, requestId, error, 'Gemini health check failed.')
+  }
+})
+
 // @desc    Run the AI-powered, role-aware resume analysis for an already-indexed
 //          resume (call POST /api/resume/chat/upload first to get a sessionId)
 // @route   POST /api/resume/analyze
@@ -68,8 +90,9 @@ router.post('/analyze', protect, async (req, res) => {
     }
 
     console.log(
-      `[resume][${requestId}] analyze user=${req.user?.id} role="${targetRole}" session=${sessionId}`
+      `[RESUME][${requestId}] analyze received: user=${req.user?.id} role="${targetRole}" session=${sessionId}`
     )
+    console.log(`[RESUME][${requestId}] calling AI service /analyze`)
 
     const data = await callAiService('/analyze', {
       json: { session_id: sessionId, target_role: targetRole },
@@ -83,6 +106,9 @@ router.post('/analyze', protect, async (req, res) => {
       })
     }
 
+    console.log(
+      `[RESUME][${requestId}] analysis returned to frontend: overall=${data.analysis.overallScore} ats=${data.analysis.atsScore}`
+    )
     res.json({ success: true, requestId, analysis: data.analysis })
   } catch (error) {
     sendAiError(res, requestId, error, 'Failed to analyze resume. Please try again.')
@@ -165,8 +191,15 @@ router.post('/chat/upload', protect, upload.single('resume'), async (req, res) =
       })
     }
 
+    // index === 'false' -> AI service just saves + text-checks the PDF (cheap,
+    // no torch). The Resume Analyzer sends this: /analyze re-parses the PDF
+    // itself and never needs the FAISS chat index, and eagerly building that
+    // index OOM-kills a small AI dyno and takes the whole analyze flow down
+    // with it. Chat still works — /chat builds the index on demand.
+    const wantIndex = req.body.index === undefined ? 'true' : String(req.body.index)
+
     console.log(
-      `[resume][${requestId}] upload user=${req.user?.id} file="${req.file.originalname}" ${req.file.size}B`
+      `[RESUME][${requestId}] upload received: user=${req.user?.id} file="${req.file.originalname}" ${req.file.size}B index=${wantIndex}`
     )
 
     const formData = new FormData()
@@ -178,14 +211,20 @@ router.post('/chat/upload', protect, upload.single('resume'), async (req, res) =
     if (req.body.sessionId) {
       formData.append('session_id', req.body.sessionId)
     }
+    formData.append('index', wantIndex)
 
+    console.log(`[RESUME][${requestId}] calling AI service /upload`)
     const data = await callAiService('/upload', { formData, requestId })
+    console.log(
+      `[RESUME][${requestId}] upload done: session=${data.sessionId} chunks=${data.chunksIndexed} chatReady=${data.chatReady}`
+    )
 
     res.json({
       success: true,
       requestId,
       sessionId: data.sessionId,
-      chunksIndexed: data.chunksIndexed
+      chunksIndexed: data.chunksIndexed,
+      chatReady: data.chatReady
     })
   } catch (error) {
     sendAiError(res, requestId, error, 'Failed to process the uploaded resume. Please try again.')
@@ -209,10 +248,12 @@ router.post('/chat', protect, async (req, res) => {
       })
     }
 
+    console.log(`[RESUME][${requestId}] chat question: user=${req.user?.id} session=${sessionId} len=${question.length}`)
     const data = await callAiService('/chat', {
       json: { session_id: sessionId, question },
       requestId
     })
+    console.log(`[RESUME][${requestId}] chat answer returned: chars=${(data.answer || '').length}`)
 
     res.json({ success: true, requestId, answer: data.answer })
   } catch (error) {

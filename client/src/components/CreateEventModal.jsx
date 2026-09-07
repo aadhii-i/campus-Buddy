@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
 
 const defaultData = {
@@ -36,82 +37,88 @@ export default function CreateEventModal({ onClose, onCreate }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-xl rounded-xl bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b px-6 py-4">
-          <h3 className="text-lg font-semibold">Create Event</h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-            <X className="h-5 w-5" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-midnight-950/60 p-4 backdrop-blur-sm" onClick={onClose}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        onClick={(e) => e.stopPropagation()}
+        className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl bg-white shadow-card-hover"
+      >
+        <div className="flex items-center justify-between border-b border-midnight-100 px-6 py-4">
+          <h3 className="text-lg font-bold text-midnight-900">Create event</h3>
+          <button onClick={onClose} className="rounded-full p-1.5 text-midnight-400 hover:bg-midnight-100">
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 px-6 py-5">
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Title</label>
+            <label className="form-label">Title</label>
             <input
               name="title"
               value={form.title}
               onChange={handleChange}
               required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+              className="form-input"
               placeholder="e.g., Tech Symposium 2025"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Description</label>
+            <label className="form-label">Description</label>
             <textarea
               name="description"
               value={form.description}
               onChange={handleChange}
               rows={4}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+              className="form-textarea"
               placeholder="Tell attendees what this event is about"
             />
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Date</label>
+              <label className="form-label">Date</label>
               <input
                 type="date"
                 name="date"
                 value={form.date}
                 onChange={handleChange}
                 required
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                className="form-input"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Time</label>
+              <label className="form-label">Time</label>
               <input
                 type="time"
                 name="time"
                 value={form.time}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                className="form-input"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Location</label>
+              <label className="form-label">Location</label>
               <input
                 name="location"
                 value={form.location}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                className="form-input"
                 placeholder="Venue or link"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Category</label>
+              <label className="form-label">Category</label>
               <select
                 name="category"
                 value={form.category}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                className="form-select"
               >
                 {['academic','cultural','sports','technical','workshop','seminar','competition','social','career'].map(c => (
                   <option key={c} value={c}>{c}</option>
@@ -121,19 +128,15 @@ export default function CreateEventModal({ onClose, onCreate }) {
           </div>
 
           <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={onClose} className="rounded-lg border px-4 py-2 text-gray-700 hover:bg-gray-50">
+            <button type="button" onClick={onClose} className="btn-secondary">
               Cancel
             </button>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-60"
-            >
-              {submitting ? 'Creating…' : 'Create Event'}
+            <button type="submit" disabled={submitting} className="btn-primary">
+              {submitting ? 'Creating…' : 'Create event'}
             </button>
           </div>
         </form>
-      </div>
+      </motion.div>
     </div>
   )
 }

@@ -12,7 +12,13 @@
  * own the HTTP contract with the browser; this only owns the hop to Python.
  */
 
-const AI_SERVICE_TIMEOUT_MS = parseInt(process.env.AI_SERVICE_TIMEOUT_MS, 10) || 45000
+// A resume analysis is: (cold-started Render dyno wake) + PDF re-parse + a
+// full-resume Gemini generateContent call + JSON normalisation. 45s was too
+// tight and turned a slow-but-successful analysis into a fake "timeout". 120s
+// covers a cold start + a slow Gemini response with margin; the browser-side
+// axios timeout for these routes is set higher still so Express always wins
+// the race and returns a real, specific error instead of the client aborting.
+const AI_SERVICE_TIMEOUT_MS = parseInt(process.env.AI_SERVICE_TIMEOUT_MS, 10) || 120000
 
 /**
  * The FastAPI service exposes /health, /upload, /analyze, /chat at the root —

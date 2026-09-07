@@ -26,18 +26,18 @@ const ChatBubble = ({ role, content }) => {
       className={`flex items-start gap-3 ${isUser ? 'flex-row-reverse' : ''}`}
     >
       <div
-        className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-          isUser ? 'bg-blue-600' : 'bg-gray-900'
+        className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${
+          isUser ? 'bg-brand-600' : 'bg-midnight-900'
         }`}
       >
-        {isUser ? <User className="h-4 w-4 text-white" /> : <Bot className="h-4 w-4 text-white" />}
+        {isUser ? <User className="h-4 w-4 text-white" /> : <Bot className="h-4 w-4 text-glow-400" />}
       </div>
 
       <div
         className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
           isUser
-            ? 'bg-blue-600 text-white rounded-tr-sm'
-            : 'bg-gray-100 text-gray-800 rounded-tl-sm'
+            ? 'rounded-tr-sm bg-brand-600 text-white'
+            : 'rounded-tl-sm bg-midnight-50 text-midnight-800'
         }`}
       >
         {isUser ? (
@@ -49,22 +49,22 @@ const ChatBubble = ({ role, content }) => {
               ul: ({ children }) => <ul className="my-1.5 pl-4 list-disc space-y-1">{children}</ul>,
               ol: ({ children }) => <ol className="my-1.5 pl-4 list-decimal space-y-1">{children}</ol>,
               li: ({ children }) => <li>{children}</li>,
-              strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
-              h1: ({ children }) => <h4 className="font-semibold text-gray-900 mt-2 mb-1">{children}</h4>,
-              h2: ({ children }) => <h4 className="font-semibold text-gray-900 mt-2 mb-1">{children}</h4>,
-              h3: ({ children }) => <h4 className="font-semibold text-gray-900 mt-2 mb-1">{children}</h4>,
+              strong: ({ children }) => <strong className="font-semibold text-midnight-900">{children}</strong>,
+              h1: ({ children }) => <h4 className="mb-1 mt-2 font-semibold text-midnight-900">{children}</h4>,
+              h2: ({ children }) => <h4 className="mb-1 mt-2 font-semibold text-midnight-900">{children}</h4>,
+              h3: ({ children }) => <h4 className="mb-1 mt-2 font-semibold text-midnight-900">{children}</h4>,
               a: ({ children, href }) => (
-                <a href={href} target="_blank" rel="noreferrer" className="text-blue-600 underline">
+                <a href={href} target="_blank" rel="noreferrer" className="text-brand-700 underline">
                   {children}
                 </a>
               ),
               code: ({ inline, children, ...props }) =>
                 inline ? (
-                  <code className="bg-gray-200 rounded px-1 py-0.5 text-xs" {...props}>
+                  <code className="rounded bg-midnight-100 px-1 py-0.5 text-xs" {...props}>
                     {children}
                   </code>
                 ) : (
-                  <pre className="bg-gray-900 text-gray-100 rounded-lg p-3 my-1.5 overflow-x-auto text-xs">
+                  <pre className="my-1.5 overflow-x-auto rounded-lg bg-midnight-900 p-3 text-xs text-white">
                     <code {...props}>{children}</code>
                   </pre>
                 )
@@ -80,14 +80,14 @@ const ChatBubble = ({ role, content }) => {
 
 const TypingIndicator = () => (
   <div className="flex items-center gap-3">
-    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center">
-      <Bot className="h-4 w-4 text-white" />
+    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-midnight-900">
+      <Bot className="h-4 w-4 text-glow-400" />
     </div>
-    <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1">
+    <div className="flex items-center gap-1 rounded-2xl rounded-tl-sm bg-midnight-50 px-4 py-3">
       {[0, 1, 2].map((i) => (
         <span
           key={i}
-          className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
+          className="h-1.5 w-1.5 animate-bounce rounded-full bg-midnight-300"
           style={{ animationDelay: `${i * 0.15}s` }}
         />
       ))}
@@ -140,21 +140,25 @@ const ResumeChat = ({ sessionId }) => {
   const disabled = !sessionId;
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-          <Sparkles className="h-4 w-4 text-white" />
+    <div className="surface-panel overflow-hidden !p-0">
+      <div className="flex items-center gap-3 border-b border-midnight-100 bg-midnight-950 px-6 py-4">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600">
+          <Sparkles className="h-4.5 w-4.5 text-white" />
         </div>
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900">Ask AI About Your Resume</h3>
-          <p className="text-xs text-gray-500">Answers are grounded only in your uploaded resume</p>
+        <div className="min-w-0 flex-1">
+          <h3 className="text-sm font-bold text-white">Resume AI Assistant</h3>
+          <p className="text-xs text-white/40">Answers are grounded only in your uploaded resume</p>
         </div>
+        <span className="flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-glow-400">
+          <span className="h-1.5 w-1.5 rounded-full bg-glow-400" />
+          Live
+        </span>
       </div>
 
-      <div ref={scrollRef} className="px-6 py-4 space-y-4 max-h-96 overflow-y-auto">
+      <div ref={scrollRef} className="max-h-96 space-y-4 overflow-y-auto px-6 py-5">
         {messages.length === 0 ? (
           <div>
-            <p className="text-sm text-gray-500 mb-3">
+            <p className="mb-3 text-sm text-midnight-400">
               {disabled
                 ? 'Analyze a resume above to unlock the AI assistant.'
                 : 'Try asking one of these:'}
@@ -165,7 +169,7 @@ const ResumeChat = ({ sessionId }) => {
                   <button
                     key={q}
                     onClick={() => sendQuestion(q)}
-                    className="text-xs px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+                    className="rounded-full bg-brand-50 px-3 py-1.5 text-xs font-medium text-brand-700 transition-colors hover:bg-brand-100"
                   >
                     {q}
                   </button>
@@ -183,7 +187,7 @@ const ResumeChat = ({ sessionId }) => {
         {loading && <TypingIndicator />}
       </div>
 
-      <div className="px-6 py-4 border-t border-gray-100">
+      <div className="border-t border-midnight-100 bg-surface-50/60 px-6 py-4">
         <div className="flex items-end gap-3">
           <textarea
             rows={1}
@@ -193,15 +197,15 @@ const ResumeChat = ({ sessionId }) => {
             disabled={disabled}
             placeholder={
               disabled
-                ? 'Analyze a resume to start chatting...'
-                : 'Ask anything about your uploaded resume...'
+                ? 'Analyze a resume to start chatting…'
+                : 'Ask anything about your uploaded resume…'
             }
-            className="flex-1 resize-none px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed text-sm"
+            className="form-input flex-1 resize-none disabled:cursor-not-allowed disabled:bg-midnight-50"
           />
           <button
             onClick={() => sendQuestion(input)}
             disabled={disabled || loading || !input.trim()}
-            className="bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 flex-shrink-0"
+            className="btn-primary flex-shrink-0 !px-5 !py-2.5"
           >
             <Send className="h-4 w-4" />
             Ask

@@ -9,7 +9,7 @@ const GlassCard = ({ children, className = '', onClick, as = 'div', ...props }) 
       onClick={onClick}
       whileHover={{ y: -8, scale: 1.02 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      className={`group relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 hover:border-white/40 transition-shadow duration-300 ${className}`}
+      className={`group relative bg-white/[0.06] backdrop-blur-xl border border-white/10 rounded-2xl shadow-card hover:shadow-glow hover:border-white/20 transition-shadow duration-300 ${className}`}
       {...props}
     >
       {children}

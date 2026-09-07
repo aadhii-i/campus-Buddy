@@ -1,6 +1,6 @@
 import React from 'react'
 
-const LogoTile = ({ icon: Icon, label, gradient = 'from-blue-500 to-purple-600', size = 'md' }) => {
+const LogoTile = ({ icon: Icon, label, gradient = 'from-brand-500 to-brand-700', size = 'md' }) => {
   const sizes = {
     sm: 'w-10 h-10 rounded-lg',
     md: 'w-14 h-14 rounded-xl',
@@ -13,7 +13,7 @@ const LogoTile = ({ icon: Icon, label, gradient = 'from-blue-500 to-purple-600',
     : ''
 
   return (
-    <div className={`flex items-center justify-center bg-gradient-to-br ${gradient} ${sizes[size]} shadow-md shrink-0`}>
+    <div className={`flex items-center justify-center bg-gradient-to-br ${gradient} ${sizes[size]} shadow-soft ring-1 ring-inset ring-white/15 shrink-0`}>
       {Icon ? (
         <Icon className={`${iconSizes[size]} text-white`} />
       ) : (

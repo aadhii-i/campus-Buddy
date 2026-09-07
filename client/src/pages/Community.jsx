@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Plus, Heart, MessageCircle, Share2, User, Calendar, Tag } from 'lucide-react';
-import { communityService } from '../services/communityService';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Heart, MessageCircle, Share2, Calendar, Tag, X, Users } from 'lucide-react';
+import { PageHeader, LoadingState, EmptyState } from '../components/common';
+
+const CATEGORY_STYLES = {
+  general: 'bg-midnight-100 text-midnight-600',
+  study: 'bg-brand-50 text-brand-700',
+  events: 'bg-emerald-50 text-emerald-700',
+  'lost-found': 'bg-amber-50 text-amber-700',
+  announcements: 'bg-violet-50 text-violet-700',
+};
 
 const Community = () => {
   const [posts, setPosts] = useState([]);
@@ -81,7 +89,7 @@ const Community = () => {
         comments: 0,
         isLiked: false
       };
-      
+
       setPosts([newPostData, ...posts]);
       setShowModal(false);
       setNewPost({
@@ -96,10 +104,10 @@ const Community = () => {
   };
 
   const handleLike = (postId) => {
-    setPosts(posts.map(post => 
-      post._id === postId 
-        ? { 
-            ...post, 
+    setPosts(posts.map(post =>
+      post._id === postId
+        ? {
+            ...post,
             isLiked: !post.isLiked,
             likes: post.isLiked ? post.likes - 1 : post.likes + 1
           }
@@ -107,106 +115,87 @@ const Community = () => {
     ));
   };
 
-  const filteredPosts = posts.filter(post => 
+  const filteredPosts = posts.filter(post =>
     filter === 'all' || post.category === filter
   );
 
-  const getCategoryColor = (category) => {
-    const colors = {
-      general: 'bg-gray-100 text-gray-800',
-      study: 'bg-blue-100 text-blue-800',
-      events: 'bg-green-100 text-green-800',
-      'lost-found': 'bg-yellow-100 text-yellow-800',
-      announcements: 'bg-purple-100 text-purple-800'
-    };
-    return colors[category] || colors.general;
-  };
+  const getCategoryStyle = (category) => CATEGORY_STYLES[category] || CATEGORY_STYLES.general;
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Community</h1>
-          <p className="text-lg text-gray-600">
-            Connect with your fellow students, share experiences, and stay updated
-          </p>
-        </div>
-
-        {/* Filters and Create Post */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="flex flex-wrap gap-2">
-              {['all', 'general', 'study', 'events', 'lost-found', 'announcements'].map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setFilter(category)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    filter === category
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  {category.charAt(0).toUpperCase() + category.slice(1).replace('-', ' ')}
-                </button>
-              ))}
-            </div>
-            <button
-              onClick={() => setShowModal(true)}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-            >
-              <Plus className="h-5 w-5" />
-              New Post
+    <div className="min-h-screen bg-surface-50 pb-20 pt-28">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <PageHeader
+          eyebrow="Campus community"
+          title="Where campus conversations happen"
+          description="Study groups, announcements, and everything students are talking about right now."
+          actions={
+            <button onClick={() => setShowModal(true)} className="btn-primary flex-shrink-0">
+              <Plus className="h-4 w-4" />
+              New post
             </button>
-          </div>
+          }
+        />
+
+        {/* Category navigation */}
+        <div className="surface-panel mt-8 flex flex-wrap gap-2 p-4">
+          {['all', 'general', 'study', 'events', 'lost-found', 'announcements'].map((category) => (
+            <button
+              key={category}
+              onClick={() => setFilter(category)}
+              className={`rounded-full px-4 py-2 text-sm font-medium capitalize transition-colors ${
+                filter === category
+                  ? 'bg-brand-600 text-white'
+                  : 'bg-midnight-100 text-midnight-600 hover:bg-midnight-200'
+              }`}
+            >
+              {category.replace('-', ' ')}
+            </button>
+          ))}
         </div>
 
         {/* Posts */}
         {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="text-gray-600 mt-4">Loading posts...</p>
+          <LoadingState label="Loading posts…" />
+        ) : filteredPosts.length === 0 ? (
+          <div className="mt-4">
+            <EmptyState icon={Users} title="Nothing here yet" description="No posts found in this category — be the first to start a conversation." />
           </div>
         ) : (
-          <div className="space-y-6">
-            {filteredPosts.map((post) => (
+          <div className="mt-8 space-y-5">
+            {filteredPosts.map((post, index) => (
               <motion.div
                 key={post._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
+                transition={{ delay: index * 0.05 }}
+                className="surface-panel p-6"
               >
                 {/* Post Header */}
-                <div className="flex items-start justify-between mb-4">
+                <div className="mb-4 flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                      <User className="h-5 w-5 text-white" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-sm font-semibold text-white">
+                      {post.author.name.charAt(0)}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{post.author.name}</h3>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <Calendar className="h-4 w-4" />
+                      <h3 className="font-semibold text-midnight-900">{post.author.name}</h3>
+                      <div className="flex items-center gap-1.5 text-xs text-midnight-400">
+                        <Calendar className="h-3.5 w-3.5" />
                         <span>{new Date(post.createdAt).toLocaleDateString()}</span>
                       </div>
                     </div>
                   </div>
-                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${getCategoryColor(post.category)}`}>
+                  <span className={`rounded-full px-3 py-1 text-[11px] font-semibold capitalize ${getCategoryStyle(post.category)}`}>
                     {post.category.replace('-', ' ')}
                   </span>
                 </div>
 
-                {/* Post Content */}
-                <h2 className="text-xl font-semibold text-gray-900 mb-3">{post.title}</h2>
-                <p className="text-gray-600 mb-4 leading-relaxed">{post.content}</p>
+                <h2 className="mb-2 text-lg font-bold text-midnight-900">{post.title}</h2>
+                <p className="mb-4 leading-relaxed text-midnight-600">{post.content}</p>
 
-                {/* Tags */}
                 {post.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="mb-4 flex flex-wrap gap-1.5">
                     {post.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full"
-                      >
+                      <span key={index} className="inline-flex items-center gap-1 rounded-full bg-midnight-50 px-2.5 py-1 text-xs text-midnight-500">
                         <Tag className="h-3 w-3" />
                         {tag}
                       </span>
@@ -214,86 +203,87 @@ const Community = () => {
                   </div>
                 )}
 
-                {/* Post Actions */}
-                <div className="flex items-center gap-6 pt-4 border-t border-gray-200">
+                <div className="flex items-center gap-2 border-t border-midnight-100 pt-4">
                   <button
                     onClick={() => handleLike(post._id)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+                    className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                       post.isLiked
-                        ? 'text-red-600 bg-red-50 hover:bg-red-100'
-                        : 'text-gray-600 hover:bg-gray-100'
+                        ? 'bg-rose-50 text-rose-600 hover:bg-rose-100'
+                        : 'text-midnight-500 hover:bg-midnight-50'
                     }`}
                   >
-                    <Heart className={`h-5 w-5 ${post.isLiked ? 'fill-current' : ''}`} />
-                    <span>{post.likes}</span>
+                    <Heart className={`h-4 w-4 ${post.isLiked ? 'fill-current' : ''}`} />
+                    {post.likes}
                   </button>
-                  
-                  <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
-                    <MessageCircle className="h-5 w-5" />
-                    <span>{post.comments}</span>
+
+                  <button className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-midnight-500 transition-colors hover:bg-midnight-50">
+                    <MessageCircle className="h-4 w-4" />
+                    {post.comments}
                   </button>
-                  
-                  <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
-                    <Share2 className="h-5 w-5" />
-                    <span>Share</span>
+
+                  <button className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-midnight-500 transition-colors hover:bg-midnight-50">
+                    <Share2 className="h-4 w-4" />
+                    Share
                   </button>
                 </div>
               </motion.div>
             ))}
           </div>
         )}
-
-        {filteredPosts.length === 0 && !loading && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No posts found in this category.</p>
-          </div>
-        )}
       </div>
 
       {/* Create Post Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <AnimatePresence>
+        {showModal && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-midnight-950/60 p-4 backdrop-blur-sm"
+            onClick={() => setShowModal(false)}
           >
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Create New Post</h3>
-              
-              <form onSubmit={handleSubmit} className="space-y-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              onClick={(e) => e.stopPropagation()}
+              className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white shadow-card-hover"
+            >
+              <div className="flex items-center justify-between border-b border-midnight-100 px-6 py-4">
+                <h3 className="text-lg font-bold text-midnight-900">Create a post</h3>
+                <button onClick={() => setShowModal(false)} className="rounded-full p-1.5 text-midnight-400 hover:bg-midnight-100">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4 p-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Title
-                  </label>
+                  <label className="form-label">Title</label>
                   <input
                     type="text"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="form-input"
                     value={newPost.title}
                     onChange={(e) => setNewPost({...newPost, title: e.target.value})}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Content
-                  </label>
+                  <label className="form-label">Content</label>
                   <textarea
                     required
                     rows={5}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="form-textarea"
                     value={newPost.content}
                     onChange={(e) => setNewPost({...newPost, content: e.target.value})}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Category
-                  </label>
+                  <label className="form-label">Category</label>
                   <select
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="form-select"
                     value={newPost.category}
                     onChange={(e) => setNewPost({...newPost, category: e.target.value})}
                   >
@@ -305,26 +295,19 @@ const Community = () => {
                   </select>
                 </div>
 
-                <div className="flex gap-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="flex-1 px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
-                  >
+                <div className="flex gap-3 pt-2">
+                  <button type="button" onClick={() => setShowModal(false)} className="btn-secondary flex-1">
                     Cancel
                   </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  >
+                  <button type="submit" className="btn-primary flex-1">
                     Post
                   </button>
                 </div>
               </form>
-            </div>
+            </motion.div>
           </motion.div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
 };

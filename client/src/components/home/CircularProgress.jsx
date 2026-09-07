@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 
-const CircularProgress = ({ percentage, size = 140, strokeWidth = 10, color = '#3b82f6', trackColor = '#e2e8f0', children }) => {
+const CircularProgress = ({ percentage, size = 140, strokeWidth = 10, color = '#6c53f0', trackColor = '#e4e6f0', children }) => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-50px' })
   const radius = (size - strokeWidth) / 2

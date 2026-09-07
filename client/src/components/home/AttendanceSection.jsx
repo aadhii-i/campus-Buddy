@@ -49,8 +49,8 @@ const AttendanceCard = ({ subject, index }) => {
           <span className="font-medium text-gray-800">{projected}%</span>
         </div>
         <div className="flex items-center justify-between text-gray-500 pt-2 border-t border-gray-100">
-          <span className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-blue-500" /> Safe Leaves Left</span>
-          <span className="font-semibold text-blue-600">{safeLeaves}</span>
+          <span className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-brand-500" /> Safe Leaves Left</span>
+          <span className="font-semibold text-brand-600">{safeLeaves}</span>
         </div>
       </div>
     </motion.div>

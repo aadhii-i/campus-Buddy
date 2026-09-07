@@ -7,7 +7,7 @@ import SectionHeading from './SectionHeading'
 
 const TAG_STYLES = {
   trending: { label: 'Trending', icon: TrendingUp, className: 'bg-orange-100 text-orange-700' },
-  announcement: { label: 'Announcement', icon: Megaphone, className: 'bg-blue-100 text-blue-700' },
+  announcement: { label: 'Announcement', icon: Megaphone, className: 'bg-brand-50 text-brand-700' },
   post: { label: 'Post', icon: null, className: 'bg-gray-100 text-gray-600' }
 }
 
@@ -37,7 +37,7 @@ const CommunityFeedSection = () => {
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white text-sm font-bold">
                       {post.initials}
                     </div>
                     <span className="font-semibold text-gray-900 text-sm">{post.author}</span>
@@ -61,7 +61,7 @@ const CommunityFeedSection = () => {
         <div className="text-center mt-10">
           <Link
             to="/community"
-            className="inline-flex items-center justify-center bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors duration-300"
+            className="inline-flex items-center justify-center bg-brand-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-brand-700 transition-colors duration-300"
           >
             View Community
           </Link>

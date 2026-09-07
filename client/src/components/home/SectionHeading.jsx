@@ -11,15 +11,15 @@ const SectionHeading = ({ eyebrow, title, subtitle, light = false }) => {
       className="text-center mb-16"
     >
       {eyebrow && (
-        <span className={`inline-block text-sm font-semibold tracking-wide uppercase mb-3 ${light ? 'text-yellow-300' : 'text-blue-600'}`}>
+        <span className={`eyebrow mb-3 ${light ? '!text-glow-400' : ''}`}>
           {eyebrow}
         </span>
       )}
-      <h2 className={`text-4xl font-bold mb-4 ${light ? 'text-white' : 'text-gray-900'}`}>
+      <h2 className={`text-display text-3xl sm:text-4xl mb-4 ${light ? 'text-white' : 'text-midnight-900'}`}>
         {title}
       </h2>
       {subtitle && (
-        <p className={`text-xl max-w-3xl mx-auto ${light ? 'text-blue-100' : 'text-gray-600'}`}>
+        <p className={`text-lg max-w-3xl mx-auto ${light ? 'text-white/65' : 'text-midnight-500'}`}>
           {subtitle}
         </p>
       )}

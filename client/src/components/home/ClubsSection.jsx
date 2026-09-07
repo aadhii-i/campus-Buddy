@@ -24,17 +24,17 @@ const ClubCard = ({ club, index }) => {
         <Link to={`/clubs/${club.slug}`} className="flex-1 flex flex-col">
           <div className="flex items-start justify-between mb-4">
             <LogoTile icon={Icon} label={club.name} gradient={club.logoColor} />
-            <span className="text-xs font-medium text-blue-100 bg-white/10 px-2 py-1 rounded-full">
+            <span className="text-xs font-medium text-white/70 bg-white/10 px-2 py-1 rounded-full">
               {club.category}
             </span>
           </div>
 
           <h3 className="text-xl font-semibold text-white mb-2">{club.name}</h3>
-          <p className="text-blue-100/80 text-sm mb-4 leading-relaxed line-clamp-2">
+          <p className="text-white/60 text-sm mb-4 leading-relaxed line-clamp-2">
             {club.description}
           </p>
 
-          <div className="mt-auto space-y-2 text-sm text-blue-100/90 border-t border-white/10 pt-4">
+          <div className="mt-auto space-y-2 text-sm text-white/70 border-t border-white/10 pt-4">
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               <span><AnimatedCounter value={club.membersCount} /> members</span>
@@ -56,7 +56,7 @@ const ClubCard = ({ club, index }) => {
 
         <Link
           to={`/clubs/${club.slug}`}
-          className="mt-4 inline-flex items-center justify-center gap-2 bg-white text-blue-700 rounded-full py-2.5 font-semibold text-sm hover:bg-blue-50 transition-all duration-300 group-hover:gap-3"
+          className="mt-4 inline-flex items-center justify-center gap-2 bg-white text-brand-700 rounded-full py-2.5 font-semibold text-sm hover:bg-brand-50 transition-all duration-300 group-hover:gap-3"
         >
           Join Club
           <ArrowRight className="w-4 h-4" />
@@ -78,7 +78,7 @@ const ClubsSection = () => {
   }, [])
 
   return (
-    <section className="relative py-20 bg-gradient-to-br from-blue-700 via-indigo-800 to-purple-900 overflow-hidden">
+    <section className="relative py-20 bg-gradient-to-br from-midnight-800 via-brand-900 to-midnight-950 overflow-hidden">
       <FloatingBlobs />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading

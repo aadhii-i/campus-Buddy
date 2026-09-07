@@ -50,9 +50,16 @@ api.interceptors.response.use(
     const AUTH_ENDPOINTS = ['/auth/login', '/auth/register', '/auth/google', '/auth/forgot-password', '/auth/reset-password']
     const isAuthRequest = AUTH_ENDPOINTS.some((path) => originalRequest?.url?.includes(path))
 
+    // Resume Analyzer / Resume Chat calls are long-running (PDF parse + Gemini)
+    // and carry their own generous per-request timeout. They must NOT be
+    // silently replayed on a network error / timeout: a retry doubles an
+    // already-long wait and can double-trigger a heavy AI call. Let the error
+    // go straight to the call site, which shows one specific message.
+    const isResumeRequest = originalRequest?.url?.includes('/resume/')
+
     // Handle network errors with retry (skip the retry for auth submits — a
-    // login should not be silently replayed).
-    if (!error.response && !originalRequest._retry && !isAuthRequest) {
+    // login should not be silently replayed — and for resume calls, see above).
+    if (!error.response && !originalRequest._retry && !isAuthRequest && !isResumeRequest) {
       originalRequest._retry = true
       try {
         return await api.request(originalRequest)
@@ -70,8 +77,8 @@ api.interceptors.response.use(
 
     // Resume Analyzer / Resume Chat calls (marked `silent`) own ALL of their
     // error messaging at the call site so the user sees exactly one clear
-    // message. The one exception is a 401 (not logged in) — handled just below
-    // with its own prompt — since the call site can't re-open the login modal.
+    // message. The one exception is a 401 — handled just below, the same way
+    // as every other endpoint: the stored session is dead and must be cleared.
     const isResumeApi = originalRequest?.url?.includes('/resume/')
     if (isResumeApi && error.response && error.response.status !== 401) {
       return Promise.reject(error)
@@ -79,19 +86,22 @@ api.interceptors.response.use(
 
     // Handle different status codes
     if (error.response?.status === 401) {
-      // Only force logout if not an event creation or a resume call (both are
-      // allowed to fail quietly without booting the user out of the page).
+      // A 401 from any protected endpoint (Resume Analyzer included) means the
+      // stored token is no longer valid — expired, or revoked server-side.
+      // Clear it so the app's auth state (navbar, ProtectedRoute, anything
+      // reading useAuth()) matches the backend's verdict instead of staying on
+      // a stale "logged in" state, then send the user to log in again.
+      // Event creation is the one exception: it has a local/offline fallback
+      // and must not boot the user out of the page.
       const isEventCreate = originalRequest?.url?.includes('/events') && originalRequest?.method === 'post';
-      if (!isEventCreate && !isResumeApi) {
+      if (isEventCreate) {
+        toast.error('Not authorized to create event. Using local fallback.')
+      } else {
         localStorage.removeItem('token')
         localStorage.removeItem('refreshToken')
         localStorage.removeItem('user')
         window.location.href = '/'
         toast.error('Session expired. Please log in again.')
-      } else if (isResumeApi) {
-        toast.error('Please log in to use the Resume Analyzer.')
-      } else {
-        toast.error('Not authorized to create event. Using local fallback.')
       }
     } else if (error.response?.status === 403) {
       toast.error('Access denied.')
@@ -216,28 +226,40 @@ export const apiService = {
   // `silent: true` — the Resume Analyzer / Resume Chat show ONE specific error
   // (from the response body) at the call site, so the global interceptor must
   // not also fire a generic "Server error" / "Network error" toast.
+  // The instance-wide `timeout: 15000` is fine for normal CRUD but far too
+  // short for the AI flow: an analysis is a full-resume Gemini call behind a
+  // possibly cold-started Render dyno and legitimately takes 20-60s+. Each of
+  // these overrides the timeout so the browser waits for Express's real
+  // answer (Express itself caps the AI hop at AI_SERVICE_TIMEOUT_MS=120s)
+  // instead of aborting early and showing a misleading "cannot reach server".
   resume: {
     // Runs the real, role-aware AI analysis against a resume already
-    // indexed via chatUpload() (sessionId links the two calls together)
+    // saved via chatUpload() (sessionId links the two calls together)
     analyze: (sessionId, targetRole) =>
-      api.post('/resume/analyze', { sessionId, targetRole }, { silent: true }),
+      api.post('/resume/analyze', { sessionId, targetRole }, { silent: true, timeout: 150000 }),
     getAnalysis: (id) => api.get(`/resume/analysis/${id}`),
     getRecommendations: (id) => api.get(`/resume/recommendations/${id}`),
     getUserAnalyses: () => api.get('/resume/user-analyses'),
-    aiHealth: () => api.get('/resume/ai-health', { silent: true }),
+    aiHealth: () => api.get('/resume/ai-health', { silent: true, timeout: 30000 }),
+    geminiHealth: () => api.get('/resume/gemini-health', { silent: true, timeout: 60000 }),
 
-    // RAG chat: index the uploaded resume, then ask questions about it
-    chatUpload: (resumeFile, sessionId) => {
+    // Save + (optionally) index the uploaded resume.
+    //   index=false (Resume Analyzer): just save the PDF so /analyze can parse
+    //     it — cheap, reliable on a small dyno.
+    //   index=true  (chat-first callers): also build the FAISS chat index now.
+    chatUpload: (resumeFile, sessionId, { index = true } = {}) => {
       const formData = new FormData()
       formData.append('resume', resumeFile)
       if (sessionId) formData.append('sessionId', sessionId)
+      formData.append('index', String(index))
       return api.post('/resume/chat/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
-        silent: true
+        silent: true,
+        timeout: index ? 120000 : 60000
       })
     },
     chatAsk: (sessionId, question) =>
-      api.post('/resume/chat', { sessionId, question }, { silent: true })
+      api.post('/resume/chat', { sessionId, question }, { silent: true, timeout: 120000 })
   }
 }
 

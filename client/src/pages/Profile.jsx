@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, MapPin, Calendar, Edit3, Save, X, Camera, Award, BookOpen, Briefcase } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Edit3, Save, X, Camera, Award, BookOpen, Briefcase } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { EmptyState } from '../components/common';
 
 const DEPARTMENT_LABELS = {
   CSE: 'Computer Science', ECE: 'Electronics', ME: 'Mechanical',
   CE: 'Civil', EE: 'Electrical', IT: 'Information Technology', OTHER: 'Other'
 };
+
+const TABS = [
+  { id: 'overview', label: 'Overview', icon: User },
+  { id: 'academic', label: 'Academic', icon: BookOpen },
+  { id: 'achievements', label: 'Achievements', icon: Award },
+  { id: 'experience', label: 'Experience', icon: Briefcase }
+];
 
 const ordinalYear = (year) => {
   const n = Number(year);
@@ -108,26 +116,29 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-surface-50 pb-20 pt-28">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         {/* Profile Header */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
-          <div className="h-32 bg-gradient-to-r from-blue-500 to-purple-600"></div>
+        <div className="surface-panel mb-6 overflow-hidden">
+          <div className="relative h-32 overflow-hidden bg-midnight-950">
+            <div className="pointer-events-none absolute inset-0 bg-mesh-dark" />
+            <div className="pointer-events-none absolute inset-0 bg-noise" />
+          </div>
           <div className="relative px-6 pb-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 -mt-16">
+            <div className="-mt-16 flex flex-col items-start gap-4 sm:flex-row sm:items-end">
               {/* Avatar */}
               <div className="relative">
-                <div className="w-32 h-32 bg-white rounded-full p-2 shadow-lg">
-                  <div className="w-full h-full bg-blue-600 rounded-full flex items-center justify-center">
+                <div className="h-32 w-32 rounded-full bg-white p-1.5 shadow-card-hover">
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600">
                     {profile.avatar ? (
-                      <img src={profile.avatar} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                      <img src={profile.avatar} alt="Profile" className="h-full w-full rounded-full object-cover" />
                     ) : (
                       <User className="h-16 w-16 text-white" />
                     )}
                   </div>
                 </div>
                 {isEditing && (
-                  <button className="absolute bottom-2 right-2 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors">
+                  <button className="absolute bottom-1 right-1 rounded-full bg-brand-600 p-2 text-white transition-colors hover:bg-brand-700">
                     <Camera className="h-4 w-4" />
                   </button>
                 )}
@@ -141,19 +152,19 @@ const Profile = () => {
                       type="text"
                       value={editForm.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
-                      className="text-2xl font-bold bg-transparent border-b-2 border-blue-600 focus:outline-none"
+                      className="text-display border-b-2 border-brand-500 bg-transparent text-2xl focus:outline-none"
                     />
                     <textarea
                       value={editForm.bio}
                       onChange={(e) => handleInputChange('bio', e.target.value)}
-                      className="w-full p-2 border border-gray-300 rounded-lg resize-none"
+                      className="form-textarea"
                       rows={2}
                     />
                   </div>
                 ) : (
                   <div>
-                    <h1 className="text-2xl font-bold text-gray-900">{profile.name}</h1>
-                    <p className="text-gray-600 mt-1">{profile.bio}</p>
+                    <h1 className="text-display text-2xl text-midnight-900">{profile.name}</h1>
+                    <p className="mt-1 text-midnight-500">{profile.bio}</p>
                   </div>
                 )}
               </div>
@@ -162,28 +173,19 @@ const Profile = () => {
               <div className="flex gap-2">
                 {isEditing ? (
                   <>
-                    <button
-                      onClick={handleSave}
-                      className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                    >
+                    <button onClick={handleSave} className="btn-primary !bg-emerald-600 hover:!bg-emerald-700">
                       <Save className="h-4 w-4" />
                       Save
                     </button>
-                    <button
-                      onClick={handleCancel}
-                      className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                    >
+                    <button onClick={handleCancel} className="btn-secondary">
                       <X className="h-4 w-4" />
                       Cancel
                     </button>
                   </>
                 ) : (
-                  <button
-                    onClick={handleEdit}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  >
+                  <button onClick={handleEdit} className="btn-primary">
                     <Edit3 className="h-4 w-4" />
-                    Edit Profile
+                    Edit profile
                   </button>
                 )}
               </div>
@@ -192,26 +194,22 @@ const Profile = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="bg-white rounded-lg shadow-sm mb-8">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
-              {[
-                { id: 'overview', label: 'Overview', icon: User },
-                { id: 'academic', label: 'Academic', icon: BookOpen },
-                { id: 'achievements', label: 'Achievements', icon: Award },
-                { id: 'experience', label: 'Experience', icon: Briefcase }
-              ].map(({ id, label, icon: Icon }) => (
+        <div className="surface-panel">
+          <div className="border-b border-midnight-100">
+            <nav className="flex gap-1 overflow-x-auto px-4">
+              {TABS.map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
                   onClick={() => setActiveTab(id)}
-                  className={`flex items-center gap-2 py-4 border-b-2 font-medium text-sm ${
-                    activeTab === id
-                      ? 'border-blue-600 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  className={`relative flex flex-shrink-0 items-center gap-2 px-4 py-4 text-sm font-medium transition-colors ${
+                    activeTab === id ? 'text-brand-700' : 'text-midnight-400 hover:text-midnight-700'
                   }`}
                 >
                   <Icon className="h-4 w-4" />
                   {label}
+                  {activeTab === id && (
+                    <motion.span layoutId="profile-tab-underline" className="absolute inset-x-0 -bottom-px h-0.5 bg-brand-600" />
+                  )}
                 </button>
               ))}
             </nav>
@@ -221,53 +219,53 @@ const Profile = () => {
             {/* Overview Tab */}
             {activeTab === 'overview' && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                   {/* Contact Information */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
-                    
+                    <h3 className="text-base font-semibold text-midnight-900">Contact information</h3>
+
                     {isEditing ? (
                       <div className="space-y-3">
                         <div className="flex items-center gap-3">
-                          <Mail className="h-5 w-5 text-gray-400" />
+                          <Mail className="h-4.5 w-4.5 flex-shrink-0 text-midnight-400" />
                           <input
                             type="email"
                             value={editForm.email}
                             onChange={(e) => handleInputChange('email', e.target.value)}
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="form-input flex-1"
                           />
                         </div>
                         <div className="flex items-center gap-3">
-                          <Phone className="h-5 w-5 text-gray-400" />
+                          <Phone className="h-4.5 w-4.5 flex-shrink-0 text-midnight-400" />
                           <input
                             type="tel"
                             value={editForm.phone}
                             onChange={(e) => handleInputChange('phone', e.target.value)}
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="form-input flex-1"
                           />
                         </div>
                         <div className="flex items-center gap-3">
-                          <MapPin className="h-5 w-5 text-gray-400" />
+                          <MapPin className="h-4.5 w-4.5 flex-shrink-0 text-midnight-400" />
                           <input
                             type="text"
                             value={editForm.location}
                             onChange={(e) => handleInputChange('location', e.target.value)}
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="form-input flex-1"
                           />
                         </div>
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        <div className="flex items-center gap-3 text-gray-600">
-                          <Mail className="h-5 w-5" />
+                        <div className="flex items-center gap-3 text-midnight-600">
+                          <Mail className="h-4.5 w-4.5 text-midnight-400" />
                           <span>{profile.email}</span>
                         </div>
-                        <div className="flex items-center gap-3 text-gray-600">
-                          <Phone className="h-5 w-5" />
+                        <div className="flex items-center gap-3 text-midnight-600">
+                          <Phone className="h-4.5 w-4.5 text-midnight-400" />
                           <span>{profile.phone}</span>
                         </div>
-                        <div className="flex items-center gap-3 text-gray-600">
-                          <MapPin className="h-5 w-5" />
+                        <div className="flex items-center gap-3 text-midnight-600">
+                          <MapPin className="h-4.5 w-4.5 text-midnight-400" />
                           <span>{profile.location}</span>
                         </div>
                       </div>
@@ -276,8 +274,8 @@ const Profile = () => {
 
                   {/* Academic Information */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Academic Information</h3>
-                    
+                    <h3 className="text-base font-semibold text-midnight-900">Academic information</h3>
+
                     {isEditing ? (
                       <div className="space-y-3">
                         <input
@@ -285,28 +283,28 @@ const Profile = () => {
                           placeholder="Roll Number"
                           value={editForm.rollNumber}
                           onChange={(e) => handleInputChange('rollNumber', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="form-input"
                         />
                         <input
                           type="text"
                           placeholder="Branch"
                           value={editForm.branch}
                           onChange={(e) => handleInputChange('branch', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="form-input"
                         />
                         <input
                           type="text"
                           placeholder="Year"
                           value={editForm.year}
                           onChange={(e) => handleInputChange('year', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="form-input"
                         />
                       </div>
                     ) : (
-                      <div className="space-y-2">
-                        <p><span className="font-medium">Roll Number:</span> {profile.rollNumber}</p>
-                        <p><span className="font-medium">Branch:</span> {profile.branch}</p>
-                        <p><span className="font-medium">Year:</span> {profile.year}</p>
+                      <div className="space-y-2 text-sm text-midnight-600">
+                        <p><span className="font-medium text-midnight-900">Roll number:</span> {profile.rollNumber}</p>
+                        <p><span className="font-medium text-midnight-900">Branch:</span> {profile.branch}</p>
+                        <p><span className="font-medium text-midnight-900">Year:</span> {profile.year}</p>
                       </div>
                     )}
                   </div>
@@ -314,42 +312,38 @@ const Profile = () => {
 
                 {/* Skills */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Skills</h3>
-                  <div className="flex flex-wrap gap-2 mb-3">
+                  <h3 className="mb-4 text-base font-semibold text-midnight-900">Skills</h3>
+                  <div className="mb-3 flex flex-wrap gap-2">
                     {(isEditing ? editForm.skills : profile.skills).map((skill, index) => (
                       <span
                         key={index}
-                        className={`px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm ${
-                          isEditing ? 'flex items-center gap-2' : ''
+                        className={`rounded-full bg-brand-50 px-3 py-1 text-sm font-medium text-brand-700 ${
+                          isEditing ? 'flex items-center gap-1.5' : ''
                         }`}
                       >
                         {skill}
                         {isEditing && (
-                          <button
-                            onClick={() => removeSkill(skill)}
-                            className="text-blue-600 hover:text-blue-800"
-                          >
+                          <button onClick={() => removeSkill(skill)} className="text-brand-500 hover:text-brand-800">
                             <X className="h-3 w-3" />
                           </button>
                         )}
                       </span>
                     ))}
                   </div>
-                  
+
                   {isEditing && (
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="Add a skill"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
-                            addSkill(e.target.value);
-                            e.target.value = '';
-                          }
-                        }}
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      placeholder="Add a skill and press Enter"
+                      className="form-input"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          addSkill(e.target.value);
+                          e.target.value = '';
+                        }
+                      }}
+                    />
                   )}
                 </div>
               </div>
@@ -358,14 +352,14 @@ const Profile = () => {
             {/* Academic Tab */}
             {activeTab === 'academic' && (
               <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-gray-900">Current Courses</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <h3 className="text-base font-semibold text-midnight-900">Current courses</h3>
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                   {profile.courses.map((course, index) => (
-                    <div key={index} className="p-4 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <BookOpen className="h-5 w-5 text-blue-600" />
-                        <span className="font-medium">{course}</span>
+                    <div key={index} className="flex items-center gap-3 rounded-xl border border-midnight-100 bg-white p-4">
+                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+                        <BookOpen className="h-4 w-4" />
                       </div>
+                      <span className="font-medium text-midnight-800">{course}</span>
                     </div>
                   ))}
                 </div>
@@ -375,12 +369,12 @@ const Profile = () => {
             {/* Achievements Tab */}
             {activeTab === 'achievements' && (
               <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-gray-900">Achievements & Awards</h3>
-                <div className="space-y-4">
+                <h3 className="text-base font-semibold text-midnight-900">Achievements &amp; awards</h3>
+                <div className="space-y-3">
                   {profile.achievements.map((achievement, index) => (
-                    <div key={index} className="flex items-start gap-3 p-4 bg-yellow-50 rounded-lg">
-                      <Award className="h-5 w-5 text-yellow-600 mt-0.5" />
-                      <span>{achievement}</span>
+                    <div key={index} className="flex items-start gap-3 rounded-xl border border-amber-100 bg-amber-50/60 p-4">
+                      <Award className="mt-0.5 h-4.5 w-4.5 flex-shrink-0 text-amber-600" />
+                      <span className="text-sm text-amber-900">{achievement}</span>
                     </div>
                   ))}
                 </div>
@@ -390,12 +384,12 @@ const Profile = () => {
             {/* Experience Tab */}
             {activeTab === 'experience' && (
               <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-gray-900">Experience & Projects</h3>
-                <div className="text-center py-12 text-gray-500">
-                  <Briefcase className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                  <p>No experience added yet.</p>
-                  <p className="text-sm">Add your internships, projects, and work experience here.</p>
-                </div>
+                <h3 className="text-base font-semibold text-midnight-900">Experience &amp; projects</h3>
+                <EmptyState
+                  icon={Briefcase}
+                  title="No experience added yet"
+                  description="Add your internships, projects, and work experience here."
+                />
               </div>
             )}
           </div>

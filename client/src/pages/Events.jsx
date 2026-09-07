@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react'
-import { Calendar, MapPin, Users, Clock, Filter, Plus, Search } from 'lucide-react'
+import { Calendar, MapPin, Users, Clock, Plus, Search, X, ArrowUpRight } from 'lucide-react'
 import { eventService } from '../services/eventService'
 import { useAuth } from '../context/AuthContext'
 import EventCard from '../components/EventCard'
 import CreateEventModal from '../components/CreateEventModal'
+import { PageHeader, EmptyState } from '../components/common'
 import { motion } from 'framer-motion'
+
+const CATEGORIES = [
+  'academic', 'cultural', 'sports', 'technical',
+  'workshop', 'seminar', 'competition', 'social', 'career'
+]
 
 const Events = () => {
   const [events, setEvents] = useState([])
@@ -15,19 +21,7 @@ const Events = () => {
     search: ''
   })
   const [showCreateModal, setShowCreateModal] = useState(false)
-  const { user, isAuthenticated } = useAuth()
-
-  const categories = [
-    'academic',
-    'cultural',
-    'sports',
-    'technical',
-    'workshop',
-    'seminar',
-    'competition',
-    'social',
-    'career'
-  ]
+  const { user } = useAuth()
 
   useEffect(() => {
     fetchEvents()
@@ -53,20 +47,22 @@ const Events = () => {
     setFilters({ category: '', date: '', search: '' })
   }
 
+  const hasActiveFilters = filters.search || filters.category || filters.date
+  const [featured, ...rest] = events
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="min-h-screen bg-surface-50 pt-28">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="mb-3 h-8 w-1/3 rounded bg-midnight-100"></div>
+            <div className="mb-8 h-4 w-1/2 rounded bg-midnight-100"></div>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="bg-white rounded-lg shadow p-6">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2 mb-4"></div>
-                  <div className="h-32 bg-gray-200 rounded mb-4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-full"></div>
+                <div key={i} className="rounded-2xl border border-midnight-100 bg-white p-6">
+                  <div className="mb-4 h-32 rounded-xl bg-midnight-100"></div>
+                  <div className="mb-2 h-4 w-3/4 rounded bg-midnight-100"></div>
+                  <div className="h-3 w-1/2 rounded bg-midnight-100"></div>
                 </div>
               ))}
             </div>
@@ -77,118 +73,132 @@ const Events = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
-        >
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Campus Events</h1>
-              <p className="text-gray-600">Discover and join exciting events happening on campus</p>
-            </div>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="mt-4 md:mt-0 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 flex items-center"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Create Event
-            </button>
-          </div>
+    <div className="min-h-screen bg-surface-50 pb-20 pt-28">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <PageHeader
+            eyebrow="Campus events"
+            title="Discover what's happening on campus"
+            description="Workshops, competitions, socials, and everything in between — curated in one live feed."
+            actions={
+              <button onClick={() => setShowCreateModal(true)} className="btn-primary flex-shrink-0">
+                <Plus className="h-4 w-4" />
+                Create event
+              </button>
+            }
+          />
 
           {/* Filters */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <div className="surface-panel mt-8 p-5">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center">
+              <div className="relative flex-1">
+                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
                 <input
                   type="text"
-                  placeholder="Search events..."
+                  placeholder="Search events…"
                   value={filters.search}
                   onChange={(e) => handleFilterChange('search', e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-input pl-10"
                 />
               </div>
-
-              {/* Category Filter */}
-              <select
-                value={filters.category}
-                onChange={(e) => handleFilterChange('category', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">All Categories</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>
-                    {category.charAt(0).toUpperCase() + category.slice(1)}
-                  </option>
-                ))}
-              </select>
-
-              {/* Date Filter */}
               <input
                 type="date"
                 value={filters.date}
                 onChange={(e) => handleFilterChange('date', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input md:w-44"
               />
+              {hasActiveFilters && (
+                <button onClick={clearFilters} className="flex flex-shrink-0 items-center gap-1.5 text-sm font-medium text-midnight-500 hover:text-brand-700">
+                  <X className="h-3.5 w-3.5" /> Clear
+                </button>
+              )}
+            </div>
 
-              {/* Clear Filters */}
+            {/* Category pills */}
+            <div className="mt-4 flex flex-wrap gap-2 border-t border-midnight-100 pt-4">
               <button
-                onClick={clearFilters}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                onClick={() => handleFilterChange('category', '')}
+                className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
+                  !filters.category ? 'bg-brand-600 text-white' : 'bg-midnight-100 text-midnight-600 hover:bg-midnight-200'
+                }`}
               >
-                Clear Filters
+                All
               </button>
+              {CATEGORIES.map(category => (
+                <button
+                  key={category}
+                  onClick={() => handleFilterChange('category', category)}
+                  className={`rounded-full px-3.5 py-1.5 text-sm font-medium capitalize transition-colors ${
+                    filters.category === category ? 'bg-brand-600 text-white' : 'bg-midnight-100 text-midnight-600 hover:bg-midnight-200'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
             </div>
           </div>
         </motion.div>
 
-  {/* Events Grid */}
         {events.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-12"
-          >
-            <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-medium text-gray-900 mb-2">No events found</h3>
-            <p className="text-gray-600 mb-6">
-              {filters.search || filters.category || filters.date
-                ? 'Try adjusting your filters to see more events.'
-                : 'No events are currently available.'}
-            </p>
-            {user && (
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200"
-              >
-                Create the First Event
-              </button>
-            )}
-          </motion.div>
+          <div className="mt-10">
+            <EmptyState
+              icon={Calendar}
+              title="No events found"
+              description={hasActiveFilters ? 'Try adjusting your filters to see more events.' : 'No events are currently available.'}
+              actionLabel={user ? 'Create the first event' : undefined}
+              onAction={user ? () => setShowCreateModal(true) : undefined}
+            />
+          </div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {events.map((event, index) => (
-              <motion.div
-                key={event._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <EventCard event={event} user={user} onUpdate={fetchEvents} />
+          <div className="mt-10 space-y-10">
+            {/* Featured event — the top match gets a distinct, larger treatment */}
+            {featured && !hasActiveFilters && (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="group relative overflow-hidden rounded-3xl bg-midnight-950 text-white shadow-card-hover">
+                <div className="pointer-events-none absolute inset-0 bg-mesh-dark" />
+                <div className="pointer-events-none absolute inset-0 bg-noise" />
+                <div className="relative grid grid-cols-1 gap-8 p-8 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center">
+                  <div>
+                    <span className="eyebrow !text-glow-400">Featured event</span>
+                    <h2 className="text-display mt-3 text-2xl leading-tight sm:text-3xl">{featured.title}</h2>
+                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/60 line-clamp-2">{featured.description}</p>
+                    <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/70">
+                      <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4 text-glow-400" /> {new Date(featured.date).toLocaleDateString(undefined, { dateStyle: 'medium' })}</span>
+                      <span className="flex items-center gap-1.5"><Clock className="h-4 w-4 text-glow-400" /> {featured.time}</span>
+                      <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4 text-glow-400" /> {featured.location}</span>
+                      {featured.maxAttendees && (
+                        <span className="flex items-center gap-1.5"><Users className="h-4 w-4 text-glow-400" /> {featured.currentAttendees || 0}/{featured.maxAttendees}</span>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => { window.location.href = `/events/${featured._id}` }}
+                    className="flex flex-shrink-0 items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-midnight-900 transition-transform duration-200 group-hover:-translate-y-0.5"
+                  >
+                    View event <ArrowUpRight className="h-4 w-4" />
+                  </button>
+                </div>
               </motion.div>
-            ))}
-          </motion.div>
+            )}
+
+            {/* Remaining events grid */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.15 }}
+              className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+            >
+              {(featured && !hasActiveFilters ? rest : events).map((event, index) => (
+                <motion.div
+                  key={event._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.06 }}
+                >
+                  <EventCard event={event} user={user} onUpdate={fetchEvents} />
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
         )}
 
         {showCreateModal && (

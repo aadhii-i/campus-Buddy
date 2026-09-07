@@ -17,7 +17,7 @@ import './App.css'
 function App() {
   return (
     <AuthProvider>
-      <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="min-h-screen flex flex-col bg-surface-50 font-sans text-midnight-800">
         <Navbar />
         
         <main className="flex-grow">
@@ -35,7 +35,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/resume-analyzer" element={<ResumeAnalyzer />} />
+            <Route
+              path="/resume-analyzer"
+              element={
+                <ProtectedRoute>
+                  <ResumeAnalyzer />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/clubs/:slug" element={<ClubDetails />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

@@ -1,7 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Building, MapPin, ExternalLink, Filter, Search, Bookmark, Plus } from 'lucide-react';
+import { Calendar, Building, MapPin, ExternalLink, Search, Bookmark, Plus, Briefcase } from 'lucide-react';
 import CreatePlacementModal from '../components/CreatePlacementModal';
+import LogoTile from '../components/home/LogoTile';
+import { PageHeader, Stat, LoadingState, EmptyState } from '../components/common';
+
+const STATUS_STYLES = {
+  open: 'bg-emerald-50 text-emerald-700',
+  closed: 'bg-rose-50 text-rose-700',
+};
+
+const CATEGORY_STYLES = {
+  software: 'bg-brand-50 text-brand-700',
+  data: 'bg-violet-50 text-violet-700',
+  management: 'bg-amber-50 text-amber-700',
+  devops: 'bg-glow-500/10 text-glow-600',
+};
+
+const CATEGORY_GRADIENT = {
+  software: 'from-brand-500 to-brand-700',
+  data: 'from-violet-500 to-violet-700',
+  management: 'from-amber-500 to-amber-700',
+  devops: 'from-glow-500 to-glow-600',
+};
 
 const PlacementNews = () => {
   const [placements, setPlacements] = useState([]);
@@ -84,21 +105,8 @@ const PlacementNews = () => {
     }
   };
 
-  const getStatusColor = (status) => {
-    return status === 'open' 
-      ? 'bg-green-100 text-green-800' 
-      : 'bg-red-100 text-red-800';
-  };
-
-  const getCategoryColor = (category) => {
-    const colors = {
-      software: 'bg-blue-100 text-blue-800',
-      data: 'bg-purple-100 text-purple-800',
-      management: 'bg-orange-100 text-orange-800',
-      devops: 'bg-cyan-100 text-cyan-800'
-    };
-    return colors[category] || 'bg-gray-100 text-gray-800';
-  };
+  const getStatusStyle = (status) => STATUS_STYLES[status] || STATUS_STYLES.closed;
+  const getCategoryStyle = (category) => CATEGORY_STYLES[category] || 'bg-midnight-100 text-midnight-600';
 
   const isDeadlineApproaching = (deadline) => {
     const deadlineDate = new Date(deadline);
@@ -114,63 +122,58 @@ const PlacementNews = () => {
                          placement.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCompany = filterCompany === 'all' || placement.company === filterCompany;
     const matchesStatus = filterStatus === 'all' || placement.status === filterStatus;
-    
+
     return matchesSearch && matchesCompany && matchesStatus;
   });
 
   const companies = [...new Set(placements.map(p => p.company))];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-          <div className="text-left">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Placement Opportunities</h1>
-            <p className="text-lg text-gray-600">
-              Stay updated with the latest job opportunities and placement news
-            </p>
-          </div>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white shadow hover:bg-blue-700 transition-colors"
-          >
-            <Plus className="mr-2 h-5 w-5" />
-            Post Opportunity
-          </button>
+    <div className="min-h-screen bg-surface-50 pb-20 pt-28">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <PageHeader
+          eyebrow="Placement hub"
+          title="Your next opportunity, curated"
+          description="Live openings from companies visiting campus — package, deadlines, and requirements at a glance."
+          actions={
+            <button onClick={() => setShowCreateModal(true)} className="btn-primary flex-shrink-0">
+              <Plus className="h-4 w-4" />
+              Post opportunity
+            </button>
+          }
+        />
+
+        {/* Stats strip */}
+        <div className="surface-panel mt-8 grid grid-cols-2 gap-6 p-6 sm:grid-cols-4">
+          <Stat icon={Briefcase} value={placements.filter(p => p.status === 'open').length} label="Active openings" />
+          <Stat icon={Building} value={companies.length} label="Companies hiring" />
+          <Stat icon={Calendar} value={placements.filter(p => isDeadlineApproaching(p.deadline)).length} label="Urgent deadlines" />
+          <Stat icon={ExternalLink} value="₹25L+" label="Avg. package" />
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="surface-panel mt-6 p-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="relative">
-              <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
               <input
                 type="text"
-                placeholder="Search opportunities..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Search opportunities…"
+                className="form-input pl-10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
-            <select
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={filterCompany}
-              onChange={(e) => setFilterCompany(e.target.value)}
-            >
-              <option value="all">All Companies</option>
+
+            <select className="form-select" value={filterCompany} onChange={(e) => setFilterCompany(e.target.value)}>
+              <option value="all">All companies</option>
               {companies.map(company => (
                 <option key={company} value={company}>{company}</option>
               ))}
             </select>
-            
-            <select
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-            >
-              <option value="all">All Status</option>
+
+            <select className="form-select" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+              <option value="all">All status</option>
               <option value="open">Open</option>
               <option value="closed">Closed</option>
             </select>
@@ -179,94 +182,92 @@ const PlacementNews = () => {
 
         {/* Placements Grid */}
         {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="text-gray-600 mt-4">Loading opportunities...</p>
+          <LoadingState label="Loading opportunities…" />
+        ) : filteredPlacements.length === 0 ? (
+          <div className="mt-4">
+            <EmptyState
+              icon={Briefcase}
+              title="No opportunities found"
+              description="No placement opportunities match your criteria."
+              actionLabel="Post the first opportunity"
+              onAction={() => setShowCreateModal(true)}
+            />
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {filteredPlacements.map((placement) => (
+          <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {filteredPlacements.map((placement, index) => (
               <motion.div
                 key={placement._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+                transition={{ delay: index * 0.06 }}
+                className="surface-panel p-6"
               >
-                <div className="p-6">
-                  {/* Header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{placement.title}</h3>
-                      <div className="flex items-center gap-2 text-gray-600 mb-2">
-                        <Building className="h-4 w-4" />
+                <div className="mb-4 flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3.5">
+                    <LogoTile label={placement.company} gradient={CATEGORY_GRADIENT[placement.category] || 'from-brand-500 to-brand-700'} size="md" />
+                    <div>
+                      <h3 className="mb-1 font-bold leading-snug text-midnight-900">{placement.title}</h3>
+                      <div className="mb-1 flex items-center gap-1.5 text-sm text-midnight-600">
+                        <Building className="h-3.5 w-3.5" />
                         <span className="font-medium">{placement.company}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-gray-500 text-sm">
-                        <MapPin className="h-4 w-4" />
+                      <div className="flex items-center gap-1.5 text-xs text-midnight-400">
+                        <MapPin className="h-3.5 w-3.5" />
                         <span>{placement.location}</span>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(placement.status)}`}>
-                        {placement.status === 'open' ? 'Open' : 'Closed'}
-                      </span>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getCategoryColor(placement.category)}`}>
-                        {placement.category}
-                      </span>
-                    </div>
+                  </div>
+                  <div className="flex flex-shrink-0 flex-col items-end gap-1.5">
+                    <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${getStatusStyle(placement.status)}`}>
+                      {placement.status === 'open' ? 'Open' : 'Closed'}
+                    </span>
+                    <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ${getCategoryStyle(placement.category)}`}>
+                      {placement.category}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mb-4 flex items-center justify-between rounded-xl bg-midnight-50 p-3.5">
+                  <div>
+                    <p className="text-xs text-midnight-500">Package</p>
+                    <p className="font-bold text-emerald-600">{placement.package}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-midnight-500">Type</p>
+                    <p className="font-semibold text-midnight-900">{placement.type}</p>
+                  </div>
+                </div>
+
+                <p className="mb-4 line-clamp-2 text-sm text-midnight-500">{placement.description}</p>
+
+                <div className="mb-4 flex flex-wrap gap-1.5">
+                  {placement.requirements.slice(0, 3).map((req, index) => (
+                    <span key={index} className="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700">
+                      {req}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between border-t border-midnight-100 pt-4">
+                  <div className="flex items-center gap-3 text-xs text-midnight-500">
+                    <span className="flex items-center gap-1">
+                      <Calendar className="h-3.5 w-3.5" />
+                      {new Date(placement.deadline).toLocaleDateString()}
+                    </span>
+                    {isDeadlineApproaching(placement.deadline) && (
+                      <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-semibold text-rose-700">Urgent</span>
+                    )}
                   </div>
 
-                  {/* Package and Type */}
-                  <div className="flex items-center justify-between mb-4 p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="text-sm text-gray-600">Package</p>
-                      <p className="font-semibold text-green-600">{placement.package}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Type</p>
-                      <p className="font-semibold text-gray-900">{placement.type}</p>
-                    </div>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-gray-600 mb-4 line-clamp-3">{placement.description}</p>
-
-                  {/* Requirements */}
-                  <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">Requirements:</h4>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      {placement.requirements.slice(0, 3).map((req, index) => (
-                        <li key={index} className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
-                          {req}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Footer */}
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        <span>Deadline: {new Date(placement.deadline).toLocaleDateString()}</span>
-                      </div>
-                      {isDeadlineApproaching(placement.deadline) && (
-                        <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
-                          Urgent
-                        </span>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <button className="p-2 text-gray-400 hover:text-blue-600 transition-colors">
-                        <Bookmark className="h-4 w-4" />
-                      </button>
-                      <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                        <ExternalLink className="h-4 w-4" />
-                        Apply
-                      </button>
-                    </div>
+                  <div className="flex items-center gap-1.5">
+                    <button aria-label="Bookmark" className="rounded-full p-2 text-midnight-400 transition-colors hover:bg-midnight-50 hover:text-brand-600">
+                      <Bookmark className="h-4 w-4" />
+                    </button>
+                    <button className="flex items-center gap-1.5 rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-700">
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Apply
+                    </button>
                   </div>
                 </div>
               </motion.div>
@@ -274,46 +275,6 @@ const PlacementNews = () => {
           </div>
         )}
 
-        {filteredPlacements.length === 0 && !loading && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No placement opportunities found matching your criteria.</p>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="mt-6 rounded-lg bg-blue-600 px-6 py-3 text-white font-medium hover:bg-blue-700 transition-colors"
-            >
-              Post First Opportunity
-            </button>
-          </div>
-        )}
-
-  {/* Statistics Section */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-            <div className="text-2xl font-bold text-blue-600 mb-2">
-              {placements.filter(p => p.status === 'open').length}
-            </div>
-            <div className="text-gray-600">Active Openings</div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-            <div className="text-2xl font-bold text-green-600 mb-2">
-              {companies.length}
-            </div>
-            <div className="text-gray-600">Companies</div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-            <div className="text-2xl font-bold text-purple-600 mb-2">
-              {placements.filter(p => isDeadlineApproaching(p.deadline)).length}
-            </div>
-            <div className="text-gray-600">Urgent Deadlines</div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-            <div className="text-2xl font-bold text-orange-600 mb-2">₹25L+</div>
-            <div className="text-gray-600">Avg. Package</div>
-          </div>
-        </div>
         {showCreateModal && (
           <CreatePlacementModal
             onClose={() => setShowCreateModal(false)}

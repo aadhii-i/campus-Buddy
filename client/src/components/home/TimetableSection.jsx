@@ -62,20 +62,20 @@ const TimetableSection = () => {
                 {activeDay === day && (
                   <motion.div
                     layoutId="active-day-pill"
-                    className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"
+                    className="absolute inset-0 bg-gradient-to-r from-brand-500 to-brand-700 rounded-full"
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   />
                 )}
                 <span className="relative z-10">
                   {day.slice(0, 3)}
-                  {day === todayName && <span className="ml-1 text-yellow-300">•</span>}
+                  {day === todayName && <span className="ml-1 text-glow-400">•</span>}
                 </span>
               </button>
             ))}
           </div>
 
           {nextClass && (
-            <div className="mb-6 text-center text-sm text-blue-700 bg-blue-50 border border-blue-100 rounded-full py-2 px-4 inline-flex items-center gap-2 mx-auto">
+            <div className="mb-6 text-center text-sm text-brand-700 bg-brand-50 border border-brand-100 rounded-full py-2 px-4 inline-flex items-center gap-2 mx-auto">
               <Clock className="w-4 h-4" />
               Up next: <span className="font-semibold">{nextClass.subject}</span> at {nextClass.time.split(' - ')[0]}
             </div>

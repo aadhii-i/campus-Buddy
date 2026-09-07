@@ -11,6 +11,7 @@ import { clubService } from '../services/clubService'
 import { useAuth } from '../context/AuthContext'
 import LogoTile from '../components/home/LogoTile'
 import AnimatedCounter from '../components/home/AnimatedCounter'
+import { LoadingState } from '../components/common'
 
 const ClubDetails = () => {
   const { slug } = useParams()
@@ -56,18 +57,18 @@ const ClubDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-gray-400">Loading club...</div>
+      <div className="flex min-h-screen items-center justify-center bg-surface-50 pt-20">
+        <LoadingState label="Loading club…" />
       </div>
     )
   }
 
   if (!club) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-center px-4">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Club not found</h2>
-        <p className="text-gray-600 mb-6">The club you're looking for doesn't exist.</p>
-        <Link to="/" className="text-blue-600 font-semibold hover:underline">Back to Home</Link>
+      <div className="flex min-h-screen flex-col items-center justify-center bg-surface-50 px-4 pt-20 text-center">
+        <h2 className="text-display mb-2 text-2xl text-midnight-900">Club not found</h2>
+        <p className="mb-6 text-midnight-500">The club you're looking for doesn't exist.</p>
+        <Link to="/" className="font-semibold text-brand-600 hover:underline">Back to home</Link>
       </div>
     )
   }
@@ -75,76 +76,77 @@ const ClubDetails = () => {
   const Icon = Icons[club.logoIcon] || Users
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-surface-50">
       {/* Hero */}
-      <div className={`relative bg-gradient-to-br ${club.logoColor} overflow-hidden`}>
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
-          <Link to="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-8 text-sm font-medium">
-            <ArrowLeft className="w-4 h-4" /> Back to Home
+      <div className={`relative overflow-hidden bg-gradient-to-br ${club.logoColor}`}>
+        <div className="absolute inset-0 bg-black/25" />
+        <div className="pointer-events-none absolute inset-0 bg-noise" />
+        <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-28 sm:px-6 lg:px-8">
+          <Link to="/" className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-white/80 hover:text-white">
+            <ArrowLeft className="h-4 w-4" /> Back to home
           </Link>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col sm:flex-row items-start sm:items-center gap-6"
+            className="flex flex-col items-start gap-6 sm:flex-row sm:items-center"
           >
             <LogoTile icon={Icon} label={club.name} gradient="from-white/30 to-white/10" size="lg" />
             <div>
-              <span className="text-white/80 text-sm font-medium uppercase tracking-wide">{club.category}</span>
-              <h1 className="text-4xl sm:text-5xl font-bold text-white mt-1 mb-3">{club.name}</h1>
-              <p className="text-white/90 text-lg max-w-2xl">{club.description}</p>
+              <span className="text-sm font-medium uppercase tracking-wide text-white/80">{club.category}</span>
+              <h1 className="text-display mb-3 mt-1 text-4xl text-white sm:text-5xl">{club.name}</h1>
+              <p className="max-w-2xl text-lg text-white/90">{club.description}</p>
             </div>
           </motion.div>
 
-          <div className="mt-10 flex flex-wrap gap-4">
+          <div className="mt-10 flex flex-wrap gap-3">
             <button
               onClick={handleJoin}
               disabled={joining}
-              className="inline-flex items-center gap-2 bg-white text-gray-900 px-6 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors duration-300 disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-midnight-900 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-50 disabled:opacity-60"
             >
-              <UserPlus className="w-5 h-5" />
-              {joining ? 'Joining...' : 'Join Club'}
+              <UserPlus className="h-4.5 w-4.5" />
+              {joining ? 'Joining…' : 'Join club'}
             </button>
             {club.recruitmentOpen && (
               <button
                 onClick={handleRegisterRecruitment}
                 disabled={registering}
-                className="inline-flex items-center gap-2 border-2 border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-gray-900 transition-colors duration-300 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-full border border-white/70 px-6 py-3 font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-midnight-900 disabled:opacity-60"
               >
-                <ClipboardCheck className="w-5 h-5" />
-                {registering ? 'Registering...' : 'Register for Recruitment'}
+                <ClipboardCheck className="h-4.5 w-4.5" />
+                {registering ? 'Registering…' : 'Register for recruitment'}
               </button>
             )}
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-4 py-16 sm:px-6 lg:grid-cols-3 lg:px-8">
         {/* Main content */}
-        <div className="lg:col-span-2 space-y-12">
+        <div className="space-y-12 lg:col-span-2">
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-blue-600" /> About the Club
+            <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold text-midnight-900">
+              <Sparkles className="h-5 w-5 text-brand-600" /> About the club
             </h2>
-            <p className="text-gray-600 leading-relaxed">{club.about}</p>
+            <p className="leading-relaxed text-midnight-600">{club.about}</p>
           </section>
 
           {club.vision && (
             <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Target className="w-6 h-6 text-blue-600" /> Vision
+              <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold text-midnight-900">
+                <Target className="h-5 w-5 text-brand-600" /> Vision
               </h2>
-              <p className="text-gray-600 leading-relaxed">{club.vision}</p>
+              <p className="leading-relaxed text-midnight-600">{club.vision}</p>
             </section>
           )}
 
           {club.activities?.length > 0 && (
             <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Activities</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <h2 className="mb-4 text-2xl font-bold text-midnight-900">Activities</h2>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {club.activities.map((activity) => (
-                  <div key={activity} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-gray-700 font-medium">
+                  <div key={activity} className="rounded-xl border border-midnight-100 bg-white p-4 font-medium text-midnight-700 shadow-soft">
                     {activity}
                   </div>
                 ))}
@@ -154,12 +156,12 @@ const ClubDetails = () => {
 
           {club.gallery?.length > 0 && (
             <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Gallery</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <h2 className="mb-4 text-2xl font-bold text-midnight-900">Gallery</h2>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                 {club.gallery.map((item, i) => (
                   <div
                     key={i}
-                    className={`aspect-square rounded-xl bg-gradient-to-br ${club.logoColor} flex items-end p-3 text-white text-sm font-medium shadow-md`}
+                    className={`flex aspect-square items-end rounded-xl bg-gradient-to-br ${club.logoColor} p-3 text-sm font-medium text-white shadow-card`}
                   >
                     {item.caption}
                   </div>
@@ -170,13 +172,13 @@ const ClubDetails = () => {
 
           {club.achievements?.length > 0 && (
             <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Trophy className="w-6 h-6 text-yellow-500" /> Achievements
+              <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold text-midnight-900">
+                <Trophy className="h-5 w-5 text-amber-500" /> Achievements
               </h2>
-              <ul className="space-y-2">
+              <ul className="space-y-2.5">
                 {club.achievements.map((achievement) => (
-                  <li key={achievement} className="flex items-start gap-2 text-gray-700">
-                    <Trophy className="w-4 h-4 text-yellow-500 mt-1 shrink-0" />
+                  <li key={achievement} className="flex items-start gap-2.5 text-midnight-600">
+                    <Trophy className="mt-1 h-4 w-4 shrink-0 text-amber-500" />
                     {achievement}
                   </li>
                 ))}
@@ -186,52 +188,54 @@ const ClubDetails = () => {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-8">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <div className="flex items-center gap-3 mb-2">
-              <Users className="w-5 h-5 text-blue-600" />
-              <span className="text-2xl font-bold text-gray-900">
+        <div className="space-y-6">
+          <div className="surface-panel p-6">
+            <div className="mb-2 flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+                <Users className="h-4.5 w-4.5" />
+              </div>
+              <span className="text-2xl font-bold text-midnight-900">
                 <AnimatedCounter value={club.membersCount} />
               </span>
             </div>
-            <p className="text-gray-500 text-sm">Active Members</p>
+            <p className="text-sm text-midnight-500">Active members</p>
           </div>
 
           {club.upcomingEvent?.title && (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-blue-600" /> Upcoming Event
+            <div className="surface-panel p-6">
+              <h3 className="mb-3 flex items-center gap-2 font-semibold text-midnight-900">
+                <Calendar className="h-4.5 w-4.5 text-brand-600" /> Upcoming event
               </h3>
-              <p className="text-gray-700 font-medium">{club.upcomingEvent.title}</p>
-              <p className="text-gray-500 text-sm mt-1">
+              <p className="font-medium text-midnight-700">{club.upcomingEvent.title}</p>
+              <p className="mt-1 text-sm text-midnight-400">
                 {new Date(club.upcomingEvent.date).toLocaleDateString(undefined, { dateStyle: 'medium' })}
               </p>
             </div>
           )}
 
           {club.facultyCoordinator?.name && (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="font-semibold text-gray-900 mb-3">Faculty Coordinator</h3>
-              <p className="text-gray-700 font-medium">{club.facultyCoordinator.name}</p>
-              <p className="text-gray-500 text-sm">{club.facultyCoordinator.designation}</p>
+            <div className="surface-panel p-6">
+              <h3 className="mb-3 font-semibold text-midnight-900">Faculty coordinator</h3>
+              <p className="font-medium text-midnight-700">{club.facultyCoordinator.name}</p>
+              <p className="text-sm text-midnight-400">{club.facultyCoordinator.designation}</p>
               {club.facultyCoordinator.email && (
-                <a href={`mailto:${club.facultyCoordinator.email}`} className="mt-2 inline-flex items-center gap-1 text-blue-600 text-sm hover:underline">
-                  <Mail className="w-4 h-4" /> {club.facultyCoordinator.email}
+                <a href={`mailto:${club.facultyCoordinator.email}`} className="mt-2 inline-flex items-center gap-1.5 text-sm text-brand-600 hover:underline">
+                  <Mail className="h-3.5 w-3.5" /> {club.facultyCoordinator.email}
                 </a>
               )}
             </div>
           )}
 
           {club.coreTeam?.length > 0 && (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Core Team</h3>
+            <div className="surface-panel p-6">
+              <h3 className="mb-4 font-semibold text-midnight-900">Core team</h3>
               <div className="space-y-3">
                 {club.coreTeam.map((member) => (
                   <div key={member.name} className="flex items-center gap-3">
                     <LogoTile label={member.name} gradient={club.logoColor} size="sm" />
                     <div>
-                      <p className="font-medium text-gray-900 text-sm">{member.name}</p>
-                      <p className="text-gray-500 text-xs">{member.role} · {member.year}</p>
+                      <p className="text-sm font-medium text-midnight-900">{member.name}</p>
+                      <p className="text-xs text-midnight-400">{member.role} · {member.year}</p>
                     </div>
                   </div>
                 ))}

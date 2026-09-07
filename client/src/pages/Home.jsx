@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Hero from '../components/Hero'
 import FeatureCard from '../components/FeatureCard'
@@ -20,7 +21,7 @@ const Home = () => {
   const [recentEvents, setRecentEvents] = useState([])
   const [recentItems, setRecentItems] = useState([])
   const [loading, setLoading] = useState(true)
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, openLoginModal } = useAuth()
 
   useEffect(() => {
     fetchHomeData()
@@ -131,33 +132,60 @@ const Home = () => {
       {/* Hero Section */}
       <Hero user={user} />
 
-      {/* Features Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Ecosystem Section — asymmetric bento grid, not N identical cards */}
+      <section className="bg-surface-50 py-20 sm:py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="mb-14 max-w-2xl"
           >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Everything You Need for Campus Life
+            <span className="eyebrow">One product, one ecosystem</span>
+            <h2 className="text-display mt-3 text-3xl text-midnight-900 sm:text-4xl">
+              Everything campus life needs, in one place.
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Streamline your campus experience with our comprehensive platform designed 
-              specifically for students, by students.
+            <p className="mt-4 text-lg text-midnight-500">
+              Five tools that used to live in five different apps — now working
+              together as one connected experience.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="lg:col-span-2 lg:row-span-2"
+            >
+              <FeatureCard {...features[4]} variant="spotlight" className="h-full" />
+            </motion.div>
+
+            {features.slice(0, 2).map((feature, index) => (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.08 * (index + 1) }}
+                className="lg:col-span-2"
               >
-                <FeatureCard {...feature} />
+                <FeatureCard {...feature} className="h-full" />
+              </motion.div>
+            ))}
+
+            {features.slice(2, 4).map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.08 * (index + 3) }}
+                className="lg:col-span-2"
+              >
+                <FeatureCard {...feature} variant="compact" className="h-full" />
               </motion.div>
             ))}
           </div>
@@ -177,42 +205,55 @@ const Home = () => {
       <EventsCarouselSection />
 
       {/* Recent Activity Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <section className="bg-white py-20 sm:py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             {/* Recent Events */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.6 }}
+              className="surface-panel p-6 sm:p-8"
             >
-              <div className="flex items-center mb-8">
-                <Calendar className="w-6 h-6 text-blue-600 mr-3" />
-                <h3 className="text-2xl font-bold text-gray-900">Upcoming Events</h3>
+              <div className="mb-6 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+                    <Calendar className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-xl font-bold text-midnight-900">Upcoming events</h3>
+                </div>
+                <Link to="/events" className="text-sm font-semibold text-brand-600 hover:text-brand-700">View all</Link>
               </div>
-              
+
               {loading ? (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="animate-pulse bg-gray-200 h-24 rounded-lg"></div>
+                    <div key={i} className="h-20 animate-pulse rounded-xl bg-midnight-50"></div>
                   ))}
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {(recentEvents || []).length > 0 ? (
                     (recentEvents || []).map((event) => (
-                      <div key={event._id} className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors duration-200">
-                        <h4 className="font-semibold text-gray-900 mb-2">{event.title}</h4>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Clock className="w-4 h-4 mr-2" />
-                          {new Date(event.date).toLocaleDateString()}
+                      <div key={event._id} className="flex items-center gap-4 rounded-xl border border-midnight-100 p-4 transition-colors duration-200 hover:border-brand-200 hover:bg-brand-50/40">
+                        <div className="flex h-11 w-11 flex-shrink-0 flex-col items-center justify-center rounded-lg bg-midnight-900 text-white">
+                          <span className="text-[9px] font-semibold uppercase leading-none text-white/50">{new Date(event.date).toLocaleDateString(undefined, { month: 'short' })}</span>
+                          <span className="text-sm font-bold leading-none">{new Date(event.date).getDate()}</span>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="truncate font-semibold text-midnight-900">{event.title}</h4>
+                          <div className="mt-0.5 flex items-center text-xs text-midnight-400">
+                            <Clock className="mr-1.5 h-3.5 w-3.5" />
+                            {new Date(event.date).toLocaleDateString()}
+                          </div>
                         </div>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                      <p>No upcoming events available</p>
+                    <div className="py-10 text-center text-midnight-400">
+                      <Calendar className="mx-auto mb-3 h-10 w-10 text-midnight-200" />
+                      <p className="text-sm">No upcoming events available</p>
                     </div>
                   )}
                 </div>
@@ -223,39 +264,51 @@ const Home = () => {
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.6 }}
+              className="surface-panel p-6 sm:p-8"
             >
-              <div className="flex items-center mb-8">
-                <Search className="w-6 h-6 text-green-600 mr-3" />
-                <h3 className="text-2xl font-bold text-gray-900">Recent Lost & Found</h3>
+              <div className="mb-6 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                    <Search className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-xl font-bold text-midnight-900">Recent lost &amp; found</h3>
+                </div>
+                <Link to="/lost-found" className="text-sm font-semibold text-brand-600 hover:text-brand-700">View all</Link>
               </div>
-              
+
               {loading ? (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="animate-pulse bg-gray-200 h-24 rounded-lg"></div>
+                    <div key={i} className="h-20 animate-pulse rounded-xl bg-midnight-50"></div>
                   ))}
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {(recentItems || []).length > 0 ? (
                     (recentItems || []).map((item) => (
-                      <div key={item._id} className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors duration-200">
-                        <h4 className="font-semibold text-gray-900 mb-2">{item.title}</h4>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <span className={`px-2 py-1 rounded-full text-xs mr-2 ${
-                            item.type === 'lost' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-                          }`}>
-                            {item.type}
-                          </span>
-                          {item.location}
+                      <div key={item._id} className="flex items-center gap-4 rounded-xl border border-midnight-100 p-4 transition-colors duration-200 hover:border-brand-200 hover:bg-brand-50/40">
+                        <div className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg ${item.type === 'lost' ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                          <Search className="h-4.5 w-4.5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="truncate font-semibold text-midnight-900">{item.title}</h4>
+                          <div className="mt-0.5 flex items-center gap-2 text-xs text-midnight-400">
+                            <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                              item.type === 'lost' ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700'
+                            }`}>
+                              {item.type}
+                            </span>
+                            {item.location}
+                          </div>
                         </div>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      <Search className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                      <p>No lost & found items available</p>
+                    <div className="py-10 text-center text-midnight-400">
+                      <Search className="mx-auto mb-3 h-10 w-10 text-midnight-200" />
+                      <p className="text-sm">No lost &amp; found items available</p>
                     </div>
                   )}
                 </div>
@@ -272,40 +325,43 @@ const Home = () => {
       <AIFeaturesSection />
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="bg-surface-50 py-20 sm:py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="mx-auto mb-14 max-w-xl text-center"
           >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              What Students Say
-            </h2>
-            <p className="text-xl text-gray-600">
-              Hear from our community members about their experience
-            </p>
+            <span className="eyebrow">Word on campus</span>
+            <h2 className="text-display mt-3 text-3xl text-midnight-900 sm:text-4xl">What students say</h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {testimonials.map((testimonial, index) => (
               <motion.div
                 key={testimonial.name}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white rounded-lg p-6 shadow-lg"
+                className="surface-panel flex flex-col p-6"
               >
-                <div className="flex items-center mb-4">
+                <div className="mb-4 flex items-center gap-0.5">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                    <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
                   ))}
                 </div>
-                <p className="text-gray-600 mb-4">"{testimonial.text}"</p>
-                <div>
-                  <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                  <div className="text-sm text-gray-500">{testimonial.role}</div>
+                <p className="flex-1 text-[15px] leading-relaxed text-midnight-600">&ldquo;{testimonial.text}&rdquo;</p>
+                <div className="mt-5 flex items-center gap-3 border-t border-midnight-100 pt-4">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-sm font-semibold text-white">
+                    {testimonial.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-midnight-900">{testimonial.name}</div>
+                    <div className="text-xs text-midnight-400">{testimonial.role}</div>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -323,39 +379,40 @@ const Home = () => {
       <DownloadAppSection />
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="relative overflow-hidden bg-midnight-950 py-20 sm:py-28">
+        <div className="pointer-events-none absolute inset-0 bg-mesh-dark" />
+        <div className="pointer-events-none absolute inset-0 bg-noise" />
+        <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-4xl font-bold text-white mb-4">
-              Ready to Get Started?
+            <span className="eyebrow !text-glow-400">Ready when you are</span>
+            <h2 className="text-display mt-3 text-3xl text-white sm:text-5xl">
+              Your campus is more connected than you think.
             </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of students who are already making the most of their campus experience
+            <p className="mx-auto mt-5 max-w-xl text-lg text-white/60">
+              Join the students already using Campus Buddy to stay on top of events,
+              community, and their next opportunity.
             </p>
-            {!user ? (
-              <button className="bg-white text-blue-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-blue-50 transition-colors duration-300">
-                Sign Up Now
-              </button>
-            ) : (
-              <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                <a
-                  href="/events"
-                  className="bg-white text-blue-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-blue-50 transition-colors duration-300"
-                >
-                  Explore Events
-                </a>
-                <a
-                  href="/community"
-                  className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors duration-300"
-                >
-                  Join Community
-                </a>
-              </div>
-            )}
+            <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              {!user ? (
+                <button onClick={openLoginModal} className="btn-primary !px-7 !py-3.5 !text-base">
+                  Sign up now
+                </button>
+              ) : (
+                <>
+                  <Link to="/events" className="btn-primary !px-7 !py-3.5 !text-base">
+                    Explore events
+                  </Link>
+                  <Link to="/community" className="rounded-full border border-white/20 px-7 py-3.5 text-base font-semibold text-white transition-colors duration-200 hover:bg-white/10">
+                    Join community
+                  </Link>
+                </>
+              )}
+            </div>
           </motion.div>
         </div>
       </section>

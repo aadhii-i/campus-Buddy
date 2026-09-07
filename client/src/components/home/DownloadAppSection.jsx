@@ -17,7 +17,7 @@ const PhoneMockup = ({ delay = 0, floatOffset = 12, className = '' }) => (
       transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay }}
       className="w-48 sm:w-56 aspect-[9/19] rounded-[2.5rem] bg-gray-900 border-4 border-gray-800 shadow-2xl p-2"
     >
-      <div className="w-full h-full rounded-[2rem] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800 overflow-hidden relative flex flex-col p-4">
+      <div className="w-full h-full rounded-[2rem] bg-gradient-to-br from-brand-500 via-brand-700 to-midnight-900 overflow-hidden relative flex flex-col p-4">
         <div className="w-16 h-1.5 bg-black/30 rounded-full mx-auto mb-6"></div>
         <p className="text-white/70 text-xs mb-1">Good morning,</p>
         <p className="text-white font-semibold mb-4">Campus Buddy</p>
@@ -42,7 +42,7 @@ const PhoneMockup = ({ delay = 0, floatOffset = 12, className = '' }) => (
 
 const DownloadAppSection = () => {
   return (
-    <section className="relative py-24 bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900 overflow-hidden">
+    <section className="relative py-24 bg-gradient-to-br from-midnight-950 via-brand-950 to-midnight-900 overflow-hidden">
       <FloatingBlobs />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <motion.div
@@ -52,11 +52,11 @@ const DownloadAppSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center lg:text-left"
         >
-          <span className="inline-block text-sm font-semibold tracking-wide uppercase text-yellow-300 mb-3">
+          <span className="inline-block text-sm font-semibold tracking-wide uppercase text-glow-400 mb-3">
             Take It With You
           </span>
           <h2 className="text-4xl font-bold text-white mb-4">Campus Buddy, Now in Your Pocket</h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-lg mx-auto lg:mx-0">
+          <p className="text-xl text-white/70 mb-8 max-w-lg mx-auto lg:mx-0">
             Get instant timetable alerts, attendance updates, and club notifications — download the app today.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
