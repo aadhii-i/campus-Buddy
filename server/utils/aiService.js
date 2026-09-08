@@ -38,7 +38,7 @@ class AiServiceError extends Error {
     super(message)
     this.name = 'AiServiceError'
     this.status = status
-    this.kind = kind // ai_unavailable | ai_timeout | ai_bad_request | ai_error
+    this.kind = kind // ai_unavailable | ai_timeout | ai_rate_limited | ai_bad_request | ai_error
     this.detail = detail
   }
 }
@@ -104,18 +104,36 @@ async function callAiService(path, { method = 'POST', json, formData, requestId 
   const elapsed = Date.now() - startedAt
 
   if (!response.ok) {
-    const isClientError = response.status >= 400 && response.status < 500
+    // ai/app.py sends `detail` as a plain string for most errors, but as a
+    // structured { code, message } object for the cases the frontend needs
+    // to distinguish (rate limit, timeout) — handle both shapes.
+    const detailObj = data && typeof data.detail === 'object' && data.detail !== null ? data.detail : null
+    const structuredCode = detailObj?.code || null
+    const detailMessage = detailObj?.message || (typeof data.detail === 'string' ? data.detail : null)
+
     console.error(
       `[resume][${requestId}] AI ${response.status} ${method} ${url} (${elapsed}ms): ${JSON.stringify(data).slice(0, 400)}`
     )
+
+    const isClientError = response.status >= 400 && response.status < 500
+    // 429 (rate limited) and 504 (timeout) carry real meaning for the
+    // frontend — pass them through as-is instead of collapsing every
+    // non-4xx failure to a generic 502.
+    const preserveStatus = response.status === 429 || response.status === 504
+
+    let kind = isClientError ? 'ai_bad_request' : 'ai_error'
+    if (structuredCode === 'AI_RATE_LIMITED') kind = 'ai_rate_limited'
+    else if (structuredCode === 'AI_TIMEOUT') kind = 'ai_timeout'
+
     throw new AiServiceError(
-      isClientError
-        ? data.detail || 'The AI service could not process this request.'
-        : 'The AI service failed to complete this request. Please try again shortly.',
+      detailMessage ||
+        (isClientError
+          ? 'The AI service could not process this request.'
+          : 'The AI service failed to complete this request. Please try again shortly.'),
       {
-        status: isClientError ? response.status : 502,
-        kind: isClientError ? 'ai_bad_request' : 'ai_error',
-        detail: data.detail
+        status: preserveStatus ? response.status : isClientError ? response.status : 502,
+        kind,
+        detail: detailMessage
       }
     )
   }

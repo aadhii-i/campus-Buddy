@@ -65,7 +65,7 @@ class RAGEngine:
         self.store.add(chunks, embeddings)
         return len(chunks)
 
-    def answer(self, question: str, top_k: int = TOP_K) -> str:
+    def answer(self, question: str, top_k: int = TOP_K, request_id: str = "") -> str:
         if not self.store.exists():
             log.info("answer: namespace=%s no index yet (empty context)", self.namespace)
             return self.not_found_message
@@ -75,7 +75,7 @@ class RAGEngine:
             log.info("answer: namespace=%s retrieval returned no chunks (empty context)", self.namespace)
             return self.not_found_message
 
-        answer = self.llm.generate_answer(chunks, question)
+        answer = self.llm.generate_answer(chunks, question, request_id=request_id)
         return answer or self.not_found_message
 
     def close(self) -> None:

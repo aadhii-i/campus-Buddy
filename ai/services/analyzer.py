@@ -20,7 +20,7 @@ from google import genai
 from google.genai import types
 
 from config import GEMINI_API_KEY, GEMINI_FALLBACK_MODEL, GEMINI_MODEL, GEMINI_TIMEOUT_MS
-from services.gemini_retry import generate_content_with_retry
+from services.gemini_retry import GeminiRateLimitedError, GeminiTimeoutError, generate_content_with_retry
 from services.roles import get_role_keywords
 
 log = logging.getLogger(__name__)
@@ -110,7 +110,7 @@ class ResumeAnalyzer:
             response_mime_type="application/json",
         )
 
-    def analyze(self, resume_text: str, target_role: str) -> Dict[str, Any]:
+    def analyze(self, resume_text: str, target_role: str, request_id: str = "") -> Dict[str, Any]:
         role_keywords = get_role_keywords(target_role)
         prompt = ANALYSIS_PROMPT_TEMPLATE.format(
             target_role=target_role,
@@ -125,8 +125,14 @@ class ResumeAnalyzer:
                 contents=prompt,
                 config=self._generate_config,
                 fallback_model=GEMINI_FALLBACK_MODEL,
-                log_context="analyze",
+                log_context=f"analyze:{request_id}" if request_id else "analyze",
             )
+        except (GeminiRateLimitedError, GeminiTimeoutError):
+            # Already a specific, categorized error (and already logged with
+            # status/attempt detail in gemini_retry.py) — let it propagate
+            # as-is so app.py can map it to AI_RATE_LIMITED / AI_TIMEOUT
+            # instead of collapsing it into a generic failure.
+            raise
         except Exception as exc:  # google.genai.errors.APIError and transport errors
             # Log the real cause (bad model name, quota, key, network) so Render
             # logs show it instead of a bare 502.

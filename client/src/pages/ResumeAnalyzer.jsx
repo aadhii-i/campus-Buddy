@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import {
@@ -42,6 +42,12 @@ const ResumeAnalyzer = () => {
   const [dragActive, setDragActive] = useState(false);
   const [chatSessionId, setChatSessionId] = useState(null);
   const [expandedRec, setExpandedRec] = useState(0);
+  // Synchronous in-flight guard: `analyzing` state alone has a re-render gap
+  // (a rapid double-click can fire this handler twice before `disabled`
+  // takes effect). A ref updates in the same tick as the click, so the
+  // second invocation — even microseconds later — sees it immediately and
+  // bails out before creating a second upload+analyze request.
+  const analyzeInFlightRef = useRef(false);
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -62,6 +68,12 @@ const ResumeAnalyzer = () => {
 
   const analyzeResume = async () => {
     if (!file || !targetRole) return;
+    // One click = one analysis job. This check+set happens synchronously, in
+    // the same tick as the click — unlike the `analyzing` state (which only
+    // disables the button after a re-render), so a rapid double-click or a
+    // duplicate event firing can never start a second upload+analyze request.
+    if (analyzeInFlightRef.current) return;
+    analyzeInFlightRef.current = true;
 
     setAnalyzing(true);
 
@@ -80,11 +92,11 @@ const ResumeAnalyzer = () => {
       // layer is `silent` for these calls, so this is the only toast — except a
       // 401, which the api interceptor already reports ("please log in").
       const status = error.response?.status;
+      const code = error.response?.data?.code;
       const serverMessage = error.response?.data?.message;
       const requestId = error.response?.data?.requestId;
       console.error(
-        `Resume analysis failed${requestId ? ` [${requestId}]` : ''}:`,
-        status,
+        `Resume analysis failed${requestId ? ` [${requestId}]` : ''}: status=${status} code=${code || 'n/a'}`,
         serverMessage || error.message
       );
 
@@ -92,15 +104,18 @@ const ResumeAnalyzer = () => {
 
       const timedOut = error.code === 'ECONNABORTED' || /timeout/i.test(error.message || '');
 
+      // Never auto-retry here — one clear message, button re-enables below,
+      // the user decides whether to click Analyze again.
       let message = serverMessage;
       if (!message) {
-        if (status === 429) message = 'The server is busy right now. Please wait a minute and try again.';
+        if (status === 429) message = 'AI analysis is temporarily rate limited. Please wait a moment before trying again.';
         else if (timedOut) message = 'The analysis is taking longer than usual (the AI service may be waking up). Please try again in a moment.';
         else if (!error.response) message = 'Cannot reach the server. Check your connection and try again.';
         else message = 'Could not analyze your resume right now. Please try again.';
       }
       toast.error(message);
     } finally {
+      analyzeInFlightRef.current = false;
       setAnalyzing(false);
     }
   };

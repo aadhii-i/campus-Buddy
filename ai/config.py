@@ -47,6 +47,21 @@ GEMINI_FALLBACK_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-3.5-flash")
 # thread indefinitely. Comfortably below Express's AI_SERVICE_TIMEOUT_MS
 # (120s) even across 3 retries + 1 fallback attempt with backoff.
 GEMINI_TIMEOUT_MS = int(os.getenv("GEMINI_TIMEOUT_MS", "20000"))
+# Max TOTAL attempts on the same model for a transient 503 (overload) or a
+# request timeout — these are worth retrying, since the same model is likely
+# to succeed a few seconds later.
+GEMINI_MAX_RETRIES = int(os.getenv("GEMINI_MAX_RETRIES", "3"))
+# Max TOTAL attempts on the same model for a 429/RESOURCE_EXHAUSTED. Default 1
+# (no retry): re-hitting the SAME model within seconds of a rate limit just
+# spends more of the same exhausted quota window and makes it worse. The
+# fallback model (a separate quota bucket) is tried once instead.
+GEMINI_RATE_LIMIT_MAX_RETRIES = int(os.getenv("GEMINI_RATE_LIMIT_MAX_RETRIES", "1"))
+# Base for exponential backoff between same-model retries, in seconds.
+GEMINI_RETRY_BASE_DELAY = float(os.getenv("GEMINI_RETRY_BASE_DELAY", "1.0"))
+# Caps how many Gemini requests this process will have in flight at once
+# (across all users' /analyze and /chat calls), so a burst of traffic can't
+# hammer the provider and trigger the very rate limit this is meant to avoid.
+MAX_GEMINI_CONCURRENCY = int(os.getenv("MAX_GEMINI_CONCURRENCY", "5"))
 
 # --- Server ---
 PORT = int(os.getenv("PORT", "8000"))

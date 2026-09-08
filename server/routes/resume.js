@@ -3,6 +3,7 @@ const crypto = require('crypto')
 const multer = require('multer')
 const { protect } = require('../middleware/auth')
 const { callAiService, AiServiceError, AI_BASE_URL } = require('../utils/aiService')
+const { dedupe, has: hasInflight } = require('../utils/inflightRequests')
 
 const router = express.Router()
 
@@ -77,40 +78,54 @@ router.get('/gemini-health', async (req, res) => {
 // @access  Private
 router.post('/analyze', protect, async (req, res) => {
   const requestId = newRequestId()
+  const { sessionId, targetRole } = req.body
+  const userId = req.user?.id
+
+  if (!sessionId || !targetRole) {
+    return res.status(400).json({
+      success: false,
+      code: 'bad_request',
+      requestId,
+      message: 'sessionId and targetRole are required'
+    })
+  }
+
+  // Scoped to user + resume session + role: one Gemini analysis per logical
+  // "click", even if a frontend race, a retried request, or a second tab
+  // sends the identical request again while the first is still running.
+  // Never shared across users/sessions — a different key gets its own run.
+  const dedupeKey = `analyze:${userId}:${sessionId}:${targetRole}`
+  const isDuplicate = hasInflight(dedupeKey)
+
+  console.log(
+    `[RESUME_ANALYSIS] requestId=${requestId} userId=${userId} role="${targetRole}" resumeId=${sessionId} status=started${isDuplicate ? ' (joining in-flight request)' : ''}`
+  )
+
   try {
-    const { sessionId, targetRole } = req.body
-
-    if (!sessionId || !targetRole) {
-      return res.status(400).json({
-        success: false,
-        code: 'bad_request',
-        requestId,
-        message: 'sessionId and targetRole are required'
+    const data = await dedupe(dedupeKey, async () => {
+      console.log(`[RESUME][${requestId}] calling AI service /analyze`)
+      const result = await callAiService('/analyze', {
+        json: { session_id: sessionId, target_role: targetRole },
+        requestId
       })
-    }
-
-    console.log(
-      `[RESUME][${requestId}] analyze received: user=${req.user?.id} role="${targetRole}" session=${sessionId}`
-    )
-    console.log(`[RESUME][${requestId}] calling AI service /analyze`)
-
-    const data = await callAiService('/analyze', {
-      json: { session_id: sessionId, target_role: targetRole },
-      requestId
+      if (!result || !result.analysis) {
+        throw new AiServiceError('The AI service returned an empty analysis.', {
+          status: 502,
+          kind: 'ai_error'
+        })
+      }
+      return result
     })
 
-    if (!data || !data.analysis) {
-      throw new AiServiceError('The AI service returned an empty analysis.', {
-        status: 502,
-        kind: 'ai_error'
-      })
-    }
-
     console.log(
-      `[RESUME][${requestId}] analysis returned to frontend: overall=${data.analysis.overallScore} ats=${data.analysis.atsScore}`
+      `[RESUME_ANALYSIS] requestId=${requestId} userId=${userId} role="${targetRole}" resumeId=${sessionId} status=success overall=${data.analysis.overallScore} ats=${data.analysis.atsScore}`
     )
     res.json({ success: true, requestId, analysis: data.analysis })
   } catch (error) {
+    const errorCode = error instanceof AiServiceError ? error.kind : 'express_error'
+    console.log(
+      `[RESUME_ANALYSIS] requestId=${requestId} userId=${userId} role="${targetRole}" resumeId=${sessionId} status=failed errorCode=${errorCode}`
+    )
     sendAiError(res, requestId, error, 'Failed to analyze resume. Please try again.')
   }
 })

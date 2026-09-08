@@ -15,6 +15,7 @@ from pydantic import BaseModel
 
 import config
 from services.analyzer import get_resume_analyzer
+from services.gemini_retry import GeminiRateLimitedError, GeminiTimeoutError
 from services.parser import extract_text_from_pdf
 from services.roles import is_valid_role, list_roles
 
@@ -256,23 +257,44 @@ def analyze_resume(payload: AnalyzeRequest):
     try:
         analyzer = get_resume_analyzer()
         log.info("[AI] Gemini request started: session=%s model=%s", payload.session_id, config.GEMINI_MODEL)
-        result = analyzer.analyze(resume_text, payload.target_role)
+        result = analyzer.analyze(resume_text, payload.target_role, request_id=payload.session_id)
         log.info("[AI] Gemini response received: session=%s", payload.session_id)
+    except GeminiRateLimitedError as exc:
+        # 429/RESOURCE_EXHAUSTED on every model tried. Genuinely rate-limited —
+        # do NOT retry again here. A distinct code + status (429, not 502) lets
+        # Express/the frontend show one specific message and skip any retry.
+        log.error("[AI] analyze rate-limited: session=%s %s", payload.session_id, exc)
+        raise HTTPException(
+            status_code=429,
+            detail={
+                "code": "AI_RATE_LIMITED",
+                "message": "AI analysis is temporarily rate limited. Please wait a moment before starting another analysis.",
+            },
+        ) from exc
+    except GeminiTimeoutError as exc:
+        log.error("[AI] analyze timed out: session=%s %s", payload.session_id, exc)
+        raise HTTPException(
+            status_code=504,
+            detail={"code": "AI_TIMEOUT", "message": "The AI analysis took too long to respond. Please try again."},
+        ) from exc
     except RuntimeError as exc:
-        # Missing GEMINI_API_KEY, or the Gemini API call itself failed (bad
-        # model, invalid key, quota, upstream error). The analyzer already
-        # logged the specific cause with the model name.
+        # Missing GEMINI_API_KEY, or the Gemini API call itself failed for a
+        # non-retryable reason (bad model, invalid key, upstream error). The
+        # analyzer already logged the specific cause with the model name.
         log.error("[AI] analyze gemini/config error: session=%s %s", payload.session_id, exc)
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
+        raise HTTPException(status_code=502, detail={"code": "AI_ANALYSIS_FAILED", "message": str(exc)}) from exc
     except ValueError as exc:
         # Model returned something unparseable / empty.
         log.error("[AI] analyze bad LLM response: session=%s %s", payload.session_id, exc)
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
+        raise HTTPException(status_code=502, detail={"code": "AI_ANALYSIS_FAILED", "message": str(exc)}) from exc
     except Exception as exc:  # noqa: BLE001 — clean 502, but keep the real cause visible (req #15)
         log.exception("[AI] analyze unexpected failure: session=%s", payload.session_id)
         raise HTTPException(
             status_code=502,
-            detail=f"Unexpected error during analysis ({type(exc).__name__}): {exc}",
+            detail={
+                "code": "AI_ANALYSIS_FAILED",
+                "message": f"Unexpected error during analysis ({type(exc).__name__}): {exc}",
+            },
         ) from exc
 
     log.info(
@@ -324,16 +346,31 @@ def chat(payload: ChatRequest):  # sync: embedding + Gemini calls block, see /an
             ) from exc
 
     try:
-        answer = engine.answer(payload.question, top_k=config.TOP_K)
+        answer = engine.answer(payload.question, top_k=config.TOP_K, request_id=payload.session_id)
+    except GeminiRateLimitedError as exc:
+        log.error("[CHAT] Gemini rate-limited: session=%s %s", payload.session_id, exc)
+        raise HTTPException(
+            status_code=429,
+            detail={"code": "AI_RATE_LIMITED", "message": "The AI assistant is temporarily rate limited. Please wait a moment and try again."},
+        ) from exc
+    except GeminiTimeoutError as exc:
+        log.error("[CHAT] Gemini timed out: session=%s %s", payload.session_id, exc)
+        raise HTTPException(
+            status_code=504,
+            detail={"code": "AI_TIMEOUT", "message": "The AI assistant took too long to respond. Please try again."},
+        ) from exc
     except RuntimeError as exc:
-        # Gemini call exhausted retries + fallback. The real status
-        # (429/503/auth/model) was already logged in services/gemini_retry.py
+        # Gemini call failed for a non-retryable reason. The real status
+        # (auth/model/etc.) was already logged in services/gemini_retry.py
         # and services/llm.py with the model name attached.
         log.error("[CHAT] Gemini call failed: session=%s %s", payload.session_id, exc)
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise HTTPException(status_code=500, detail={"code": "AI_ANALYSIS_FAILED", "message": str(exc)}) from exc
     except Exception as exc:  # noqa: BLE001 — retrieval / vector-store / parsing failure
         log.exception("[CHAT] unexpected failure (retrieval/vector-store): session=%s", payload.session_id)
-        raise HTTPException(status_code=502, detail="The AI assistant failed to answer. Please try again.") from exc
+        raise HTTPException(
+            status_code=502,
+            detail={"code": "AI_ANALYSIS_FAILED", "message": "The AI assistant failed to answer. Please try again."},
+        ) from exc
 
     return {"success": True, "answer": answer}
 

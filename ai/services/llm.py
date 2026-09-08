@@ -11,7 +11,7 @@ from google import genai
 from google.genai import types
 
 from config import GEMINI_API_KEY, GEMINI_FALLBACK_MODEL, GEMINI_MODEL, GEMINI_TIMEOUT_MS
-from services.gemini_retry import generate_content_with_retry
+from services.gemini_retry import GeminiRateLimitedError, GeminiTimeoutError, generate_content_with_retry
 
 log = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class GeminiClient:
             http_options=types.HttpOptions(timeout=GEMINI_TIMEOUT_MS),
         )
 
-    def generate_answer(self, context_chunks: list[str], question: str) -> str:
+    def generate_answer(self, context_chunks: list[str], question: str, request_id: str = "") -> str:
         context = "\n\n---\n\n".join(context_chunks)
         prompt = SYSTEM_PROMPT_TEMPLATE.format(context=context, question=question)
 
@@ -52,8 +52,10 @@ class GeminiClient:
                 model=GEMINI_MODEL,
                 contents=prompt,
                 fallback_model=GEMINI_FALLBACK_MODEL,
-                log_context="chat",
+                log_context=f"chat:{request_id}" if request_id else "chat",
             )
+        except (GeminiRateLimitedError, GeminiTimeoutError):
+            raise  # already categorized + logged in gemini_retry.py
         except Exception as exc:  # google.genai.errors.APIError and transport errors
             log.error(
                 "Gemini generate_content failed (model=%r): %s: %s",
