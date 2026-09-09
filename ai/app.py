@@ -7,9 +7,10 @@ index and answers questions against that index.
 """
 import logging
 import os
+import time
 import uuid
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -35,6 +36,28 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def log_every_request(request: Request, call_next):
+    """Logs every request this process actually receives — method, path,
+    client, X-Request-Id (set by Express, see server/utils/aiService.js),
+    status, elapsed. This is the definitive way to tell "rejected before
+    reaching the app" (nothing logged here) apart from "the app itself
+    returned an error" (logged here with the real status). Never logs
+    headers/body — no auth tokens, no resume content.
+    """
+    request_id = request.headers.get("x-request-id", "-")
+    started = time.monotonic()
+    response = await call_next(request)
+    elapsed_ms = round((time.monotonic() - started) * 1000)
+    log.info(
+        "[REQ] request_id=%s %s %s client=%s status=%d elapsed=%dms",
+        request_id, request.method, request.url.path,
+        request.client.host if request.client else "-",
+        response.status_code, elapsed_ms,
+    )
+    return response
 
 
 class ChatRequest(BaseModel):
@@ -155,6 +178,7 @@ def _truthy(value: str) -> bool:
 
 @app.post("/upload")
 async def upload_resume(
+    request: Request,
     file: UploadFile = File(...),
     session_id: str = Form(None),
     # The Resume Analyzer only needs the PDF saved so /analyze can re-parse it.
@@ -166,6 +190,17 @@ async def upload_resume(
     # index on demand later if the user actually opens the chat.
     index: str = Form("true"),
 ):
+    # Logged BEFORE any validation/processing — if a request never produces
+    # this line (with the log_every_request middleware line above it also
+    # missing), it was rejected before reaching this process at all (e.g.
+    # Render's edge during a deploy/restart window), not by this handler.
+    log.info(
+        "[UPLOAD] request_id=%s entered handler: content_type=%s content_length=%s",
+        request.headers.get("x-request-id", "-"),
+        file.content_type,
+        request.headers.get("content-length", "-"),
+    )
+
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Only PDF files are supported.")
 
