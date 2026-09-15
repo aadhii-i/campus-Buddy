@@ -13,14 +13,12 @@
 
 **Your campus. One intelligent companion.**
 
-A modern all-in-one platform that brings campus events, clubs, academics,
-placements, lost & found, community, and AI-powered career tools together
-in one connected experience.
+A modern all-in-one platform that brings campus events, clubs, academics, placements, lost & found, community, and AI-powered career tools together in one connected experience.
 
 <br>
 
-[![Live Demo](https://img.shields.io/badge/🌐%20Live%20Demo-Visit%20Campus%20Buddy-6C4FF6?style=for-the-badge)](YOUR_LIVE_DEMO_URL)
-[![GitHub](https://img.shields.io/badge/💻%20GitHub-Repository-181717?style=for-the-badge&logo=github)](YOUR_GITHUB_URL)
+[![🌐 Live Demo](https://img.shields.io/badge/🌐%20Live%20Demo-Visit%20Campus%20Buddy-6C4FF6?style=for-the-badge)](https://campus-buddy-1-aolw.onrender.com/)
+[![💻 GitHub](https://img.shields.io/badge/💻%20GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/aadhii-i/campus-Buddy)
 
 <br>
 <br>
@@ -30,7 +28,9 @@ in one connected experience.
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white)
-![OpenAI](https://img.shields.io/badge/AI-OpenAI-412991?style=flat-square&logo=openai&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![Gemini](https://img.shields.io/badge/AI-Gemini-4285F4?style=flat-square&logo=google&logoColor=white)
 
 </div>
 
