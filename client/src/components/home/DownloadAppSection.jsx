@@ -15,24 +15,24 @@ const PhoneMockup = ({ delay = 0, floatOffset = 12, className = '' }) => (
     <motion.div
       animate={{ y: [0, -floatOffset, 0] }}
       transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay }}
-      className="w-48 sm:w-56 aspect-[9/19] rounded-[2.5rem] bg-gray-900 border-4 border-gray-800 shadow-2xl p-2"
+      className="w-48 sm:w-56 aspect-[9/19] rounded-[2.5rem] bg-midnight-950 border-4 border-midnight-700 shadow-float p-2"
     >
-      <div className="w-full h-full rounded-[2rem] bg-gradient-to-br from-brand-500 via-brand-700 to-midnight-900 overflow-hidden relative flex flex-col p-4">
-        <div className="w-16 h-1.5 bg-black/30 rounded-full mx-auto mb-6"></div>
-        <p className="text-white/70 text-xs mb-1">Good morning,</p>
-        <p className="text-white font-semibold mb-4">Campus Buddy</p>
+      <div className="w-full h-full rounded-[2rem] bg-surface-50 overflow-hidden relative flex flex-col p-4">
+        <div className="w-16 h-1.5 bg-midnight-900/20 rounded-full mx-auto mb-6"></div>
+        <p className="text-midnight-500 text-xs mb-1">Good morning,</p>
+        <p className="text-midnight-900 font-semibold mb-4">Campus Buddy</p>
         <div className="space-y-2">
-          <div className="bg-white/15 rounded-xl p-2.5 flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-white" />
-            <span className="text-white text-[11px]">Next class in 20 min</span>
+          <div className="bg-glow-400 border border-midnight-900/10 rounded-xl p-2.5 flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-midnight-900" />
+            <span className="text-midnight-900 text-[11px] font-medium">Next class in 20 min</span>
           </div>
-          <div className="bg-white/15 rounded-xl p-2.5 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-white" />
-            <span className="text-white text-[11px]">Attendance: 92%</span>
+          <div className="bg-brand-200 rounded-xl p-2.5 flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-midnight-900" />
+            <span className="text-midnight-900 text-[11px] font-medium">Attendance: 92%</span>
           </div>
-          <div className="bg-white/15 rounded-xl p-2.5 flex items-center gap-2">
-            <Bell className="w-4 h-4 text-white" />
-            <span className="text-white text-[11px]">3 new club updates</span>
+          <div className="bg-midnight-900 rounded-xl p-2.5 flex items-center gap-2">
+            <Bell className="w-4 h-4 text-glow-400" />
+            <span className="text-surface-50 text-[11px] font-medium">3 new club updates</span>
           </div>
         </div>
       </div>
@@ -42,7 +42,7 @@ const PhoneMockup = ({ delay = 0, floatOffset = 12, className = '' }) => (
 
 const DownloadAppSection = () => {
   return (
-    <section className="relative py-24 bg-gradient-to-br from-midnight-950 via-brand-950 to-midnight-900 overflow-hidden">
+    <section className="relative py-24 bg-midnight-900 overflow-hidden">
       <FloatingBlobs />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <motion.div
@@ -52,17 +52,17 @@ const DownloadAppSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center lg:text-left"
         >
-          <span className="inline-block text-sm font-semibold tracking-wide uppercase text-glow-400 mb-3">
+          <span className="eyebrow-dark mb-4">
             Take It With You
           </span>
-          <h2 className="text-4xl font-bold text-white mb-4">Campus Buddy, Now in Your Pocket</h2>
-          <p className="text-xl text-white/70 mb-8 max-w-lg mx-auto lg:mx-0">
+          <h2 className="text-4xl font-bold text-surface-50 mb-4">Campus Buddy, Now in Your Pocket</h2>
+          <p className="text-xl text-surface-50/70 mb-8 max-w-lg mx-auto lg:mx-0">
             Get instant timetable alerts, attendance updates, and club notifications — download the app today.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
             <button
               onClick={() => toast('App Store link coming soon!', { icon: '🍎' })}
-              className="inline-flex items-center justify-center gap-3 bg-white text-gray-900 px-6 py-3.5 rounded-2xl font-semibold hover:bg-gray-100 transition-colors duration-300"
+              className="inline-flex items-center justify-center gap-3 bg-surface-50 text-midnight-900 border border-surface-50 px-6 py-3.5 rounded-2xl font-semibold hover:bg-glow-400 hover:border-glow-400 transition-colors duration-300"
             >
               <Apple className="w-6 h-6" />
               <span className="text-left leading-tight">
@@ -72,7 +72,7 @@ const DownloadAppSection = () => {
             </button>
             <button
               onClick={() => toast('Google Play link coming soon!', { icon: '▶️' })}
-              className="inline-flex items-center justify-center gap-3 bg-white text-gray-900 px-6 py-3.5 rounded-2xl font-semibold hover:bg-gray-100 transition-colors duration-300"
+              className="inline-flex items-center justify-center gap-3 bg-surface-50 text-midnight-900 border border-surface-50 px-6 py-3.5 rounded-2xl font-semibold hover:bg-glow-400 hover:border-glow-400 transition-colors duration-300"
             >
               <PlayCircle className="w-6 h-6" />
               <span className="text-left leading-tight">

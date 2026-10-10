@@ -19,63 +19,91 @@ export default {
         display: ['"Sora"', '"Inter"', 'ui-sans-serif', 'sans-serif'],
       },
       colors: {
-        // Refined indigo/violet brand accent — replaces flat `blue-600`.
-        brand: {
-          50: '#f2f1ff',
-          100: '#e6e3ff',
-          200: '#d0caff',
-          300: '#aea3ff',
-          400: '#8b78fb',
-          500: '#6c53f0',
-          600: '#5b3edb',
-          700: '#4a30b8',
-          800: '#3c2896',
-          900: '#302178',
-          950: '#1d1350',
-        },
-        // Deep navy/midnight scale for dark sections and emphasis surfaces.
+        /* ------------------------------------------------------------------
+           Campus Buddy design system. Source of truth for the palette:
+             brand-primary      #1A1A1A  ink — text, dark surfaces, primary buttons
+             brand-accent       #FCFFD7  cream — page + light surfaces
+             brand-lilac        #DCD0FF  secondary buttons, AI accents, selection
+             neutral-background #FCFFD7  app background
+             surface-highlight  #F4FFA9  lime — active states, key highlights
+           The numeric scales below are tonal variations of those five colors
+           so existing utility classes (midnight-*, brand-*, glow-*, surface-*)
+           resolve to the new identity instead of the old indigo/navy/teal.
+           ------------------------------------------------------------------ */
+
+        // Ink scale — warm neutrals built from #1A1A1A, tuned to sit on cream.
         midnight: {
-          50: '#f4f6fb',
-          100: '#e6eaf5',
-          200: '#c6cee3',
-          300: '#96a3c4',
-          400: '#5d6b98',
-          500: '#3a4570',
-          600: '#262f54',
-          700: '#1a2140',
-          800: '#111527',
-          850: '#0c0f1d',
-          900: '#080a15',
-          950: '#04050c',
+          50: '#F6F8E6',
+          100: '#ECEFD6',
+          200: '#DCDFC4',
+          300: '#BDBFA8',
+          400: '#76786C',
+          500: '#5C5D55',
+          600: '#46473F',
+          700: '#33342F',
+          800: '#252523',
+          850: '#1F1F1E',
+          900: '#1A1A1A',
+          950: '#111111',
         },
-        // Sparing vibrant accent — AI moments, "new"/"live" highlights only.
+        // Lilac scale — #DCD0FF sits at 200. Deep shades exist only for text
+        // that must stay readable on cream/lilac surfaces.
+        brand: {
+          primary: '#1A1A1A',
+          accent: '#FCFFD7',
+          lilac: '#DCD0FF',
+          50: '#F7F4FF',
+          100: '#EEE8FF',
+          200: '#DCD0FF',
+          300: '#C8B8FB',
+          400: '#AE98F0',
+          500: '#8F75DC',
+          600: '#6F56BE',
+          700: '#563F9C',
+          800: '#41307A',
+          900: '#2E2257',
+          950: '#1D1538',
+        },
+        // Lime scale — #F4FFA9 sits at 400. 600/700 are dark olive tones used
+        // only for small text on light surfaces where lime would be illegible.
         glow: {
-          300: '#7cf5e0',
-          400: '#3fe8cb',
-          500: '#14ccae',
-          600: '#0aa892',
+          200: '#FAFFD9',
+          300: '#F8FFC6',
+          400: '#F4FFA9',
+          500: '#E8F57E',
+          600: '#5B6600',
+          700: '#454D00',
         },
-        // Neutral content surfaces (kept close to slate so existing gray-*
-        // usages still read correctly, but tuned slightly cooler/warmer).
+        // Cream surfaces. 50 is the page; 0 is the slightly lifted card paper.
         surface: {
-          0: '#ffffff',
-          50: '#f8f9fc',
-          100: '#f1f2f8',
-          200: '#e4e6f0',
+          0: '#FFFFF4',
+          50: '#FCFFD7',
+          100: '#F5F8C9',
+          200: '#EBEEBB',
+          highlight: '#F4FFA9',
+        },
+        neutral: {
+          background: '#FCFFD7',
         },
       },
       boxShadow: {
-        // Soft, slightly tinted shadows instead of default flat gray ones.
-        soft: '0 1px 2px 0 rgba(18, 21, 45, 0.04), 0 1px 1px 0 rgba(18, 21, 45, 0.03)',
-        card: '0 1px 2px rgba(16, 19, 43, 0.04), 0 8px 24px -8px rgba(16, 19, 43, 0.10)',
-        'card-hover': '0 4px 10px rgba(16, 19, 43, 0.06), 0 16px 40px -12px rgba(16, 19, 43, 0.18)',
-        glow: '0 0 0 1px rgba(108, 83, 240, 0.15), 0 8px 30px -6px rgba(108, 83, 240, 0.35)',
-        'inner-line': 'inset 0 0 0 1px rgba(255,255,255,0.06)',
+        // Flat, editorial surfaces: separation comes from borders, shadows are
+        // reserved for floating layers (menus, modals, toasts).
+        soft: '0 1px 0 0 rgba(26, 26, 26, 0.04)',
+        card: '0 1px 0 0 rgba(26, 26, 26, 0.04)',
+        'card-hover': '0 18px 40px -24px rgba(26, 26, 26, 0.35)',
+        float: '0 24px 60px -28px rgba(26, 26, 26, 0.45)',
+        glow: '0 0 0 0 rgba(0, 0, 0, 0)',
+        'inner-line': 'inset 0 0 0 1px rgba(255,255,255,0.08)',
       },
       backgroundImage: {
-        'mesh-light': 'radial-gradient(60% 50% at 15% 10%, rgba(108,83,240,0.10) 0%, rgba(108,83,240,0) 60%), radial-gradient(50% 40% at 90% 15%, rgba(20,204,174,0.10) 0%, rgba(20,204,174,0) 60%)',
-        'mesh-dark': 'radial-gradient(60% 60% at 20% 0%, rgba(108,83,240,0.35) 0%, rgba(108,83,240,0) 60%), radial-gradient(45% 45% at 100% 20%, rgba(20,204,174,0.18) 0%, rgba(20,204,174,0) 60%)',
+        // Fine dot grid instead of the old purple/teal mesh gradients.
+        'mesh-light': 'radial-gradient(rgba(26,26,26,0.07) 1px, transparent 1px)',
+        'mesh-dark': 'radial-gradient(rgba(252,255,215,0.08) 1px, transparent 1px)',
         'grain': "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E\")",
+      },
+      backgroundSize: {
+        dots: '22px 22px',
       },
       letterSpacing: {
         tightest: '-0.045em',
@@ -88,11 +116,11 @@ export default {
         'slide-up': 'slideUp 0.3s ease-out',
         'slide-down': 'slideDown 0.3s ease-out',
         'scale-in': 'scaleIn 0.2s cubic-bezier(0.16,1,0.3,1) both',
-        'blob': 'blob 7s infinite',
         'float': 'float 6s ease-in-out infinite',
         'float-slow': 'float 9s ease-in-out infinite',
         'shimmer': 'shimmer 2.4s linear infinite',
-        'marquee': 'marquee 32s linear infinite',
+        // Marquee animations live in index.css (.animate-marquee /
+        // .animate-marquee-reverse) so they can carry hover + reduced-motion rules.
       },
       keyframes: {
         fadeIn: {
@@ -115,12 +143,6 @@ export default {
           '0%': { opacity: '0', transform: 'scale(0.96)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
         },
-        blob: {
-          '0%': { transform: 'translate(0px, 0px) scale(1)' },
-          '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-          '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-          '100%': { transform: 'translate(0px, 0px) scale(1)' },
-        },
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-14px)' },
@@ -128,10 +150,6 @@ export default {
         shimmer: {
           '0%': { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' },
-        },
-        marquee: {
-          '0%': { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(-50%)' },
         },
       },
       backdropBlur: {

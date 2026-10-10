@@ -25,32 +25,43 @@ const AttendanceCard = ({ subject, index }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow duration-300"
+      className="surface-panel card-interactive p-6 flex flex-col items-center text-center"
     >
-      <CircularProgress percentage={percentage} color={subject.color}>
+      <div className="mb-4 self-end">
+        {percentage >= SAFE_THRESHOLD ? (
+          <span className="badge-lime">On track</span>
+        ) : (
+          <span className="badge-danger">Below {SAFE_THRESHOLD}%</span>
+        )}
+      </div>
+      <CircularProgress
+        percentage={percentage}
+        color={percentage >= SAFE_THRESHOLD ? '#1A1A1A' : '#BE123C'}
+        trackColor="#DCD0FF"
+      >
         <div>
-          <div className="text-2xl font-bold text-gray-900">{percentage}%</div>
+          <div className="font-display text-2xl font-bold text-midnight-900">{percentage}%</div>
         </div>
       </CircularProgress>
 
-      <h3 className="font-semibold text-gray-900 mt-4">{subject.subject}</h3>
+      <h3 className="font-semibold text-midnight-900 mt-4">{subject.subject}</h3>
 
       <div className="w-full mt-4 space-y-2 text-sm text-left">
-        <div className="flex items-center justify-between text-gray-500">
-          <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Classes Attended</span>
-          <span className="font-medium text-gray-800">{subject.attended}/{subject.total}</span>
+        <div className="flex items-center justify-between text-midnight-600">
+          <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-midnight-900" /> Classes Attended</span>
+          <span className="font-medium text-midnight-900">{subject.attended}/{subject.total}</span>
         </div>
-        <div className="flex items-center justify-between text-gray-500">
-          <span className="flex items-center gap-1.5"><XCircle className="w-4 h-4 text-red-400" /> Classes Missed</span>
-          <span className="font-medium text-gray-800">{missed}</span>
+        <div className="flex items-center justify-between text-midnight-600">
+          <span className="flex items-center gap-1.5"><XCircle className="w-4 h-4 text-rose-700" /> Classes Missed</span>
+          <span className="font-medium text-midnight-900">{missed}</span>
         </div>
-        <div className="flex items-center justify-between text-gray-500">
+        <div className="flex items-center justify-between text-midnight-600">
           <span>Projected Attendance</span>
-          <span className="font-medium text-gray-800">{projected}%</span>
+          <span className="font-medium text-midnight-900">{projected}%</span>
         </div>
-        <div className="flex items-center justify-between text-gray-500 pt-2 border-t border-gray-100">
-          <span className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-brand-500" /> Safe Leaves Left</span>
-          <span className="font-semibold text-brand-600">{safeLeaves}</span>
+        <div className="flex items-center justify-between text-midnight-900 mt-3 rounded-xl bg-glow-400 border border-midnight-900/10 px-3 py-2">
+          <span className="flex items-center gap-1.5 font-medium"><ShieldCheck className="w-4 h-4" /> Safe Leaves Left</span>
+          <span className="font-display text-lg font-bold">{safeLeaves}</span>
         </div>
       </div>
     </motion.div>
@@ -59,7 +70,7 @@ const AttendanceCard = ({ subject, index }) => {
 
 const AttendanceSection = () => {
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 sm:py-28 bg-brand-100 border-y border-midnight-900/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Track Your Progress"

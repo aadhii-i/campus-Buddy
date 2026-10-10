@@ -24,14 +24,16 @@ const TARGET_ROLES = [
 
 // Category keys returned by the AI analyzer -> icon + accent for the dashboard.
 const CATEGORY_META = {
-  atsCompatibility: { icon: ShieldCheck, color: 'text-brand-600', bg: 'bg-brand-50' },
-  structure: { icon: LayoutGrid, color: 'text-violet-600', bg: 'bg-violet-50' },
-  skillsMatch: { icon: Code2, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-  projects: { icon: FolderGit2, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-  experience: { icon: Briefcase, color: 'text-amber-600', bg: 'bg-amber-50' },
-  achievements: { icon: Award, color: 'text-pink-600', bg: 'bg-pink-50' },
-  keywordMatch: { icon: Hash, color: 'text-glow-600', bg: 'bg-glow-500/10' },
-  writingQuality: { icon: PenLine, color: 'text-rose-600', bg: 'bg-rose-50' },
+  // Palette-only accents: lilac tiles for analysis categories, lime for the
+  // keyword/ATS signals, ink for the "hard skills" ones.
+  atsCompatibility: { icon: ShieldCheck, color: 'text-midnight-900', bg: 'bg-glow-400 border border-midnight-900/10' },
+  structure: { icon: LayoutGrid, color: 'text-midnight-900', bg: 'bg-brand-200 border border-midnight-900/10' },
+  skillsMatch: { icon: Code2, color: 'text-glow-400', bg: 'bg-midnight-900' },
+  projects: { icon: FolderGit2, color: 'text-midnight-900', bg: 'bg-brand-200 border border-midnight-900/10' },
+  experience: { icon: Briefcase, color: 'text-glow-400', bg: 'bg-midnight-900' },
+  achievements: { icon: Award, color: 'text-midnight-900', bg: 'bg-brand-200 border border-midnight-900/10' },
+  keywordMatch: { icon: Hash, color: 'text-midnight-900', bg: 'bg-glow-400 border border-midnight-900/10' },
+  writingQuality: { icon: PenLine, color: 'text-midnight-900', bg: 'bg-brand-200 border border-midnight-900/10' },
 };
 
 const ResumeAnalyzer = () => {
@@ -121,9 +123,10 @@ const ResumeAnalyzer = () => {
   };
 
   const getScoreTone = (score) => {
-    if (score >= 80) return { text: 'text-emerald-600', ring: '#059669', chip: 'bg-emerald-50 text-emerald-700' };
-    if (score >= 60) return { text: 'text-amber-600', ring: '#d97706', chip: 'bg-amber-50 text-amber-700' };
-    return { text: 'text-rose-600', ring: '#e11d48', chip: 'bg-rose-50 text-rose-700' };
+    // Same thresholds; palette mapping: good = ink on lime, ok = lilac, poor = rose.
+    if (score >= 80) return { text: 'text-midnight-900', ring: '#1A1A1A', chip: 'border border-midnight-900 bg-glow-400 text-midnight-900' };
+    if (score >= 60) return { text: 'text-midnight-900', ring: '#8F75DC', chip: 'border border-midnight-900/15 bg-brand-200 text-midnight-900' };
+    return { text: 'text-rose-700', ring: '#BE123C', chip: 'border border-rose-200 bg-rose-50 text-rose-800' };
   };
 
   const resetAnalysis = () => {
@@ -134,23 +137,22 @@ const ResumeAnalyzer = () => {
   };
 
   return (
-    <div className="min-h-screen bg-surface-50 pb-24 pt-28">
+    <div className="page-shell">
       {!analysis ? (
         <>
-          {/* AI product hero */}
-          <section className="relative mx-4 overflow-hidden rounded-[2rem] bg-midnight-950 sm:mx-6 lg:mx-8">
-            <div className="pointer-events-none absolute inset-0 bg-mesh-dark" />
-            <div className="pointer-events-none absolute inset-0 bg-noise" />
-            <div className="relative mx-auto max-w-3xl px-6 py-16 text-center sm:py-20">
+          {/* AI product hero — cream, dot texture, ink type */}
+          <section className="relative overflow-hidden">
+            <div className="pointer-events-none absolute inset-0 bg-dots mask-fade-b" />
+            <div className="relative mx-auto max-w-3xl px-4 pb-4 pt-4 text-center sm:px-6 sm:pt-8">
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-                <span className="eyebrow !text-glow-400">
+                <span className="eyebrow">
                   <Sparkles className="h-3 w-3" /> AI resume intelligence
                 </span>
-                <h1 className="text-display mt-4 text-3xl leading-[1.1] text-white sm:text-5xl">
+                <h1 className="text-display mt-5 text-3xl leading-[1.1] text-midnight-900 sm:text-5xl">
                   Turn your resume into your
-                  <span className="text-gradient-brand"> competitive advantage.</span>
+                  <span className="marker"> competitive advantage.</span>
                 </h1>
-                <p className="mx-auto mt-5 max-w-xl text-base text-white/60 sm:text-lg">
+                <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-midnight-600 sm:text-lg">
                   Upload once — get a role-aware ATS score, keyword gaps, and specific
                   rewrite suggestions, powered by Gemini and grounded only in your resume.
                 </p>
@@ -166,34 +168,44 @@ const ResumeAnalyzer = () => {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="surface-panel p-6 sm:p-8"
             >
-              <label className="form-label">
-                <Briefcase className="mr-1.5 -mt-0.5 inline h-3.5 w-3.5" />
-                Target role <span className="text-rose-500">*</span>
-              </label>
-              <div className="relative">
-                <select
-                  value={targetRole}
-                  onChange={(e) => setTargetRole(e.target.value)}
-                  className="form-select"
-                >
-                  <option value="">Select the role you're targeting…</option>
-                  {TARGET_ROLES.map((role) => (
-                    <option key={role} value={role}>{role}</option>
-                  ))}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
+              {/* Step 1 — role */}
+              <div className="mb-4 flex items-center gap-2.5">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-midnight-900 text-[11px] font-bold text-surface-50" aria-hidden="true">1</span>
+                <span className="text-sm font-semibold text-midnight-900">Choose your target role</span>
               </div>
-              <p className="mt-1.5 text-xs text-midnight-400">
+              <label htmlFor="resume-target-role" className="form-label">
+                <Briefcase className="mr-1.5 -mt-0.5 inline h-3.5 w-3.5" aria-hidden="true" />
+                Target role <span className="text-rose-700" aria-hidden="true">*</span>
+              </label>
+              <select
+                id="resume-target-role"
+                value={targetRole}
+                onChange={(e) => setTargetRole(e.target.value)}
+                className="form-select"
+                aria-required="true"
+                aria-describedby="resume-target-role-hint"
+              >
+                <option value="">Select the role you're targeting…</option>
+                {TARGET_ROLES.map((role) => (
+                  <option key={role} value={role}>{role}</option>
+                ))}
+              </select>
+              <p id="resume-target-role-hint" className="mt-1.5 text-xs text-midnight-500">
                 Your resume is scored specifically against this role's expected skills and keywords.
               </p>
 
+              {/* Step 2 — upload */}
+              <div className="mb-4 mt-8 flex items-center gap-2.5">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-midnight-900 text-[11px] font-bold text-surface-50" aria-hidden="true">2</span>
+                <span className="text-sm font-semibold text-midnight-900">Upload your resume</span>
+              </div>
               <div
-                className={`relative mt-6 overflow-hidden rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300 ${
+                className={`relative overflow-hidden rounded-2xl border-2 p-8 text-center transition-all duration-300 ${
                   dragActive
-                    ? 'scale-[1.01] border-brand-400 bg-brand-50/60'
+                    ? 'scale-[1.01] border-dashed border-midnight-900 bg-brand-100'
                     : file
-                    ? 'border-emerald-300 bg-emerald-50/40'
-                    : 'border-midnight-200 hover:border-brand-300 hover:bg-brand-50/30'
+                    ? 'border-solid border-midnight-900/15 bg-surface-50/60'
+                    : 'border-dashed border-midnight-900/20 bg-surface-50/40 focus-within:border-midnight-900 hover:border-midnight-900/40 hover:bg-surface-50'
                 }`}
                 onDrop={handleDrop}
                 onDragOver={(e) => e.preventDefault()}
@@ -201,22 +213,26 @@ const ResumeAnalyzer = () => {
                 onDragLeave={() => setDragActive(false)}
               >
                 {file ? (
-                  <div className="space-y-4">
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
-                      <FileText className="h-8 w-8" />
-                    </div>
-                    <div>
-                      <p className="flex items-center justify-center gap-2 text-base font-semibold text-midnight-900">
-                        {file.name}
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setFile(null); }}
-                          aria-label="Remove file"
-                          className="rounded-full p-0.5 text-midnight-400 hover:bg-midnight-100 hover:text-midnight-700"
-                        >
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      </p>
-                      <p className="text-sm text-midnight-400">{(file.size / 1024 / 1024).toFixed(2)} MB · ready to analyze</p>
+                  <div className="space-y-5">
+                    {/* Selected file card */}
+                    <div className="mx-auto flex max-w-md items-center gap-3 rounded-xl border border-midnight-900/10 bg-surface-0 p-3 text-left">
+                      <div className="icon-tile-lime h-11 w-11">
+                        <FileText className="h-5 w-5" aria-hidden="true" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-midnight-900" title={file.name}>{file.name}</p>
+                        <p className="text-xs text-midnight-500">{(file.size / 1024 / 1024).toFixed(2)} MB · ready to analyze</p>
+                      </div>
+                      <span className="badge-lime hidden sm:inline-flex">
+                        <Check className="h-3 w-3" aria-hidden="true" /> PDF
+                      </span>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setFile(null); }}
+                        aria-label="Remove file"
+                        className="btn-icon !h-8 !w-8 flex-shrink-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
                     </div>
                     <button
                       onClick={analyzeResume}
@@ -226,40 +242,52 @@ const ResumeAnalyzer = () => {
                     >
                       {analyzing ? (
                         <>
-                          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-r-transparent" />
+                          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-surface-50 border-r-transparent" aria-hidden="true" />
                           Analyzing your resume…
                         </>
                       ) : (
                         <>
-                          <Zap className="h-4 w-4" />
+                          <Zap className="h-4 w-4" aria-hidden="true" />
                           Analyze resume
                         </>
                       )}
                     </button>
                     {!targetRole && (
-                      <p className="text-sm text-amber-600">Select a target role above to enable analysis.</p>
+                      <p className="flex items-center justify-center gap-1.5 text-sm font-medium text-amber-800">
+                        <Info className="h-4 w-4" aria-hidden="true" />
+                        Select a target role above to enable analysis.
+                      </p>
                     )}
                     {analyzing && (
-                      <p className="text-xs text-midnight-400">This can take up to a minute — Gemini is reading your whole resume.</p>
+                      <div
+                        role="status"
+                        aria-live="polite"
+                        className="mx-auto flex max-w-md items-center gap-3 rounded-xl border border-midnight-900/10 bg-brand-100 px-4 py-3 text-left"
+                      >
+                        <div className="icon-tile-dark h-8 w-8 !rounded-lg">
+                          <Sparkles className="h-4 w-4 animate-pulse" aria-hidden="true" />
+                        </div>
+                        <p className="text-xs leading-relaxed text-midnight-700">This can take up to a minute — Gemini is reading your whole resume.</p>
+                      </div>
                     )}
                   </div>
                 ) : (
                   <label className="block cursor-pointer space-y-4">
-                    <input type="file" accept=".pdf" onChange={handleFileChange} className="hidden" />
+                    <input type="file" accept=".pdf" onChange={handleFileChange} className="sr-only" />
                     <motion.div
                       animate={dragActive ? { y: -4 } : { y: 0 }}
-                      className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-50 text-brand-600"
+                      className={`mx-auto h-16 w-16 !rounded-2xl ${dragActive ? 'icon-tile-dark' : 'icon-tile'}`}
                     >
-                      <Upload className="h-7 w-7" />
+                      <Upload className="h-7 w-7" aria-hidden="true" />
                     </motion.div>
                     <div>
                       <p className="text-base font-semibold text-midnight-900">
                         {dragActive ? 'Drop it right here' : 'Upload your resume'}
                       </p>
-                      <p className="text-sm text-midnight-400">Drag and drop a PDF, or click to browse</p>
+                      <p className="text-sm text-midnight-500">Drag and drop a PDF, or click to browse</p>
                     </div>
                     <span className="btn-secondary inline-flex !px-5 !py-2">Choose file</span>
-                    <p className="text-xs text-midnight-400">PDF only · Max 10MB</p>
+                    <p className="text-xs text-midnight-500">PDF only · Max 10MB</p>
                   </label>
                 )}
               </div>
@@ -272,8 +300,10 @@ const ResumeAnalyzer = () => {
                 { icon: TrendingUp, title: 'Actionable fixes', desc: 'Specific, prioritized suggestions — not generic advice.' },
                 { icon: Sparkles, title: 'Role-aware scoring', desc: 'Scored against the real skills your target role expects.' },
               ].map((f) => (
-                <div key={f.title} className="rounded-2xl border border-midnight-100 bg-white p-5 text-center">
-                  <f.icon className="mx-auto mb-3 h-6 w-6 text-brand-600" />
+                <div key={f.title} className="surface-panel p-5">
+                  <div className="icon-tile mb-3 h-10 w-10">
+                    <f.icon className="h-5 w-5" aria-hidden="true" />
+                  </div>
                   <h3 className="mb-1 text-sm font-semibold text-midnight-900">{f.title}</h3>
                   <p className="text-xs leading-relaxed text-midnight-500">{f.desc}</p>
                 </div>
@@ -284,64 +314,68 @@ const ResumeAnalyzer = () => {
       ) : (
         /* ============================ AI Dashboard ============================ */
         <div className="mx-auto max-w-6xl space-y-6 px-4 sm:px-6 lg:px-8">
-          {/* Score hero */}
+          {/* Score hero — ink panel, lime score ring */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="surface-panel-dark relative overflow-hidden p-6 sm:p-8">
-            <div className="pointer-events-none absolute inset-0 bg-mesh-dark opacity-80" />
-            <div className="pointer-events-none absolute inset-0 bg-noise" />
-            <div className="relative flex flex-col items-center gap-8 sm:flex-row sm:items-center sm:justify-between">
+            <div className="pointer-events-none absolute inset-0 bg-dots-dark mask-fade-b" />
+            <div className="relative flex flex-col items-center gap-8 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex flex-col items-center gap-6 sm:flex-row">
-                <CircularProgress percentage={analysis.overallScore} size={128} strokeWidth={9} color="#8b78fb" trackColor="rgba(255,255,255,0.12)">
+                <CircularProgress percentage={analysis.overallScore} size={148} strokeWidth={10} color="#F4FFA9" trackColor="rgba(252,255,215,0.12)">
                   <div className="text-center">
-                    <p className="font-display text-3xl font-bold text-white">
+                    <p className="font-display text-5xl font-bold leading-none tracking-tighter text-glow-400">
                       <AnimatedCounter value={analysis.overallScore} duration={1.2} />
                     </p>
-                    <p className="text-[10px] uppercase tracking-wide text-white/50">/ 100</p>
+                    <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide2 text-surface-50/60">/ 100</p>
                   </div>
                 </CircularProgress>
                 <div className="text-center sm:text-left">
-                  <span className="eyebrow !text-glow-400">Resume analysis complete</span>
-                  <h1 className="text-display mt-1 text-2xl text-white">Overall score: {analysis.overallScore}</h1>
-                  <p className="mt-1 text-sm text-white/60">
-                    Target role · <span className="font-semibold text-white">{analysis.targetRole}</span>
+                  <span className="eyebrow-dark">
+                    <Check className="h-3 w-3" aria-hidden="true" /> Resume analysis complete
+                  </span>
+                  <h1 className="text-display mt-3 text-2xl text-surface-50 sm:text-3xl">Overall score: {analysis.overallScore}</h1>
+                  <p className="mt-1.5 text-sm text-surface-50/70">
+                    Target role · <span className="rounded-full bg-glow-400 px-2 py-0.5 font-semibold text-midnight-900">{analysis.targetRole}</span>
                   </p>
                   {analysis.careerReadiness && (
-                    <div className="mt-3 flex max-w-md items-start gap-2 rounded-xl bg-white/[0.07] p-3 text-left">
-                      <Compass className="mt-0.5 h-4 w-4 flex-shrink-0 text-glow-400" />
-                      <p className="text-xs leading-relaxed text-white/70">{analysis.careerReadiness}</p>
+                    <div className="mt-4 flex max-w-md items-start gap-2.5 rounded-xl border border-white/10 bg-white/[0.05] p-3 text-left">
+                      <Compass className="mt-0.5 h-4 w-4 flex-shrink-0 text-glow-400" aria-hidden="true" />
+                      <p className="text-xs leading-relaxed text-surface-50/75">{analysis.careerReadiness}</p>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="flex flex-shrink-0 gap-2.5">
-                <button onClick={resetAnalysis} className="btn-secondary !bg-white/10 !text-white hover:!bg-white/15">
+              <div className="flex flex-shrink-0 flex-wrap justify-center gap-2.5">
+                <button onClick={resetAnalysis} className="btn-ghost-dark">
                   New resume
                 </button>
                 <button
                   onClick={() => generateReport(analysis, file?.name || "Resume")}
-                  className="btn-primary"
+                  className="btn-accent !border-glow-400"
                 >
-                  <Download className="h-4 w-4" />
+                  <Download className="h-4 w-4" aria-hidden="true" />
                   Report
                 </button>
               </div>
             </div>
 
             {analysis.resumeSummary && (
-              <p className="relative mt-6 max-w-3xl border-t border-white/10 pt-5 text-sm leading-relaxed text-white/60">
+              <p className="relative mt-6 max-w-3xl border-t border-white/10 pt-5 text-sm leading-relaxed text-surface-50/70">
                 {analysis.resumeSummary}
               </p>
             )}
           </motion.div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-            {/* Category Analysis */}
-            <div className="surface-panel p-6 lg:col-span-3">
-              <h3 className="mb-5 text-base font-bold text-midnight-900">Category analysis</h3>
-              <div className="space-y-4">
+            {/* Category Analysis — one scannable tile per category */}
+            <section className="surface-panel p-5 sm:p-6 lg:col-span-3" aria-labelledby="ra-category-heading">
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <h3 id="ra-category-heading" className="text-base font-bold text-midnight-900">Category analysis</h3>
+                <span className="badge-outline">{Object.keys(analysis.categoryScores).length} areas</span>
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {Object.entries(analysis.categoryScores).map(([key, data], i) => {
                   const percent = Math.round((data.score / data.max) * 100);
-                  const meta = CATEGORY_META[key] || { icon: Star, color: 'text-brand-600', bg: 'bg-brand-50' };
+                  const meta = CATEGORY_META[key] || { icon: Star, color: 'text-midnight-900', bg: 'bg-brand-200 border border-midnight-900/10' };
                   const Icon = meta.icon;
                   return (
                     <motion.div
@@ -350,109 +384,117 @@ const ResumeAnalyzer = () => {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.04 }}
                       title={data.explanation}
-                      className="group"
+                      className="group rounded-xl border border-midnight-900/10 bg-surface-50/50 p-4 transition-colors hover:border-midnight-900/30"
                     >
-                      <div className="mb-1.5 flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2.5">
-                          <div className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg ${meta.bg} ${meta.color}`}>
-                            <Icon className="h-3.5 w-3.5" />
+                      <div className="mb-3 flex items-start justify-between gap-3">
+                        <div className="flex min-w-0 items-center gap-2.5">
+                          <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg ${meta.bg} ${meta.color}`}>
+                            <Icon className="h-4 w-4" aria-hidden="true" />
                           </div>
-                          <span className="text-sm font-medium text-midnight-700">{data.label}</span>
+                          <span className="text-sm font-semibold leading-tight text-midnight-900">{data.label}</span>
                         </div>
-                        <span className="flex-shrink-0 text-sm font-semibold text-midnight-500">
-                          {data.score}<span className="text-midnight-300">/{data.max}</span>
+                        <span className="flex-shrink-0 font-display text-lg font-bold leading-none text-midnight-900">
+                          {data.score}<span className="text-xs font-semibold text-midnight-500">/{data.max}</span>
                         </span>
                       </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-midnight-100">
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-midnight-900/10">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${percent}%` }}
                           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: i * 0.04 }}
                           className={`h-full rounded-full ${
-                            percent >= 80 ? 'bg-emerald-500' : percent >= 60 ? 'bg-amber-500' : 'bg-rose-500'
+                            percent >= 80 ? 'bg-midnight-900' : percent >= 60 ? 'bg-brand-500' : 'bg-rose-700'
                           }`}
                         />
                       </div>
                       {data.explanation && (
-                        <p className="mt-1 pl-9 text-xs text-midnight-400 line-clamp-1 group-hover:line-clamp-none">{data.explanation}</p>
+                        <p className="mt-2.5 text-xs leading-relaxed text-midnight-600 line-clamp-2 group-hover:line-clamp-none">{data.explanation}</p>
                       )}
                     </motion.div>
                   );
                 })}
               </div>
-            </div>
+            </section>
 
             {/* ATS + keywords */}
-            <div className="surface-panel p-6 lg:col-span-2">
-              <h3 className="mb-5 text-base font-bold text-midnight-900">ATS compatibility</h3>
-              <div className="mb-6 flex items-center gap-5">
-                <CircularProgress percentage={analysis.atsScore} size={84} strokeWidth={7} color={getScoreTone(analysis.atsScore).ring} trackColor="#e4e6f0">
-                  <span className={`text-lg font-bold ${getScoreTone(analysis.atsScore).text}`}>{analysis.atsScore}%</span>
-                </CircularProgress>
-                <div>
-                  <span className={`inline-block rounded-full px-2.5 py-1 text-xs font-semibold ${getScoreTone(analysis.atsScore).chip}`}>
-                    {analysis.atsScore >= 80 ? 'Strong match' : analysis.atsScore >= 60 ? 'Good match' : 'Needs work'}
-                  </span>
-                  <p className="mt-1.5 text-xs text-midnight-400">How well parsers can read this resume.</p>
+            <section className="flex flex-col gap-6 lg:col-span-2" aria-label="ATS compatibility and keywords">
+              <div className="surface-panel p-5 sm:p-6">
+                <h3 className="mb-5 text-base font-bold text-midnight-900">ATS compatibility</h3>
+                <div className="flex items-center gap-5">
+                  <CircularProgress percentage={analysis.atsScore} size={96} strokeWidth={8} color={getScoreTone(analysis.atsScore).ring} trackColor="rgba(26,26,26,0.1)">
+                    <span className={`font-display text-2xl font-bold ${getScoreTone(analysis.atsScore).text}`}>{analysis.atsScore}%</span>
+                  </CircularProgress>
+                  <div>
+                    <span className={`inline-block rounded-full px-2.5 py-1 text-xs font-semibold ${getScoreTone(analysis.atsScore).chip}`}>
+                      {analysis.atsScore >= 80 ? 'Strong match' : analysis.atsScore >= 60 ? 'Good match' : 'Needs work'}
+                    </span>
+                    <p className="mt-2 text-xs leading-relaxed text-midnight-500">How well parsers can read this resume.</p>
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="surface-lilac space-y-5 p-5 sm:p-6">
                 <div>
-                  <h4 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-midnight-500">
-                    <Check className="h-3.5 w-3.5 text-emerald-500" /> Found keywords
+                  <h4 className="mb-2.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-midnight-700">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-midnight-900 text-glow-400">
+                      <Check className="h-3 w-3" aria-hidden="true" />
+                    </span>
+                    Found keywords
                   </h4>
                   <div className="flex flex-wrap gap-1.5">
                     {analysis.foundKeywords.length > 0 ? analysis.foundKeywords.map((k, i) => (
-                      <Badge key={i} variant="success">{k}</Badge>
-                    )) : <p className="text-xs text-midnight-400">None detected.</p>}
+                      <Badge key={i} variant="lime" className="!normal-case !tracking-normal">{k}</Badge>
+                    )) : <p className="text-xs text-midnight-600">None detected.</p>}
                   </div>
                 </div>
 
-                <div>
-                  <h4 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-midnight-500">
-                    <X className="h-3.5 w-3.5 text-rose-500" /> Missing keywords
+                <div className="border-t border-midnight-900/10 pt-5">
+                  <h4 className="mb-2.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-midnight-700">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-700 text-surface-50">
+                      <X className="h-3 w-3" aria-hidden="true" />
+                    </span>
+                    Missing keywords
                   </h4>
                   <div className="flex flex-wrap gap-1.5">
                     {analysis.missingKeywords.length > 0 ? analysis.missingKeywords.map((k, i) => (
-                      <Badge key={i} variant="danger">{k}</Badge>
-                    )) : <p className="text-xs text-midnight-400">None — great coverage.</p>}
+                      <Badge key={i} variant="outline" className="!normal-case !tracking-normal border-dashed !border-midnight-900/30 bg-surface-0/70 !text-midnight-900">{k}</Badge>
+                    )) : <p className="text-xs text-midnight-600">None — great coverage.</p>}
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
           </div>
 
           {/* Strengths / Weaknesses */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className="surface-panel p-6">
-              <h3 className="mb-4 flex items-center gap-2 text-base font-bold text-midnight-900">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
-                  <Check className="h-4 w-4" />
+            <div className="surface-panel p-5 sm:p-6">
+              <h3 className="mb-4 flex items-center gap-2.5 text-base font-bold text-midnight-900">
+                <div className="icon-tile-lime h-8 w-8 !rounded-lg">
+                  <Check className="h-4 w-4" aria-hidden="true" />
                 </div>
                 Key strengths
               </h3>
               <ul className="space-y-3">
                 {analysis.strengths.map((strength, index) => (
-                  <li key={index} className="flex items-start gap-3 text-sm text-midnight-600">
-                    <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-500" />
+                  <li key={index} className="flex items-start gap-3 text-sm leading-relaxed text-midnight-700">
+                    <div className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-midnight-900" />
                     {strength}
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="surface-panel p-6">
-              <h3 className="mb-4 flex items-center gap-2 text-base font-bold text-midnight-900">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
-                  <AlertCircle className="h-4 w-4" />
+            <div className="surface-panel p-5 sm:p-6">
+              <h3 className="mb-4 flex items-center gap-2.5 text-base font-bold text-midnight-900">
+                <div className="icon-tile h-8 w-8 !rounded-lg">
+                  <AlertCircle className="h-4 w-4" aria-hidden="true" />
                 </div>
                 Areas to improve
               </h3>
               <ul className="space-y-3">
                 {analysis.weaknesses.map((improvement, index) => (
-                  <li key={index} className="flex items-start gap-3 text-sm text-midnight-600">
-                    <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-amber-500" />
+                  <li key={index} className="flex items-start gap-3 text-sm leading-relaxed text-midnight-700">
+                    <div className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-brand-500" />
                     {improvement}
                   </li>
                 ))}
@@ -460,11 +502,11 @@ const ResumeAnalyzer = () => {
             </div>
           </div>
 
-          {/* AI Recommendations — expandable */}
-          <div className="surface-panel p-6">
-            <h3 className="mb-5 flex items-center gap-2 text-base font-bold text-midnight-900">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
-                <Sparkles className="h-4 w-4" />
+          {/* AI Recommendations — expandable, lilac AI panel */}
+          <div className="surface-lilac p-5 sm:p-6">
+            <h3 className="mb-5 flex items-center gap-2.5 text-base font-bold text-midnight-900">
+              <div className="icon-tile-dark h-8 w-8 !rounded-lg">
+                <Sparkles className="h-4 w-4" aria-hidden="true" />
               </div>
               AI recommendations
             </h3>
@@ -472,18 +514,28 @@ const ResumeAnalyzer = () => {
               {analysis.recommendations.map((rec, index) => {
                 const open = expandedRec === index;
                 return (
-                  <div key={index} className="overflow-hidden rounded-xl border border-midnight-100">
+                  <div
+                    key={index}
+                    className={`overflow-hidden rounded-xl border bg-surface-0 transition-colors ${
+                      open ? 'border-midnight-900/30' : 'border-midnight-900/10 hover:border-midnight-900/25'
+                    }`}
+                  >
                     <button
                       onClick={() => setExpandedRec(open ? -1 : index)}
-                      className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors hover:bg-midnight-50/60"
+                      aria-expanded={open}
+                      className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left"
                     >
                       <span className="flex items-center gap-3">
-                        <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-brand-50 text-xs font-bold text-brand-600">
+                        <span
+                          className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                            open ? 'border border-midnight-900 bg-glow-400 text-midnight-900' : 'bg-midnight-900 text-surface-50'
+                          }`}
+                        >
                           {index + 1}
                         </span>
-                        <span className="font-medium text-midnight-800">{rec.title}</span>
+                        <span className="font-medium text-midnight-900">{rec.title}</span>
                       </span>
-                      <ChevronDown className={`h-4 w-4 flex-shrink-0 text-midnight-400 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-4 w-4 flex-shrink-0 text-midnight-500 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
                     </button>
                     <AnimatePresence initial={false}>
                       {open && (
@@ -495,9 +547,9 @@ const ResumeAnalyzer = () => {
                           className="overflow-hidden"
                         >
                           <div className="px-4 pb-4 pl-13">
-                            <p className="text-sm leading-relaxed text-midnight-600">{rec.description}</p>
+                            <p className="text-sm leading-relaxed text-midnight-700">{rec.description}</p>
                             {rec.category && (
-                              <span className="mt-3 inline-block rounded-full bg-midnight-100 px-2.5 py-1 text-[11px] font-semibold text-midnight-600">
+                              <span className="badge-lilac mt-3 !normal-case !tracking-normal">
                                 {analysis.categoryScores[rec.category]?.label || rec.category}
                               </span>
                             )}
@@ -515,15 +567,17 @@ const ResumeAnalyzer = () => {
           {(analysis.suggestedImprovements?.length > 0 || analysis.missingInformation?.length > 0) && (
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
               {analysis.suggestedImprovements?.length > 0 && (
-                <div className="surface-panel p-6">
-                  <h3 className="mb-4 flex items-center gap-2 text-base font-bold text-midnight-900">
-                    <TrendingUp className="h-5 w-5 text-emerald-600" />
+                <div className="surface-panel p-5 sm:p-6">
+                  <h3 className="mb-4 flex items-center gap-2.5 text-base font-bold text-midnight-900">
+                    <div className="icon-tile-lime h-8 w-8 !rounded-lg">
+                      <TrendingUp className="h-4 w-4" aria-hidden="true" />
+                    </div>
                     Suggested improvements
                   </h3>
                   <ul className="space-y-3">
                     {analysis.suggestedImprovements.map((item, index) => (
-                      <li key={index} className="flex items-start gap-3 text-sm text-midnight-600">
-                        <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-500" />
+                      <li key={index} className="flex items-start gap-3 text-sm leading-relaxed text-midnight-700">
+                        <div className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-midnight-900" />
                         {item}
                       </li>
                     ))}
@@ -532,15 +586,17 @@ const ResumeAnalyzer = () => {
               )}
 
               {analysis.missingInformation?.length > 0 && (
-                <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-6">
-                  <h3 className="mb-4 flex items-center gap-2 text-base font-bold text-amber-900">
-                    <Info className="h-5 w-5 text-amber-600" />
+                <div className="rounded-2xl border border-amber-300 bg-amber-50 p-5 sm:p-6">
+                  <h3 className="mb-4 flex items-center gap-2.5 text-base font-bold text-amber-900">
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-800">
+                      <Info className="h-4 w-4" aria-hidden="true" />
+                    </div>
                     Missing information
                   </h3>
                   <ul className="space-y-2.5">
                     {analysis.missingInformation.map((item, index) => (
-                      <li key={index} className="flex items-start gap-3 text-sm text-amber-800">
-                        <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-amber-500" />
+                      <li key={index} className="flex items-start gap-3 text-sm leading-relaxed text-amber-900">
+                        <div className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-amber-600" />
                         {item}
                       </li>
                     ))}

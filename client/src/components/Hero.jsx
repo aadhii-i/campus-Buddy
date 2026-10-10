@@ -21,11 +21,9 @@ const fadeUp = {
 
 const Hero = ({ user }) => {
   return (
-    <section className="relative overflow-hidden bg-surface-50 pb-20 pt-32 sm:pb-28 sm:pt-40">
-      {/* Restrained background: one soft mesh gradient + fine grain, no rainbow blobs */}
-      <div className="pointer-events-none absolute inset-0 bg-mesh-light" />
-      <div className="pointer-events-none absolute inset-0 bg-noise" />
-      <div className="pointer-events-none absolute -top-40 right-[-10%] h-[32rem] w-[32rem] rounded-full bg-brand-200/30 blur-3xl" />
+    <section className="relative overflow-hidden border-b border-midnight-900/10 bg-surface-50 pb-20 pt-32 sm:pb-28 sm:pt-40">
+      {/* Restrained background: fine dot grid that fades out, no gradients */}
+      <div className="pointer-events-none absolute inset-0 bg-dots mask-fade-b" />
 
       <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-16 px-4 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-10 lg:px-8">
         {/* Left: statement */}
@@ -41,13 +39,13 @@ const Hero = ({ user }) => {
             animate="visible"
             custom={1}
             variants={fadeUp}
-            className="text-display mt-5 text-[2.6rem] leading-[1.03] text-midnight-900 sm:text-6xl lg:text-[4.1rem]"
+            className="text-display mt-6 text-[2.6rem] leading-[1.03] text-midnight-900 sm:text-6xl lg:text-[4.4rem]"
           >
             Your campus.
             <br />
             One intelligent
             <br />
-            <span className="text-gradient-brand">companion.</span>
+            <span className="marker">companion.</span>
           </motion.h1>
 
           <motion.p
@@ -55,7 +53,7 @@ const Hero = ({ user }) => {
             animate="visible"
             custom={2}
             variants={fadeUp}
-            className="mt-6 max-w-md text-lg leading-relaxed text-midnight-500"
+            className="mt-6 max-w-md text-lg leading-relaxed text-midnight-600"
           >
             Campus Buddy brings events, community, lost &amp; found, placements and an
             AI resume coach into one place — so campus life stops living across
@@ -78,10 +76,10 @@ const Hero = ({ user }) => {
             animate="visible"
             custom={4}
             variants={fadeUp}
-            className="mt-14 grid max-w-lg grid-cols-2 gap-x-8 gap-y-6 border-t border-midnight-100 pt-8 sm:grid-cols-4"
+            className="mt-14 grid max-w-lg grid-cols-2 gap-x-8 gap-y-6 border-t border-midnight-900/15 pt-8 sm:grid-cols-4"
           >
-            {STATS.map((s) => (
-              <div key={s.label}>
+            {STATS.map((s, i) => (
+              <div key={s.label} className={i > 0 ? 'sm:border-l sm:border-midnight-900/10 sm:pl-6' : ''}>
                 <p className="font-display text-2xl font-bold text-midnight-900">{s.value}</p>
                 <p className="mt-0.5 text-xs text-midnight-500">{s.label}</p>
               </div>
@@ -97,40 +95,41 @@ const Hero = ({ user }) => {
           className="relative mx-auto h-[26rem] w-full max-w-md lg:h-[30rem]"
         >
           {/* Base dark panel — the "product" surface everything floats above */}
-          <div className="absolute inset-x-2 inset-y-6 rounded-[2rem] bg-midnight-900 shadow-card-hover">
-            <div className="absolute inset-0 rounded-[2rem] bg-mesh-dark opacity-90" />
-            <div className="absolute inset-0 rounded-[2rem] bg-noise" />
+          <div className="absolute inset-x-2 inset-y-6 overflow-hidden rounded-[2rem] bg-midnight-900">
+            <div className="absolute inset-0 bg-dots-dark" />
+            <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full border border-brand-200/20" />
+            <div className="absolute -bottom-28 -left-28 h-72 w-72 rounded-full border border-brand-200/10" />
           </div>
 
           {/* Resume AI score preview — the hero feature, largest */}
           <motion.div
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute left-6 top-8 w-56 rounded-2xl border border-white/10 bg-white/[0.08] p-4 backdrop-blur-xl"
+            className="absolute left-6 top-8 w-56 rounded-2xl border border-midnight-900 bg-glow-400 p-4 text-midnight-900"
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-semibold uppercase tracking-wide2 text-white/50">Resume score</span>
-              <TrendingUp className="h-3.5 w-3.5 text-glow-400" />
+              <span className="text-[10px] font-semibold uppercase tracking-wide2 text-midnight-700">Resume score</span>
+              <TrendingUp className="h-3.5 w-3.5" />
             </div>
-            <p className="mt-2 font-display text-4xl font-bold text-white">87</p>
-            <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-              <div className="h-full w-[87%] rounded-full bg-gradient-to-r from-brand-400 to-glow-400" />
+            <p className="mt-2 font-display text-4xl font-bold">87</p>
+            <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-midnight-900/15">
+              <div className="h-full w-[87%] rounded-full bg-midnight-900" />
             </div>
-            <p className="mt-2 text-[11px] font-medium text-glow-400">Strong ATS match</p>
+            <p className="mt-2 text-[11px] font-semibold">Strong ATS match</p>
           </motion.div>
 
           {/* Event card preview */}
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
-            className="absolute right-4 top-2 flex w-40 items-center gap-2.5 rounded-xl bg-white p-3 shadow-card"
+            className="absolute right-4 top-2 flex w-40 items-center gap-2.5 rounded-xl border border-midnight-900/10 bg-surface-0 p-3 shadow-float"
           >
-            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+            <div className="icon-tile h-9 w-9 rounded-lg">
               <Calendar className="h-4.5 w-4.5" />
             </div>
             <div>
               <p className="text-xs font-semibold text-midnight-900">Hack Night</p>
-              <p className="text-[11px] text-midnight-400">Fri · 6:00 PM</p>
+              <p className="text-[11px] text-midnight-500">Fri · 6:00 PM</p>
             </div>
           </motion.div>
 
@@ -138,9 +137,9 @@ const Hero = ({ user }) => {
           <motion.div
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
-            className="absolute bottom-24 right-0 w-48 rounded-2xl rounded-br-sm bg-brand-600 p-3.5 text-white shadow-glow"
+            className="absolute bottom-24 right-0 w-48 rounded-2xl rounded-br-sm border border-midnight-900/10 bg-brand-200 p-3.5 text-midnight-900 shadow-float"
           >
-            <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide2 text-white/70">
+            <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide2 text-midnight-700">
               <MessageCircle className="h-3 w-3" /> AI Assistant
             </div>
             <p className="mt-1.5 text-[13px] leading-snug">
@@ -152,18 +151,18 @@ const Hero = ({ user }) => {
           <motion.div
             animate={{ y: [0, 9, 0] }}
             transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
-            className="absolute bottom-6 left-8 flex items-center gap-2 rounded-full bg-white py-2 pl-2 pr-4 shadow-card"
+            className="absolute bottom-6 left-8 flex items-center gap-2 rounded-full border border-midnight-900/10 bg-surface-0 py-2 pl-2 pr-4 shadow-float"
           >
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-midnight-900 text-glow-400">
               <CheckCircle2 className="h-4 w-4" />
             </div>
-            <span className="text-xs font-semibold text-midnight-800">Item reunited</span>
+            <span className="text-xs font-semibold text-midnight-900">Item reunited</span>
           </motion.div>
 
           {/* community avatars stack */}
-          <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 backdrop-blur-xl">
-            <Users className="h-3.5 w-3.5 text-white/70" />
-            <span className="text-[11px] font-medium text-white/70">42 in Community</span>
+          <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 rounded-full border border-white/15 bg-midnight-900 px-3 py-1.5">
+            <Users className="h-3.5 w-3.5 text-brand-200" />
+            <span className="text-[11px] font-medium text-surface-50/80">42 in Community</span>
           </div>
         </motion.div>
       </div>

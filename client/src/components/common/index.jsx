@@ -17,7 +17,7 @@ export const LoadingSpinner = ({ size = 'medium', className = '' }) => {
   }
 
   return (
-    <div className={`inline-block animate-spin rounded-full border-solid border-brand-600 border-r-transparent ${sizeClasses[size]} ${className}`}>
+    <div className={`inline-block animate-spin rounded-full border-solid border-midnight-900 border-r-transparent ${sizeClasses[size]} ${className}`}>
       <span className="sr-only">Loading...</span>
     </div>
   )
@@ -30,7 +30,7 @@ export const LoadingSpinner = ({ size = 'medium', className = '' }) => {
 export const LoadingState = ({ label = 'Loading…', className = '' }) => (
   <div className={`flex flex-col items-center justify-center gap-3 py-20 text-center ${className}`}>
     <LoadingSpinner size="large" />
-    <p className="text-sm font-medium text-midnight-400">{label}</p>
+    <p className="text-sm font-medium text-midnight-500">{label}</p>
   </div>
 )
 
@@ -54,8 +54,8 @@ export class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-[200px] flex items-center justify-center">
-          <div className="text-center">
+        <div className="min-h-[200px] flex items-center justify-center p-6">
+          <div className="surface-panel max-w-sm px-8 py-10 text-center">
             <h3 className="text-lg font-semibold text-midnight-900 mb-2">
               Oops! Something went wrong
             </h3>
@@ -81,20 +81,20 @@ export class ErrorBoundary extends React.Component {
  * Skeleton loader for cards
  */
 export const CardSkeleton = () => (
-  <div className="surface-panel p-6 animate-pulse">
+  <div className="surface-panel p-6" aria-hidden="true">
     <div className="flex justify-between items-start mb-4">
-      <div className="h-4 bg-midnight-100 rounded w-1/4"></div>
-      <div className="h-6 bg-midnight-100 rounded w-16"></div>
+      <div className="skeleton h-4 w-1/4"></div>
+      <div className="skeleton h-6 w-16 !rounded-full"></div>
     </div>
-    <div className="h-6 bg-midnight-100 rounded w-3/4 mb-2"></div>
-    <div className="h-4 bg-midnight-100 rounded w-full mb-4"></div>
+    <div className="skeleton h-6 w-3/4 mb-2"></div>
+    <div className="skeleton h-4 w-full mb-4"></div>
     <div className="flex items-center gap-4 mb-4">
-      <div className="h-4 bg-midnight-100 rounded w-20"></div>
-      <div className="h-4 bg-midnight-100 rounded w-24"></div>
+      <div className="skeleton h-4 w-20"></div>
+      <div className="skeleton h-4 w-24"></div>
     </div>
     <div className="flex justify-between items-center">
-      <div className="h-4 bg-midnight-100 rounded w-16"></div>
-      <div className="h-8 bg-midnight-100 rounded w-20"></div>
+      <div className="skeleton h-4 w-16"></div>
+      <div className="skeleton h-9 w-24 !rounded-full"></div>
     </div>
   </div>
 )
@@ -109,9 +109,9 @@ export const EmptyState = ({
   actionLabel,
   onAction
 }) => (
-  <div className="text-center py-16 px-6">
+  <div className="rounded-2xl border border-dashed border-midnight-900/20 bg-surface-0/60 text-center py-16 px-6">
     {Icon && (
-      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
+      <div className="icon-tile mx-auto mb-4 h-14 w-14 rounded-2xl">
         <Icon className="h-6 w-6" />
       </div>
     )}
@@ -215,22 +215,23 @@ export const Button = React.forwardRef(function Button(
   ref
 ) {
   const variants = {
-    primary: 'bg-brand-600 text-white shadow-glow hover:bg-brand-700',
-    secondary: 'bg-midnight-100 text-midnight-800 hover:bg-midnight-200',
-    ghost: 'border border-midnight-200 text-midnight-700 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700',
-    dark: 'bg-midnight-900 text-white hover:bg-midnight-800',
-    danger: 'bg-rose-600 text-white hover:bg-rose-700',
-    link: 'text-brand-700 hover:text-brand-800 !px-0 !py-0 !shadow-none bg-transparent',
+    primary: 'btn-primary',
+    secondary: 'btn-secondary',
+    accent: 'btn-accent',
+    ghost: 'btn-ghost',
+    dark: 'btn-primary',
+    danger: 'btn-danger',
+    link: 'link inline-flex items-center gap-1.5',
   }
   const sizes = {
-    sm: 'px-3.5 py-1.5 text-xs',
-    md: 'px-5 py-2.5 text-sm',
-    lg: 'px-6 py-3.5 text-base',
+    sm: '!px-3.5 !py-1.5 !text-xs',
+    md: '',
+    lg: '!px-6 !py-3.5 !text-base',
   }
   return (
     <Comp
       ref={ref}
-      className={`inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:pointer-events-none disabled:translate-y-0 ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`${variants[variant] || variants.primary} ${variant === 'link' ? '' : sizes[size]} ${className}`}
       {...props}
     >
       {Icon && <Icon className="h-4 w-4" />}
@@ -243,16 +244,20 @@ export const Button = React.forwardRef(function Button(
 /** Small pill label — status, category, "AI", "New", etc. */
 export const Badge = ({ children, variant = 'neutral', className = '', icon: Icon }) => {
   const variants = {
-    neutral: 'bg-midnight-100 text-midnight-600',
-    brand: 'bg-brand-50 text-brand-700',
-    success: 'bg-emerald-50 text-emerald-700',
-    warning: 'bg-amber-50 text-amber-700',
-    danger: 'bg-rose-50 text-rose-700',
-    glow: 'bg-glow-500/10 text-glow-600',
-    dark: 'bg-white/10 text-white',
+    neutral: 'badge-neutral',
+    brand: 'badge-lilac',
+    lilac: 'badge-lilac',
+    lime: 'badge-lime',
+    ink: 'badge-ink',
+    outline: 'badge-outline',
+    success: 'badge-success',
+    warning: 'badge-warning',
+    danger: 'badge-danger',
+    glow: 'badge-lime',
+    dark: 'badge bg-white/10 text-surface-50',
   }
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${variants[variant]} ${className}`}>
+    <span className={`${variants[variant] || variants.neutral} ${className}`}>
       {Icon && <Icon className="h-3 w-3" />}
       {children}
     </span>
@@ -261,32 +266,62 @@ export const Badge = ({ children, variant = 'neutral', className = '', icon: Ico
 
 /** Page-level header used across Events / Community / Lost & Found / Placements. */
 export const PageHeader = ({ eyebrow, title, description, actions, dark = false }) => (
-  <div className={`flex flex-col gap-6 md:flex-row md:items-end md:justify-between ${dark ? 'text-white' : ''}`}>
+  <div className={`flex flex-col gap-6 border-b pb-8 md:flex-row md:items-end md:justify-between ${dark ? 'border-white/10 text-surface-50' : 'border-midnight-900/10'}`}>
     <div className="max-w-2xl">
-      {eyebrow && <span className={`eyebrow ${dark ? '!text-glow-400' : ''}`}>{eyebrow}</span>}
-      <h1 className={`text-display mt-2 text-3xl sm:text-4xl lg:text-[2.75rem] leading-[1.05] ${dark ? 'text-white' : 'text-midnight-900'}`}>
+      {eyebrow && <span className={dark ? 'eyebrow-dark' : 'eyebrow'}>{eyebrow}</span>}
+      <h1 className={`text-display mt-4 text-3xl sm:text-4xl lg:text-[2.9rem] leading-[1.05] ${dark ? 'text-surface-50' : 'text-midnight-900'}`}>
         {title}
       </h1>
       {description && (
-        <p className={`mt-3 text-base leading-relaxed ${dark ? 'text-white/70' : 'text-midnight-500'}`}>{description}</p>
+        <p className={`mt-3 text-base leading-relaxed ${dark ? 'text-surface-50/70' : 'text-midnight-500'}`}>{description}</p>
       )}
     </div>
-    {actions && <div className="flex flex-shrink-0 items-center gap-3">{actions}</div>}
+    {actions && <div className="flex flex-shrink-0 flex-wrap items-center gap-3">{actions}</div>}
   </div>
 )
 
 /** Reusable stat tile — used in dashboards / feature summaries. */
 export const Stat = ({ label, value, hint, icon: Icon, dark = false }) => (
-  <div className={`flex items-start gap-3 ${dark ? 'text-white' : ''}`}>
+  <div className={`flex items-start gap-3 ${dark ? 'text-surface-50' : ''}`}>
     {Icon && (
-      <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ${dark ? 'bg-white/10 text-glow-400' : 'bg-brand-50 text-brand-600'}`}>
+      <div className={`h-10 w-10 ${dark ? 'icon-tile-dark border border-white/10' : 'icon-tile'}`}>
         <Icon className="h-5 w-5" />
       </div>
     )}
     <div>
-      <p className={`text-2xl font-display font-bold leading-none ${dark ? 'text-white' : 'text-midnight-900'}`}>{value}</p>
-      <p className={`mt-1 text-xs font-medium ${dark ? 'text-white/60' : 'text-midnight-500'}`}>{label}</p>
-      {hint && <p className="text-[11px] text-glow-600 font-semibold mt-0.5">{hint}</p>}
+      <p className={`text-2xl font-display font-bold leading-none ${dark ? 'text-surface-50' : 'text-midnight-900'}`}>{value}</p>
+      <p className={`mt-1 text-xs font-medium ${dark ? 'text-surface-50/60' : 'text-midnight-500'}`}>{label}</p>
+      {hint && (
+        <p className={`mt-1.5 inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold ${dark ? 'bg-glow-400 text-midnight-900' : 'bg-glow-400 text-midnight-900'}`}>{hint}</p>
+      )}
+    </div>
+  </div>
+)
+
+/** Reusable alert — one notification per failed operation, themed by tone. */
+export const Alert = ({ tone = 'info', icon: Icon, title, children, action, className = '' }) => (
+  <div role={tone === 'error' ? 'alert' : 'status'} className={`alert-${tone} ${className}`}>
+    {Icon && <Icon className="mt-0.5 h-4 w-4 flex-shrink-0" />}
+    <div className="min-w-0 flex-1">
+      {title && <p className="font-semibold">{title}</p>}
+      {children && <div className={title ? 'mt-0.5 opacity-90' : ''}>{children}</div>}
+    </div>
+    {action && <div className="flex-shrink-0">{action}</div>}
+  </div>
+)
+
+/**
+ * Marquee — seamless horizontal loop. Renders children twice inside the
+ * track so translateX(-50%) lands exactly on the start of the second copy.
+ * The duplicate is aria-hidden and hidden entirely for reduced motion.
+ */
+export const Marquee = ({ children, reverse = false, className = '', gap = 'gap-4' }) => (
+  <div className={`marquee pause-on-hover mask-fade-x ${className}`}>
+    <div className={`marquee-track ${reverse ? 'animate-marquee-reverse' : 'animate-marquee'}`}>
+      <div className={`flex shrink-0 items-stretch ${gap} ${gap.replace('gap-', 'pr-')}`}>{children}</div>
+      <div className={`flex shrink-0 items-stretch ${gap} ${gap.replace('gap-', 'pr-')}`} aria-hidden="true" data-marquee-duplicate>
+        {children}
+      </div>
     </div>
   </div>
 )

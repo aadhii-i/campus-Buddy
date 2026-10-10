@@ -9,6 +9,7 @@ import GlassCard from './GlassCard'
 import LogoTile from './LogoTile'
 import AnimatedCounter from './AnimatedCounter'
 import FloatingBlobs from './FloatingBlobs'
+import { Marquee } from '../common'
 
 const ClubCard = ({ club, index }) => {
   const Icon = Icons[club.logoIcon] || Users
@@ -24,17 +25,17 @@ const ClubCard = ({ club, index }) => {
         <Link to={`/clubs/${club.slug}`} className="flex-1 flex flex-col">
           <div className="flex items-start justify-between mb-4">
             <LogoTile icon={Icon} label={club.name} gradient={club.logoColor} />
-            <span className="text-xs font-medium text-white/70 bg-white/10 px-2 py-1 rounded-full">
+            <span className="badge-outline">
               {club.category}
             </span>
           </div>
 
-          <h3 className="text-xl font-semibold text-white mb-2">{club.name}</h3>
-          <p className="text-white/60 text-sm mb-4 leading-relaxed line-clamp-2">
+          <h3 className="text-xl font-semibold text-midnight-900 mb-2">{club.name}</h3>
+          <p className="text-midnight-600 text-sm mb-4 leading-relaxed line-clamp-2">
             {club.description}
           </p>
 
-          <div className="mt-auto space-y-2 text-sm text-white/70 border-t border-white/10 pt-4">
+          <div className="mt-auto space-y-2 text-sm text-midnight-600 border-t border-midnight-900/10 pt-4">
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               <span><AnimatedCounter value={club.membersCount} /> members</span>
@@ -56,7 +57,7 @@ const ClubCard = ({ club, index }) => {
 
         <Link
           to={`/clubs/${club.slug}`}
-          className="mt-4 inline-flex items-center justify-center gap-2 bg-white text-brand-700 rounded-full py-2.5 font-semibold text-sm hover:bg-brand-50 transition-all duration-300 group-hover:gap-3"
+          className="btn-primary mt-4 w-full group-hover:gap-3"
         >
           Join Club
           <ArrowRight className="w-4 h-4" />
@@ -78,7 +79,7 @@ const ClubsSection = () => {
   }, [])
 
   return (
-    <section className="relative py-20 bg-gradient-to-br from-midnight-800 via-brand-900 to-midnight-950 overflow-hidden">
+    <section className="relative py-20 sm:py-28 bg-midnight-900 overflow-hidden">
       <FloatingBlobs />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
@@ -88,10 +89,25 @@ const ClubsSection = () => {
           subtitle="Explore student communities, participate in events, and build your network."
         />
 
+        {!loading && clubs.length > 0 && (
+          <Marquee className="-mt-6 mb-12">
+            {clubs.map((club) => (
+              <span
+                key={club._id || club.slug}
+                className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-surface-50/80"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-glow-400" />
+                {club.name}
+                <span className="text-surface-50/40">· {club.category}</span>
+              </span>
+            ))}
+          </Marquee>
+        )}
+
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="animate-pulse bg-white/10 rounded-2xl h-64"></div>
+              <div key={i} className="animate-pulse bg-white/[0.06] rounded-2xl h-64"></div>
             ))}
           </div>
         ) : (

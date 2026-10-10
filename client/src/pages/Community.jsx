@@ -4,11 +4,11 @@ import { Plus, Heart, MessageCircle, Share2, Calendar, Tag, X, Users } from 'luc
 import { PageHeader, LoadingState, EmptyState } from '../components/common';
 
 const CATEGORY_STYLES = {
-  general: 'bg-midnight-100 text-midnight-600',
-  study: 'bg-brand-50 text-brand-700',
-  events: 'bg-emerald-50 text-emerald-700',
-  'lost-found': 'bg-amber-50 text-amber-700',
-  announcements: 'bg-violet-50 text-violet-700',
+  general: 'badge-neutral',
+  study: 'badge-lilac',
+  events: 'badge-lime',
+  'lost-found': 'badge-outline',
+  announcements: 'badge-ink',
 };
 
 const Community = () => {
@@ -122,8 +122,8 @@ const Community = () => {
   const getCategoryStyle = (category) => CATEGORY_STYLES[category] || CATEGORY_STYLES.general;
 
   return (
-    <div className="min-h-screen bg-surface-50 pb-20 pt-28">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+    <div className="page-shell">
+      <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8">
         <PageHeader
           eyebrow="Campus community"
           title="Where campus conversations happen"
@@ -137,16 +137,13 @@ const Community = () => {
         />
 
         {/* Category navigation */}
-        <div className="surface-panel mt-8 flex flex-wrap gap-2 p-4">
+        <div className="no-scrollbar -mx-4 mt-8 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0" role="group" aria-label="Filter posts by category">
           {['all', 'general', 'study', 'events', 'lost-found', 'announcements'].map((category) => (
             <button
               key={category}
               onClick={() => setFilter(category)}
-              className={`rounded-full px-4 py-2 text-sm font-medium capitalize transition-colors ${
-                filter === category
-                  ? 'bg-brand-600 text-white'
-                  : 'bg-midnight-100 text-midnight-600 hover:bg-midnight-200'
-              }`}
+              aria-pressed={filter === category}
+              className={`capitalize ${filter === category ? 'chip-active' : 'chip'}`}
             >
               {category.replace('-', ' ')}
             </button>
@@ -157,7 +154,7 @@ const Community = () => {
         {loading ? (
           <LoadingState label="Loading posts…" />
         ) : filteredPosts.length === 0 ? (
-          <div className="mt-4">
+          <div className="mt-8">
             <EmptyState icon={Users} title="Nothing here yet" description="No posts found in this category — be the first to start a conversation." />
           </div>
         ) : (
@@ -168,23 +165,23 @@ const Community = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="surface-panel p-6"
+                className="surface-panel p-6 transition-[border-color] duration-300 hover:border-midnight-900/25"
               >
                 {/* Post Header */}
-                <div className="mb-4 flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-sm font-semibold text-white">
+                <div className="mb-4 flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-midnight-900/10 bg-brand-200 text-sm font-semibold text-midnight-900">
                       {post.author.name.charAt(0)}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-midnight-900">{post.author.name}</h3>
-                      <div className="flex items-center gap-1.5 text-xs text-midnight-400">
+                      <h3 className="truncate font-semibold text-midnight-900">{post.author.name}</h3>
+                      <div className="flex items-center gap-1.5 text-xs text-midnight-500">
                         <Calendar className="h-3.5 w-3.5" />
                         <span>{new Date(post.createdAt).toLocaleDateString()}</span>
                       </div>
                     </div>
                   </div>
-                  <span className={`rounded-full px-3 py-1 text-[11px] font-semibold capitalize ${getCategoryStyle(post.category)}`}>
+                  <span className={`flex-shrink-0 ${getCategoryStyle(post.category)}`}>
                     {post.category.replace('-', ' ')}
                   </span>
                 </div>
@@ -195,7 +192,7 @@ const Community = () => {
                 {post.tags.length > 0 && (
                   <div className="mb-4 flex flex-wrap gap-1.5">
                     {post.tags.map((tag, index) => (
-                      <span key={index} className="inline-flex items-center gap-1 rounded-full bg-midnight-50 px-2.5 py-1 text-xs text-midnight-500">
+                      <span key={index} className="inline-flex items-center gap-1 rounded-full border border-midnight-900/10 bg-surface-50 px-2.5 py-1 text-xs text-midnight-600">
                         <Tag className="h-3 w-3" />
                         {tag}
                       </span>
@@ -203,25 +200,26 @@ const Community = () => {
                   </div>
                 )}
 
-                <div className="flex items-center gap-2 border-t border-midnight-100 pt-4">
+                <div className="flex flex-wrap items-center gap-1.5 border-t border-midnight-900/10 pt-4">
                   <button
                     onClick={() => handleLike(post._id)}
-                    className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    aria-pressed={post.isLiked}
+                    className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${
                       post.isLiked
-                        ? 'bg-rose-50 text-rose-600 hover:bg-rose-100'
-                        : 'text-midnight-500 hover:bg-midnight-50'
+                        ? 'border-midnight-900 bg-glow-400 text-midnight-900'
+                        : 'border-transparent text-midnight-600 hover:border-midnight-900/15 hover:bg-surface-50 hover:text-midnight-900'
                     }`}
                   >
                     <Heart className={`h-4 w-4 ${post.isLiked ? 'fill-current' : ''}`} />
                     {post.likes}
                   </button>
 
-                  <button className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-midnight-500 transition-colors hover:bg-midnight-50">
+                  <button className="flex items-center gap-1.5 rounded-full border border-transparent px-3.5 py-1.5 text-sm font-medium text-midnight-600 transition-colors hover:border-midnight-900/15 hover:bg-surface-50 hover:text-midnight-900">
                     <MessageCircle className="h-4 w-4" />
                     {post.comments}
                   </button>
 
-                  <button className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-midnight-500 transition-colors hover:bg-midnight-50">
+                  <button className="flex items-center gap-1.5 rounded-full border border-transparent px-3.5 py-1.5 text-sm font-medium text-midnight-600 transition-colors hover:border-midnight-900/15 hover:bg-surface-50 hover:text-midnight-900">
                     <Share2 className="h-4 w-4" />
                     Share
                   </button>
@@ -239,7 +237,7 @@ const Community = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-midnight-950/60 p-4 backdrop-blur-sm"
+            className="modal-overlay"
             onClick={() => setShowModal(false)}
           >
             <motion.div
@@ -248,19 +246,28 @@ const Community = () => {
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white shadow-card-hover"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="community-post-title"
+              className="modal-panel max-w-lg"
             >
-              <div className="flex items-center justify-between border-b border-midnight-100 px-6 py-4">
-                <h3 className="text-lg font-bold text-midnight-900">Create a post</h3>
-                <button onClick={() => setShowModal(false)} className="rounded-full p-1.5 text-midnight-400 hover:bg-midnight-100">
+              <div className="modal-header bg-brand-200/60">
+                <div className="flex items-center gap-2.5">
+                  <div className="icon-tile-dark h-9 w-9">
+                    <MessageCircle className="h-4 w-4" />
+                  </div>
+                  <h3 id="community-post-title" className="text-lg font-bold text-midnight-900">Create a post</h3>
+                </div>
+                <button type="button" onClick={() => setShowModal(false)} aria-label="Close" className="btn-icon">
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4 p-6">
                 <div>
-                  <label className="form-label">Title</label>
+                  <label htmlFor="post-title" className="form-label">Title</label>
                   <input
+                    id="post-title"
                     type="text"
                     required
                     className="form-input"
@@ -270,8 +277,9 @@ const Community = () => {
                 </div>
 
                 <div>
-                  <label className="form-label">Content</label>
+                  <label htmlFor="post-content" className="form-label">Content</label>
                   <textarea
+                    id="post-content"
                     required
                     rows={5}
                     className="form-textarea"
@@ -281,8 +289,9 @@ const Community = () => {
                 </div>
 
                 <div>
-                  <label className="form-label">Category</label>
+                  <label htmlFor="post-category" className="form-label">Category</label>
                   <select
+                    id="post-category"
                     className="form-select"
                     value={newPost.category}
                     onChange={(e) => setNewPost({...newPost, category: e.target.value})}
@@ -295,8 +304,8 @@ const Community = () => {
                   </select>
                 </div>
 
-                <div className="flex gap-3 pt-2">
-                  <button type="button" onClick={() => setShowModal(false)} className="btn-secondary flex-1">
+                <div className="flex flex-col-reverse gap-3 border-t border-midnight-900/10 pt-5 sm:flex-row">
+                  <button type="button" onClick={() => setShowModal(false)} className="btn-ghost flex-1">
                     Cancel
                   </button>
                   <button type="submit" className="btn-primary flex-1">

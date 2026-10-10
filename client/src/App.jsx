@@ -17,7 +17,7 @@ import './App.css'
 function App() {
   return (
     <AuthProvider>
-      <div className="min-h-screen flex flex-col bg-surface-50 font-sans text-midnight-800">
+      <div className="min-h-screen flex flex-col bg-surface-50 font-sans text-midnight-900">
         <Navbar />
         
         <main className="flex-grow">

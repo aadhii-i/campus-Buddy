@@ -69,7 +69,7 @@ const LoginModal = ({ isOpen, onClose }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-midnight-950/60 p-4 backdrop-blur-sm"
+          className="modal-overlay"
           onClick={onClose}
         >
           <motion.div
@@ -77,19 +77,22 @@ const LoginModal = ({ isOpen, onClose }) => {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.96, opacity: 0 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white shadow-card-hover"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="login-modal-title"
+            className="modal-panel max-w-md"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-midnight-100 px-6 py-5">
+            <div className="modal-header bg-brand-200/60">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700">
-                  <Sparkles className="h-4.5 w-4.5 text-white" />
+                <div className="icon-tile-dark h-9 w-9">
+                  <Sparkles className="h-4.5 w-4.5" />
                 </div>
-                <h2 className="text-lg font-bold text-midnight-900">
+                <h2 id="login-modal-title" className="text-lg font-bold text-midnight-900">
                   {isLogin ? 'Welcome back' : 'Create your account'}
                 </h2>
               </div>
-              <button onClick={onClose} className="rounded-full p-1.5 text-midnight-400 transition-colors hover:bg-midnight-100">
+              <button onClick={onClose} aria-label="Close" className="btn-icon">
                 <X className="h-4.5 w-4.5" />
               </button>
             </div>
@@ -98,11 +101,12 @@ const LoginModal = ({ isOpen, onClose }) => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 {!isLogin && (
                   <div>
-                    <label className="form-label">Full name</label>
+                    <label htmlFor="login-name" className="form-label">Full name</label>
                     <div className="relative">
-                      <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
+                      <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-500" />
                       <input
                         type="text"
+                        id="login-name"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
@@ -115,11 +119,12 @@ const LoginModal = ({ isOpen, onClose }) => {
                 )}
 
                 <div>
-                  <label className="form-label">Email address</label>
+                  <label htmlFor="login-email" className="form-label">Email address</label>
                   <div className="relative">
-                    <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
+                    <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-500" />
                     <input
                       type="email"
+                      id="login-email"
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
@@ -131,11 +136,12 @@ const LoginModal = ({ isOpen, onClose }) => {
                 </div>
 
                 <div>
-                  <label className="form-label">Password</label>
+                  <label htmlFor="login-password" className="form-label">Password</label>
                   <div className="relative">
-                    <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
+                    <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-500" />
                     <input
                       type="password"
+                      id="login-password"
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
@@ -149,11 +155,12 @@ const LoginModal = ({ isOpen, onClose }) => {
                 {!isLogin && (
                   <>
                     <div>
-                      <label className="form-label">Student ID</label>
+                      <label htmlFor="login-studentId" className="form-label">Student ID</label>
                       <div className="relative">
-                        <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
+                        <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-500" />
                         <input
                           type="text"
+                          id="login-studentId"
                           name="studentId"
                           value={formData.studentId}
                           onChange={handleChange}
@@ -167,10 +174,11 @@ const LoginModal = ({ isOpen, onClose }) => {
                     </div>
 
                     <div>
-                      <label className="form-label">Department</label>
+                      <label htmlFor="login-department" className="form-label">Department</label>
                       <div className="relative">
-                        <Building className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
+                        <Building className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-500" />
                         <select
+                          id="login-department"
                           name="department"
                           value={formData.department}
                           onChange={handleChange}
@@ -190,10 +198,11 @@ const LoginModal = ({ isOpen, onClose }) => {
                     </div>
 
                     <div>
-                      <label className="form-label">Year</label>
+                      <label htmlFor="login-year" className="form-label">Year</label>
                       <div className="relative">
-                        <GraduationCap className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
+                        <GraduationCap className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-500" />
                         <select
+                          id="login-year"
                           name="year"
                           value={formData.year}
                           onChange={handleChange}
@@ -217,9 +226,9 @@ const LoginModal = ({ isOpen, onClose }) => {
               </form>
 
               <div className="mt-5 flex items-center gap-3">
-                <div className="h-px flex-1 bg-midnight-100" />
-                <span className="text-xs uppercase tracking-wide text-midnight-400">or</span>
-                <div className="h-px flex-1 bg-midnight-100" />
+                <div className="h-px flex-1 bg-midnight-900/10" />
+                <span className="text-xs uppercase tracking-wide text-midnight-500">or</span>
+                <div className="h-px flex-1 bg-midnight-900/10" />
               </div>
 
               <div className="mt-5">
@@ -229,7 +238,7 @@ const LoginModal = ({ isOpen, onClose }) => {
               <div className="mt-6 text-center">
                 <p className="text-sm text-midnight-500">
                   {isLogin ? "Don't have an account?" : 'Already have an account?'}
-                  <button onClick={toggleMode} className="ml-1 font-semibold text-brand-600 hover:text-brand-700">
+                  <button onClick={toggleMode} className="link ml-1">
                     {isLogin ? 'Sign up' : 'Sign in'}
                   </button>
                 </p>

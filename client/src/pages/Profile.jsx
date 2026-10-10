@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { User, Mail, Phone, MapPin, Edit3, Save, X, Camera, Award, BookOpen, Briefcase } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { EmptyState } from '../components/common';
+import { EmptyState, Stat } from '../components/common';
 
 const DEPARTMENT_LABELS = {
   CSE: 'Computer Science', ECE: 'Electronics', ME: 'Mechanical',
@@ -116,183 +115,219 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-surface-50 pb-20 pt-28">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        {/* Profile Header */}
-        <div className="surface-panel mb-6 overflow-hidden">
-          <div className="relative h-32 overflow-hidden bg-midnight-950">
-            <div className="pointer-events-none absolute inset-0 bg-mesh-dark" />
-            <div className="pointer-events-none absolute inset-0 bg-noise" />
-          </div>
-          <div className="relative px-6 pb-6">
-            <div className="-mt-16 flex flex-col items-start gap-4 sm:flex-row sm:items-end">
-              {/* Avatar */}
-              <div className="relative">
-                <div className="h-32 w-32 rounded-full bg-white p-1.5 shadow-card-hover">
-                  <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600">
-                    {profile.avatar ? (
-                      <img src={profile.avatar} alt="Profile" className="h-full w-full rounded-full object-cover" />
-                    ) : (
-                      <User className="h-16 w-16 text-white" />
-                    )}
-                  </div>
+    <div className="page-shell">
+      <div className="page-container max-w-5xl">
+        {/* Identity header */}
+        <div className="surface-panel-dark relative mb-4 overflow-hidden">
+          <div className="pointer-events-none absolute inset-0 bg-dots-dark mask-fade-b" />
+          <div className="relative flex flex-col gap-6 p-6 sm:p-8 md:flex-row md:items-center">
+            {/* Avatar */}
+            <div className="relative flex-shrink-0 self-start md:self-center">
+              <div className="h-24 w-24 rounded-full border-2 border-glow-400 p-1 sm:h-28 sm:w-28">
+                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-brand-200">
+                  {profile.avatar ? (
+                    <img src={profile.avatar} alt="Profile" className="h-full w-full rounded-full object-cover" />
+                  ) : (
+                    <User className="h-12 w-12 text-midnight-900" />
+                  )}
                 </div>
-                {isEditing && (
-                  <button className="absolute bottom-1 right-1 rounded-full bg-brand-600 p-2 text-white transition-colors hover:bg-brand-700">
-                    <Camera className="h-4 w-4" />
-                  </button>
-                )}
               </div>
+              {isEditing && (
+                <button aria-label="Change photo" className="absolute bottom-0 right-0 rounded-full border-2 border-midnight-900 bg-glow-400 p-2 text-midnight-900 transition-colors hover:bg-glow-500">
+                  <Camera className="h-4 w-4" />
+                </button>
+              )}
+            </div>
 
-              {/* Profile Info */}
-              <div className="flex-1 pt-4">
-                {isEditing ? (
-                  <div className="space-y-3">
-                    <input
-                      type="text"
-                      value={editForm.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
-                      className="text-display border-b-2 border-brand-500 bg-transparent text-2xl focus:outline-none"
-                    />
-                    <textarea
-                      value={editForm.bio}
-                      onChange={(e) => handleInputChange('bio', e.target.value)}
-                      className="form-textarea"
-                      rows={2}
-                    />
-                  </div>
-                ) : (
-                  <div>
-                    <h1 className="text-display text-2xl text-midnight-900">{profile.name}</h1>
-                    <p className="mt-1 text-midnight-500">{profile.bio}</p>
-                  </div>
-                )}
+            {/* Profile Info */}
+            <div className="min-w-0 flex-1">
+              <span className="eyebrow-dark">Student dashboard</span>
+              {isEditing ? (
+                <div className="mt-3 space-y-3">
+                  <label htmlFor="profile-name" className="sr-only">Name</label>
+                  <input
+                    id="profile-name"
+                    type="text"
+                    value={editForm.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    className="text-display w-full border-b-2 border-glow-400 bg-transparent text-2xl text-surface-50 focus:outline-none sm:text-3xl"
+                  />
+                  <label htmlFor="profile-bio" className="sr-only">Bio</label>
+                  <textarea
+                    id="profile-bio"
+                    value={editForm.bio}
+                    onChange={(e) => handleInputChange('bio', e.target.value)}
+                    className="form-textarea"
+                    rows={2}
+                  />
+                </div>
+              ) : (
+                <div className="mt-3">
+                  <h1 className="text-display break-words text-2xl text-surface-50 sm:text-3xl">{profile.name}</h1>
+                  <p className="mt-2 max-w-2xl text-sm leading-relaxed text-surface-50/70 sm:text-base">{profile.bio}</p>
+                </div>
+              )}
+              <div className="mt-4 flex flex-wrap gap-2">
+                <span className="badge bg-glow-400 text-midnight-900">{profile.year}</span>
+                <span className="badge bg-brand-200 text-midnight-900">{profile.branch}</span>
+                <span className="badge border border-white/20 text-surface-50">{profile.rollNumber}</span>
               </div>
+            </div>
 
-              {/* Edit Button */}
-              <div className="flex gap-2">
-                {isEditing ? (
-                  <>
-                    <button onClick={handleSave} className="btn-primary !bg-emerald-600 hover:!bg-emerald-700">
-                      <Save className="h-4 w-4" />
-                      Save
-                    </button>
-                    <button onClick={handleCancel} className="btn-secondary">
-                      <X className="h-4 w-4" />
-                      Cancel
-                    </button>
-                  </>
-                ) : (
-                  <button onClick={handleEdit} className="btn-primary">
-                    <Edit3 className="h-4 w-4" />
-                    Edit profile
+            {/* Edit Button */}
+            <div className="flex flex-shrink-0 flex-wrap gap-2 md:self-start">
+              {isEditing ? (
+                <>
+                  <button onClick={handleSave} className="btn-accent">
+                    <Save className="h-4 w-4" />
+                    Save
                   </button>
-                )}
-              </div>
+                  <button onClick={handleCancel} className="btn-ghost-dark">
+                    <X className="h-4 w-4" />
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <button onClick={handleEdit} className="btn-accent">
+                  <Edit3 className="h-4 w-4" />
+                  Edit profile
+                </button>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="surface-panel">
-          <div className="border-b border-midnight-100">
-            <nav className="flex gap-1 overflow-x-auto px-4">
-              {TABS.map(({ id, label, icon: Icon }) => (
-                <button
-                  key={id}
-                  onClick={() => setActiveTab(id)}
-                  className={`relative flex flex-shrink-0 items-center gap-2 px-4 py-4 text-sm font-medium transition-colors ${
-                    activeTab === id ? 'text-brand-700' : 'text-midnight-400 hover:text-midnight-700'
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {label}
-                  {activeTab === id && (
-                    <motion.span layoutId="profile-tab-underline" className="absolute inset-x-0 -bottom-px h-0.5 bg-brand-600" />
-                  )}
-                </button>
-              ))}
-            </nav>
+        {/* Stats row — counts of the profile's own data */}
+        <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+          <div className="surface-panel p-5">
+            <Stat icon={BookOpen} value={profile.courses.length} label="Current courses" />
           </div>
+          <div className="surface-panel p-5">
+            <Stat icon={Award} value={profile.achievements.length} label="Achievements" />
+          </div>
+          <div className="surface-panel p-5">
+            <Stat icon={Briefcase} value={profile.skills.length} label="Skills" />
+          </div>
+        </div>
 
-          <div className="p-6">
-            {/* Overview Tab */}
-            {activeTab === 'overview' && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                  {/* Contact Information */}
-                  <div className="space-y-4">
-                    <h3 className="text-base font-semibold text-midnight-900">Contact information</h3>
+        {/* Tab Navigation */}
+        <div className="no-scrollbar mb-4 overflow-x-auto">
+          <nav className="tab-list" aria-label="Profile sections">
+            {TABS.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                aria-current={activeTab === id ? 'page' : undefined}
+                className={activeTab === id ? 'tab-active' : 'tab'}
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </button>
+            ))}
+          </nav>
+        </div>
 
-                    {isEditing ? (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <Mail className="h-4.5 w-4.5 flex-shrink-0 text-midnight-400" />
-                          <input
-                            type="email"
-                            value={editForm.email}
-                            onChange={(e) => handleInputChange('email', e.target.value)}
-                            className="form-input flex-1"
-                          />
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <Phone className="h-4.5 w-4.5 flex-shrink-0 text-midnight-400" />
-                          <input
-                            type="tel"
-                            value={editForm.phone}
-                            onChange={(e) => handleInputChange('phone', e.target.value)}
-                            className="form-input flex-1"
-                          />
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <MapPin className="h-4.5 w-4.5 flex-shrink-0 text-midnight-400" />
-                          <input
-                            type="text"
-                            value={editForm.location}
-                            onChange={(e) => handleInputChange('location', e.target.value)}
-                            className="form-input flex-1"
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3 text-midnight-600">
-                          <Mail className="h-4.5 w-4.5 text-midnight-400" />
-                          <span>{profile.email}</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-midnight-600">
-                          <Phone className="h-4.5 w-4.5 text-midnight-400" />
-                          <span>{profile.phone}</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-midnight-600">
-                          <MapPin className="h-4.5 w-4.5 text-midnight-400" />
-                          <span>{profile.location}</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+        <div>
+          {/* Overview Tab */}
+          {activeTab === 'overview' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {/* Contact Information */}
+                <section className="surface-panel space-y-4 p-6">
+                  <h3 className="flex items-center gap-2 text-base font-semibold text-midnight-900">
+                    <span className="icon-tile h-8 w-8"><Mail className="h-4 w-4" /></span>
+                    Contact information
+                  </h3>
 
-                  {/* Academic Information */}
-                  <div className="space-y-4">
-                    <h3 className="text-base font-semibold text-midnight-900">Academic information</h3>
-
-                    {isEditing ? (
-                      <div className="space-y-3">
+                  {isEditing ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <Mail className="h-4.5 w-4.5 flex-shrink-0 text-midnight-500" />
+                        <label htmlFor="profile-email" className="sr-only">Email</label>
                         <input
+                          id="profile-email"
+                          type="email"
+                          value={editForm.email}
+                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          className="form-input flex-1"
+                        />
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Phone className="h-4.5 w-4.5 flex-shrink-0 text-midnight-500" />
+                        <label htmlFor="profile-phone" className="sr-only">Phone</label>
+                        <input
+                          id="profile-phone"
+                          type="tel"
+                          value={editForm.phone}
+                          onChange={(e) => handleInputChange('phone', e.target.value)}
+                          className="form-input flex-1"
+                        />
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <MapPin className="h-4.5 w-4.5 flex-shrink-0 text-midnight-500" />
+                        <label htmlFor="profile-location" className="sr-only">Location</label>
+                        <input
+                          id="profile-location"
+                          type="text"
+                          value={editForm.location}
+                          onChange={(e) => handleInputChange('location', e.target.value)}
+                          className="form-input flex-1"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-midnight-900/10 text-sm">
+                      <div className="flex items-center gap-3 py-2.5 text-midnight-700">
+                        <Mail className="h-4.5 w-4.5 flex-shrink-0 text-midnight-500" />
+                        <span className="min-w-0 break-all">{profile.email}</span>
+                      </div>
+                      <div className="flex items-center gap-3 py-2.5 text-midnight-700">
+                        <Phone className="h-4.5 w-4.5 flex-shrink-0 text-midnight-500" />
+                        <span>{profile.phone}</span>
+                      </div>
+                      <div className="flex items-center gap-3 py-2.5 text-midnight-700">
+                        <MapPin className="h-4.5 w-4.5 flex-shrink-0 text-midnight-500" />
+                        <span>{profile.location}</span>
+                      </div>
+                    </div>
+                  )}
+                </section>
+
+                {/* Academic Information */}
+                <section className="surface-lilac space-y-4 p-6">
+                  <h3 className="flex items-center gap-2 text-base font-semibold text-midnight-900">
+                    <span className="icon-tile-dark h-8 w-8"><BookOpen className="h-4 w-4" /></span>
+                    Academic information
+                  </h3>
+
+                  {isEditing ? (
+                    <div className="space-y-3">
+                      <div>
+                        <label htmlFor="profile-roll" className="form-label">Roll number</label>
+                        <input
+                          id="profile-roll"
                           type="text"
                           placeholder="Roll Number"
                           value={editForm.rollNumber}
                           onChange={(e) => handleInputChange('rollNumber', e.target.value)}
                           className="form-input"
                         />
+                      </div>
+                      <div>
+                        <label htmlFor="profile-branch" className="form-label">Branch</label>
                         <input
+                          id="profile-branch"
                           type="text"
                           placeholder="Branch"
                           value={editForm.branch}
                           onChange={(e) => handleInputChange('branch', e.target.value)}
                           className="form-input"
                         />
+                      </div>
+                      <div>
+                        <label htmlFor="profile-year" className="form-label">Year</label>
                         <input
+                          id="profile-year"
                           type="text"
                           placeholder="Year"
                           value={editForm.year}
@@ -300,39 +335,55 @@ const Profile = () => {
                           className="form-input"
                         />
                       </div>
-                    ) : (
-                      <div className="space-y-2 text-sm text-midnight-600">
-                        <p><span className="font-medium text-midnight-900">Roll number:</span> {profile.rollNumber}</p>
-                        <p><span className="font-medium text-midnight-900">Branch:</span> {profile.branch}</p>
-                        <p><span className="font-medium text-midnight-900">Year:</span> {profile.year}</p>
+                    </div>
+                  ) : (
+                    <dl className="divide-y divide-midnight-900/10 text-sm">
+                      <div className="flex items-center justify-between gap-4 py-2.5">
+                        <dt className="font-medium text-midnight-600">Roll number:</dt>
+                        <dd className="font-semibold text-midnight-900">{profile.rollNumber}</dd>
                       </div>
-                    )}
-                  </div>
+                      <div className="flex items-center justify-between gap-4 py-2.5">
+                        <dt className="font-medium text-midnight-600">Branch:</dt>
+                        <dd className="text-right font-semibold text-midnight-900">{profile.branch}</dd>
+                      </div>
+                      <div className="flex items-center justify-between gap-4 py-2.5">
+                        <dt className="font-medium text-midnight-600">Year:</dt>
+                        <dd><span className="rounded-full border border-midnight-900/15 bg-glow-400 px-2.5 py-0.5 font-semibold text-midnight-900">{profile.year}</span></dd>
+                      </div>
+                    </dl>
+                  )}
+                </section>
+              </div>
+
+              {/* Skills */}
+              <section className="surface-panel p-6">
+                <h3 className="mb-4 flex items-center gap-2 text-base font-semibold text-midnight-900">
+                  <span className="icon-tile-lime h-8 w-8"><Briefcase className="h-4 w-4" /></span>
+                  Skills
+                </h3>
+                <div className="mb-3 flex flex-wrap gap-2">
+                  {(isEditing ? editForm.skills : profile.skills).map((skill, index) => (
+                    <span
+                      key={index}
+                      className={`rounded-full border border-midnight-900/10 bg-brand-100 px-3 py-1 text-sm font-medium text-midnight-900 ${
+                        isEditing ? 'flex items-center gap-1.5' : ''
+                      }`}
+                    >
+                      {skill}
+                      {isEditing && (
+                        <button onClick={() => removeSkill(skill)} aria-label={`Remove ${skill}`} className="rounded-full text-midnight-600 hover:text-midnight-900">
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
+                    </span>
+                  ))}
                 </div>
 
-                {/* Skills */}
-                <div>
-                  <h3 className="mb-4 text-base font-semibold text-midnight-900">Skills</h3>
-                  <div className="mb-3 flex flex-wrap gap-2">
-                    {(isEditing ? editForm.skills : profile.skills).map((skill, index) => (
-                      <span
-                        key={index}
-                        className={`rounded-full bg-brand-50 px-3 py-1 text-sm font-medium text-brand-700 ${
-                          isEditing ? 'flex items-center gap-1.5' : ''
-                        }`}
-                      >
-                        {skill}
-                        {isEditing && (
-                          <button onClick={() => removeSkill(skill)} className="text-brand-500 hover:text-brand-800">
-                            <X className="h-3 w-3" />
-                          </button>
-                        )}
-                      </span>
-                    ))}
-                  </div>
-
-                  {isEditing && (
+                {isEditing && (
+                  <>
+                    <label htmlFor="profile-add-skill" className="sr-only">Add a skill</label>
                     <input
+                      id="profile-add-skill"
                       type="text"
                       placeholder="Add a skill and press Enter"
                       className="form-input"
@@ -344,55 +395,57 @@ const Profile = () => {
                         }
                       }}
                     />
-                  )}
-                </div>
-              </div>
-            )}
+                  </>
+                )}
+              </section>
+            </div>
+          )}
 
-            {/* Academic Tab */}
-            {activeTab === 'academic' && (
-              <div className="space-y-6">
-                <h3 className="text-base font-semibold text-midnight-900">Current courses</h3>
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                  {profile.courses.map((course, index) => (
-                    <div key={index} className="flex items-center gap-3 rounded-xl border border-midnight-100 bg-white p-4">
-                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
-                        <BookOpen className="h-4 w-4" />
-                      </div>
-                      <span className="font-medium text-midnight-800">{course}</span>
+          {/* Academic Tab */}
+          {activeTab === 'academic' && (
+            <section className="surface-panel space-y-5 p-6">
+              <h3 className="text-base font-semibold text-midnight-900">Current courses</h3>
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                {profile.courses.map((course, index) => (
+                  <div key={index} className="flex items-center gap-3 rounded-xl border border-midnight-900/10 bg-surface-50 p-4 transition-colors hover:border-midnight-900/30">
+                    <div className="icon-tile h-9 w-9">
+                      <BookOpen className="h-4 w-4" />
                     </div>
-                  ))}
-                </div>
+                    <span className="font-medium text-midnight-800">{course}</span>
+                  </div>
+                ))}
               </div>
-            )}
+            </section>
+          )}
 
-            {/* Achievements Tab */}
-            {activeTab === 'achievements' && (
-              <div className="space-y-6">
-                <h3 className="text-base font-semibold text-midnight-900">Achievements &amp; awards</h3>
-                <div className="space-y-3">
-                  {profile.achievements.map((achievement, index) => (
-                    <div key={index} className="flex items-start gap-3 rounded-xl border border-amber-100 bg-amber-50/60 p-4">
-                      <Award className="mt-0.5 h-4.5 w-4.5 flex-shrink-0 text-amber-600" />
-                      <span className="text-sm text-amber-900">{achievement}</span>
+          {/* Achievements Tab */}
+          {activeTab === 'achievements' && (
+            <section className="surface-panel space-y-5 p-6">
+              <h3 className="text-base font-semibold text-midnight-900">Achievements &amp; awards</h3>
+              <div className="space-y-3">
+                {profile.achievements.map((achievement, index) => (
+                  <div key={index} className="flex items-start gap-3 rounded-xl border border-midnight-900/10 bg-glow-300 p-4">
+                    <div className="icon-tile-dark h-8 w-8">
+                      <Award className="h-4 w-4" />
                     </div>
-                  ))}
-                </div>
+                    <span className="self-center text-sm font-medium text-midnight-900">{achievement}</span>
+                  </div>
+                ))}
               </div>
-            )}
+            </section>
+          )}
 
-            {/* Experience Tab */}
-            {activeTab === 'experience' && (
-              <div className="space-y-6">
-                <h3 className="text-base font-semibold text-midnight-900">Experience &amp; projects</h3>
-                <EmptyState
-                  icon={Briefcase}
-                  title="No experience added yet"
-                  description="Add your internships, projects, and work experience here."
-                />
-              </div>
-            )}
-          </div>
+          {/* Experience Tab */}
+          {activeTab === 'experience' && (
+            <section className="surface-panel space-y-5 p-6">
+              <h3 className="text-base font-semibold text-midnight-900">Experience &amp; projects</h3>
+              <EmptyState
+                icon={Briefcase}
+                title="No experience added yet"
+                description="Add your internships, projects, and work experience here."
+              />
+            </section>
+          )}
         </div>
       </div>
     </div>

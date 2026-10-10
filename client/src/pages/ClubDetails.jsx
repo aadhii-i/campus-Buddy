@@ -57,7 +57,7 @@ const ClubDetails = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-surface-50 pt-20">
+      <div className="page-shell flex items-center justify-center">
         <LoadingState label="Loading club…" />
       </div>
     )
@@ -65,24 +65,38 @@ const ClubDetails = () => {
 
   if (!club) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-surface-50 px-4 pt-20 text-center">
-        <h2 className="text-display mb-2 text-2xl text-midnight-900">Club not found</h2>
-        <p className="mb-6 text-midnight-500">The club you're looking for doesn't exist.</p>
-        <Link to="/" className="font-semibold text-brand-600 hover:underline">Back to home</Link>
+      <div className="page-shell flex flex-col items-center justify-center px-4 text-center">
+        <div className="surface-panel max-w-md px-8 py-12">
+          <div className="icon-tile mx-auto mb-4 h-14 w-14 rounded-2xl">
+            <Users className="h-6 w-6" />
+          </div>
+          <h2 className="text-display mb-2 text-2xl text-midnight-900">Club not found</h2>
+          <p className="mb-6 text-midnight-500">The club you're looking for doesn't exist.</p>
+          <Link to="/" className="btn-primary">
+            <ArrowLeft className="h-4 w-4" /> Back to home
+          </Link>
+        </div>
       </div>
     )
   }
 
   const Icon = Icons[club.logoIcon] || Users
 
+  // Gallery placeholder tiles cycle through palette surfaces (club.logoColor is
+  // legacy data and no longer drives colour).
+  const GALLERY_TILES = [
+    'bg-brand-200 text-midnight-900',
+    'bg-glow-400 text-midnight-900',
+    'bg-midnight-900 text-surface-50',
+  ]
+
   return (
-    <div className="min-h-screen bg-surface-50">
-      {/* Hero */}
-      <div className={`relative overflow-hidden bg-gradient-to-br ${club.logoColor}`}>
-        <div className="absolute inset-0 bg-black/25" />
-        <div className="pointer-events-none absolute inset-0 bg-noise" />
-        <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-28 sm:px-6 lg:px-8">
-          <Link to="/" className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-white/80 hover:text-white">
+    <div className="min-h-screen bg-surface-50 pb-20">
+      {/* Hero — club identity on an ink band */}
+      <div className="relative overflow-hidden bg-midnight-900 text-surface-50">
+        <div className="pointer-events-none absolute inset-0 bg-dots-dark mask-fade-b" />
+        <div className="page-container relative pb-14 pt-28 sm:pt-32">
+          <Link to="/" className="mb-8 inline-flex items-center gap-2 rounded-full text-sm font-medium text-surface-50/70 transition-colors hover:text-surface-50">
             <ArrowLeft className="h-4 w-4" /> Back to home
           </Link>
           <motion.div
@@ -92,10 +106,10 @@ const ClubDetails = () => {
             className="flex flex-col items-start gap-6 sm:flex-row sm:items-center"
           >
             <LogoTile icon={Icon} label={club.name} gradient="from-white/30 to-white/10" size="lg" />
-            <div>
-              <span className="text-sm font-medium uppercase tracking-wide text-white/80">{club.category}</span>
-              <h1 className="text-display mb-3 mt-1 text-4xl text-white sm:text-5xl">{club.name}</h1>
-              <p className="max-w-2xl text-lg text-white/90">{club.description}</p>
+            <div className="min-w-0">
+              <span className="eyebrow-dark capitalize">{club.category}</span>
+              <h1 className="text-display mb-3 mt-3 text-4xl text-surface-50 sm:text-5xl">{club.name}</h1>
+              <p className="max-w-2xl text-lg leading-relaxed text-surface-50/75">{club.description}</p>
             </div>
           </motion.div>
 
@@ -103,7 +117,7 @@ const ClubDetails = () => {
             <button
               onClick={handleJoin}
               disabled={joining}
-              className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-midnight-900 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-50 disabled:opacity-60"
+              className="btn-accent !px-6 !py-3"
             >
               <UserPlus className="h-4.5 w-4.5" />
               {joining ? 'Joining…' : 'Join club'}
@@ -112,7 +126,7 @@ const ClubDetails = () => {
               <button
                 onClick={handleRegisterRecruitment}
                 disabled={registering}
-                className="inline-flex items-center gap-2 rounded-full border border-white/70 px-6 py-3 font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-midnight-900 disabled:opacity-60"
+                className="btn-secondary !px-6 !py-3"
               >
                 <ClipboardCheck className="h-4.5 w-4.5" />
                 {registering ? 'Registering…' : 'Register for recruitment'}
@@ -122,22 +136,22 @@ const ClubDetails = () => {
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-4 py-16 sm:px-6 lg:grid-cols-3 lg:px-8">
+      <div className="page-container grid grid-cols-1 gap-10 py-14 lg:grid-cols-3 lg:gap-12">
         {/* Main content */}
-        <div className="space-y-12 lg:col-span-2">
-          <section>
-            <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold text-midnight-900">
-              <Sparkles className="h-5 w-5 text-brand-600" /> About the club
+        <div className="min-w-0 space-y-10 lg:col-span-2">
+          <section className="surface-panel p-6 sm:p-8">
+            <h2 className="mb-4 flex items-center gap-3 text-2xl font-bold text-midnight-900">
+              <span className="icon-tile h-9 w-9"><Sparkles className="h-4.5 w-4.5" /></span> About the club
             </h2>
             <p className="leading-relaxed text-midnight-600">{club.about}</p>
           </section>
 
           {club.vision && (
-            <section>
-              <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold text-midnight-900">
-                <Target className="h-5 w-5 text-brand-600" /> Vision
+            <section className="surface-lilac p-6 sm:p-8">
+              <h2 className="mb-4 flex items-center gap-3 text-2xl font-bold text-midnight-900">
+                <span className="icon-tile-dark h-9 w-9"><Target className="h-4.5 w-4.5" /></span> Vision
               </h2>
-              <p className="leading-relaxed text-midnight-600">{club.vision}</p>
+              <p className="leading-relaxed text-midnight-800">{club.vision}</p>
             </section>
           )}
 
@@ -146,7 +160,8 @@ const ClubDetails = () => {
               <h2 className="mb-4 text-2xl font-bold text-midnight-900">Activities</h2>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {club.activities.map((activity) => (
-                  <div key={activity} className="rounded-xl border border-midnight-100 bg-white p-4 font-medium text-midnight-700 shadow-soft">
+                  <div key={activity} className="surface-panel flex items-center gap-3 p-4 font-medium text-midnight-800">
+                    <span className="h-2 w-2 flex-shrink-0 rounded-full bg-midnight-900" aria-hidden="true" />
                     {activity}
                   </div>
                 ))}
@@ -161,9 +176,10 @@ const ClubDetails = () => {
                 {club.gallery.map((item, i) => (
                   <div
                     key={i}
-                    className={`flex aspect-square items-end rounded-xl bg-gradient-to-br ${club.logoColor} p-3 text-sm font-medium text-white shadow-card`}
+                    className={`relative flex aspect-square items-end overflow-hidden rounded-2xl border border-midnight-900/10 p-3 text-sm font-medium ${GALLERY_TILES[i % GALLERY_TILES.length]}`}
                   >
-                    {item.caption}
+                    {i % GALLERY_TILES.length === 2 && <div className="pointer-events-none absolute inset-0 bg-dots-dark" aria-hidden="true" />}
+                    <span className="relative">{item.caption}</span>
                   </div>
                 ))}
               </div>
@@ -171,14 +187,14 @@ const ClubDetails = () => {
           )}
 
           {club.achievements?.length > 0 && (
-            <section>
-              <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold text-midnight-900">
-                <Trophy className="h-5 w-5 text-amber-500" /> Achievements
+            <section className="surface-panel p-6 sm:p-8">
+              <h2 className="mb-4 flex items-center gap-3 text-2xl font-bold text-midnight-900">
+                <span className="icon-tile-lime h-9 w-9"><Trophy className="h-4.5 w-4.5" /></span> Achievements
               </h2>
               <ul className="space-y-2.5">
                 {club.achievements.map((achievement) => (
                   <li key={achievement} className="flex items-start gap-2.5 text-midnight-600">
-                    <Trophy className="mt-1 h-4 w-4 shrink-0 text-amber-500" />
+                    <Trophy className="mt-1 h-4 w-4 shrink-0 text-midnight-900" />
                     {achievement}
                   </li>
                 ))}
@@ -187,40 +203,46 @@ const ClubDetails = () => {
           )}
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
+        {/* Sidebar — membership & contacts */}
+        <aside className="space-y-6">
           <div className="surface-panel p-6">
             <div className="mb-2 flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+              <div className="icon-tile-lime h-10 w-10">
                 <Users className="h-4.5 w-4.5" />
               </div>
-              <span className="text-2xl font-bold text-midnight-900">
+              <span className="font-display text-2xl font-bold text-midnight-900">
                 <AnimatedCounter value={club.membersCount} />
               </span>
             </div>
             <p className="text-sm text-midnight-500">Active members</p>
+            {club.recruitmentOpen && (
+              <span className="badge-lime mt-4">Recruitment open</span>
+            )}
           </div>
 
           {club.upcomingEvent?.title && (
-            <div className="surface-panel p-6">
-              <h3 className="mb-3 flex items-center gap-2 font-semibold text-midnight-900">
-                <Calendar className="h-4.5 w-4.5 text-brand-600" /> Upcoming event
-              </h3>
-              <p className="font-medium text-midnight-700">{club.upcomingEvent.title}</p>
-              <p className="mt-1 text-sm text-midnight-400">
-                {new Date(club.upcomingEvent.date).toLocaleDateString(undefined, { dateStyle: 'medium' })}
-              </p>
+            <div className="surface-panel-dark relative overflow-hidden p-6">
+              <div className="pointer-events-none absolute inset-0 bg-dots-dark" aria-hidden="true" />
+              <div className="relative">
+                <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-glow-400">
+                  <Calendar className="h-4 w-4" /> Upcoming event
+                </h3>
+                <p className="font-semibold text-surface-50">{club.upcomingEvent.title}</p>
+                <p className="mt-1 text-sm text-surface-50/70">
+                  {new Date(club.upcomingEvent.date).toLocaleDateString(undefined, { dateStyle: 'medium' })}
+                </p>
+              </div>
             </div>
           )}
 
           {club.facultyCoordinator?.name && (
             <div className="surface-panel p-6">
               <h3 className="mb-3 font-semibold text-midnight-900">Faculty coordinator</h3>
-              <p className="font-medium text-midnight-700">{club.facultyCoordinator.name}</p>
-              <p className="text-sm text-midnight-400">{club.facultyCoordinator.designation}</p>
+              <p className="font-medium text-midnight-800">{club.facultyCoordinator.name}</p>
+              <p className="text-sm text-midnight-500">{club.facultyCoordinator.designation}</p>
               {club.facultyCoordinator.email && (
-                <a href={`mailto:${club.facultyCoordinator.email}`} className="mt-2 inline-flex items-center gap-1.5 text-sm text-brand-600 hover:underline">
-                  <Mail className="h-3.5 w-3.5" /> {club.facultyCoordinator.email}
+                <a href={`mailto:${club.facultyCoordinator.email}`} className="link mt-3 inline-flex items-center gap-1.5 break-all text-sm">
+                  <Mail className="h-3.5 w-3.5 flex-shrink-0" /> {club.facultyCoordinator.email}
                 </a>
               )}
             </div>
@@ -229,20 +251,20 @@ const ClubDetails = () => {
           {club.coreTeam?.length > 0 && (
             <div className="surface-panel p-6">
               <h3 className="mb-4 font-semibold text-midnight-900">Core team</h3>
-              <div className="space-y-3">
+              <div className="divide-y divide-midnight-900/10">
                 {club.coreTeam.map((member) => (
-                  <div key={member.name} className="flex items-center gap-3">
+                  <div key={member.name} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
                     <LogoTile label={member.name} gradient={club.logoColor} size="sm" />
-                    <div>
-                      <p className="text-sm font-medium text-midnight-900">{member.name}</p>
-                      <p className="text-xs text-midnight-400">{member.role} · {member.year}</p>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-midnight-900">{member.name}</p>
+                      <p className="text-xs text-midnight-500">{member.role} · {member.year}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
           )}
-        </div>
+        </aside>
       </div>
     </div>
   )

@@ -26,9 +26,9 @@ const CountdownTimer = ({ target, className = '' }) => {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       {units.map((unit) => (
-        <div key={unit.label} className="bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 text-center min-w-[2.5rem]">
-          <span className="text-sm font-bold text-white">{unit.value}</span>
-          <span className="text-xs text-white/70 ml-0.5">{unit.label}</span>
+        <div key={unit.label} className="bg-surface-0 border border-midnight-900/15 rounded-lg px-2 py-1 text-center min-w-[2.5rem]">
+          <span className="text-sm font-bold text-midnight-900">{unit.value}</span>
+          <span className="text-xs text-midnight-500 ml-0.5">{unit.label}</span>
         </div>
       ))}
     </div>

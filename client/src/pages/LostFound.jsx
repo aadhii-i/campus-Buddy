@@ -95,11 +95,11 @@ const LostFound = () => {
   });
 
   return (
-    <div className="min-h-screen bg-surface-50 pb-20 pt-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="page-shell">
+      <div className="page-container">
         <PageHeader
           eyebrow="Lost & found"
-          title="Reunite items with their owners"
+          title={<>Reunite items with their <span className="marker">owners</span></>}
           description="Search what's been lost or found on campus, or report an item in under a minute."
           actions={
             <button onClick={() => setShowModal(true)} className="btn-primary flex-shrink-0">
@@ -110,11 +110,13 @@ const LostFound = () => {
         />
 
         {/* Search and Filters */}
-        <div className="surface-panel mt-8 p-5">
+        <div className="surface-panel mt-8 p-4 sm:p-5">
           <div className="flex flex-col gap-4 md:flex-row md:items-center">
             <div className="relative flex-1">
+              <label htmlFor="lostfound-search" className="sr-only">Search items</label>
               <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-400" />
               <input
+                id="lostfound-search"
                 type="text"
                 placeholder="Search by title or description…"
                 className="form-input pl-10"
@@ -122,14 +124,17 @@ const LostFound = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex flex-shrink-0 gap-2">
+            <div
+              role="group"
+              aria-label="Filter by type"
+              className="no-scrollbar -mx-1 flex flex-shrink-0 gap-2 overflow-x-auto px-1"
+            >
               {FILTERS.map(f => (
                 <button
                   key={f.value}
                   onClick={() => setFilter(f.value)}
-                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                    filter === f.value ? 'bg-brand-600 text-white' : 'bg-midnight-100 text-midnight-600 hover:bg-midnight-200'
-                  }`}
+                  aria-pressed={filter === f.value}
+                  className={filter === f.value ? 'chip-active' : 'chip'}
                 >
                   {f.label}
                 </button>
@@ -142,7 +147,7 @@ const LostFound = () => {
         {loading ? (
           <LoadingState label="Loading items…" />
         ) : filteredItems.length === 0 ? (
-          <div className="mt-4">
+          <div className="mt-6">
             <EmptyState
               icon={PackageSearch}
               title="No items found"
@@ -150,60 +155,93 @@ const LostFound = () => {
             />
           </div>
         ) : (
-          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredItems.map((item, index) => (
-              <motion.div
-                key={item._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className={`group overflow-hidden rounded-2xl border-l-4 bg-white shadow-card transition-shadow duration-300 hover:shadow-card-hover ${
-                  item.type === 'lost' ? 'border-l-rose-400' : 'border-l-emerald-400'
-                }`}
-              >
-                <div className="p-6">
-                  <div className="mb-3 flex items-start justify-between gap-3">
-                    <h3 className="text-lg font-bold text-midnight-900">{item.title}</h3>
-                    <span className={`flex-shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${
-                      item.type === 'lost'
-                        ? 'bg-rose-50 text-rose-700'
-                        : 'bg-emerald-50 text-emerald-700'
-                    }`}>
-                      {item.type === 'lost' ? 'Lost' : 'Found'}
-                    </span>
-                  </div>
+          <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredItems.map((item, index) => {
+              // Presentational only: show the first attached photo if the item has one.
+              const firstImage = item.images?.[0];
+              const imageUrl = typeof firstImage === 'string' ? firstImage : firstImage?.url;
+              const isClosed = item.status === 'resolved' || item.status === 'matched';
 
-                  <p className="mb-4 line-clamp-2 text-sm text-midnight-500">{item.description}</p>
+              return (
+                <motion.div
+                  key={item._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="group surface-panel card-interactive flex h-full flex-col overflow-hidden"
+                >
+                  {/* Media — fixed aspect ratio so every card lines up */}
+                  <div className="relative aspect-[4/3] overflow-hidden border-b border-midnight-900/10 bg-midnight-50">
+                    {imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt={item.title}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="relative flex h-full w-full items-center justify-center bg-brand-100">
+                        <div className="pointer-events-none absolute inset-0 bg-dots" />
+                        <div className="relative flex flex-col items-center gap-2">
+                          <div className="icon-tile h-14 w-14 rounded-2xl bg-surface-0">
+                            <PackageSearch className="h-6 w-6" />
+                          </div>
+                          <span className="text-xs font-medium text-midnight-600">No photo</span>
+                        </div>
+                      </div>
+                    )}
 
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2 text-sm text-midnight-500">
-                      <MapPin className="h-4 w-4 text-midnight-400" />
-                      <span>{item.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-midnight-500">
-                      <User className="h-4 w-4 text-midnight-400" />
-                      <span>{item.user?.name || 'Anonymous'}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-midnight-500">
-                      <Calendar className="h-4 w-4 text-midnight-400" />
-                      <span>{new Date(item.createdAt).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 flex items-center justify-between border-t border-midnight-100 pt-4">
-                    <span className="text-xs font-medium uppercase tracking-wide text-midnight-400">Contact</span>
-                    <div className="flex items-center gap-1.5">
-                      {item.contactInfo.includes('@') ? (
-                        <Mail className="h-3.5 w-3.5 text-brand-600" />
-                      ) : (
-                        <Phone className="h-3.5 w-3.5 text-brand-600" />
+                    <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
+                      <span className={item.type === 'lost' ? 'badge-danger' : 'badge-success'}>
+                        {item.type === 'lost' ? 'Lost' : 'Found'}
+                      </span>
+                      {isClosed && (
+                        <span className="badge-outline bg-surface-0">{item.status}</span>
                       )}
-                      <span className="text-sm font-semibold text-brand-700">{item.contactInfo}</span>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+
+                  <div className="flex flex-1 flex-col p-5">
+                    {item.category && (
+                      <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-midnight-500">
+                        {item.category}
+                      </p>
+                    )}
+                    <h3 className="mb-2 line-clamp-1 text-lg font-bold leading-snug text-midnight-900">{item.title}</h3>
+                    <p className="mb-4 line-clamp-2 text-sm text-midnight-600">{item.description}</p>
+
+                    <div className="space-y-1.5 border-t border-midnight-900/10 pt-3">
+                      <div className="flex items-center gap-2 text-sm text-midnight-600">
+                        <MapPin className="h-4 w-4 flex-shrink-0 text-midnight-500" />
+                        <span className="truncate">{item.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-midnight-600">
+                        <User className="h-4 w-4 flex-shrink-0 text-midnight-500" />
+                        <span className="truncate">{item.user?.name || 'Anonymous'}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-midnight-600">
+                        <Calendar className="h-4 w-4 flex-shrink-0 text-midnight-500" />
+                        <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-auto pt-4">
+                      <div className="flex items-center justify-between gap-3 rounded-xl bg-brand-100 px-3.5 py-2.5">
+                        <span className="text-[11px] font-semibold uppercase tracking-wide text-midnight-600">Contact</span>
+                        <div className="flex min-w-0 items-center gap-1.5">
+                          {item.contactInfo.includes('@') ? (
+                            <Mail className="h-3.5 w-3.5 flex-shrink-0 text-midnight-900" />
+                          ) : (
+                            <Phone className="h-3.5 w-3.5 flex-shrink-0 text-midnight-900" />
+                          )}
+                          <span className="truncate text-sm font-semibold text-midnight-900">{item.contactInfo}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </div>
@@ -215,7 +253,7 @@ const LostFound = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-midnight-950/60 p-4 backdrop-blur-sm"
+            className="modal-overlay"
             onClick={() => setShowModal(false)}
           >
             <motion.div
@@ -224,19 +262,28 @@ const LostFound = () => {
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white shadow-card-hover"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="report-item-title"
+              className="modal-panel max-w-lg"
             >
-              <div className="flex items-center justify-between border-b border-midnight-100 px-6 py-4">
-                <h3 className="text-lg font-bold text-midnight-900">Report an item</h3>
-                <button onClick={() => setShowModal(false)} className="rounded-full p-1.5 text-midnight-400 hover:bg-midnight-100">
+              <div className="modal-header bg-brand-200/60">
+                <div className="flex items-center gap-2.5">
+                  <div className="icon-tile-dark h-9 w-9">
+                    <PackageSearch className="h-4 w-4" />
+                  </div>
+                  <h3 id="report-item-title" className="text-lg font-bold text-midnight-900">Report an item</h3>
+                </div>
+                <button onClick={() => setShowModal(false)} aria-label="Close" className="btn-icon">
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4 p-6">
                 <div>
-                  <label className="form-label">Item title</label>
+                  <label htmlFor="report-title" className="form-label">Item title</label>
                   <input
+                    id="report-title"
                     type="text"
                     required
                     className="form-input"
@@ -246,8 +293,9 @@ const LostFound = () => {
                 </div>
 
                 <div>
-                  <label className="form-label">Description</label>
+                  <label htmlFor="report-description" className="form-label">Description</label>
                   <textarea
+                    id="report-description"
                     required
                     rows={3}
                     className="form-textarea"
@@ -256,10 +304,11 @@ const LostFound = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="form-label">Type</label>
+                    <label htmlFor="report-type" className="form-label">Type</label>
                     <select
+                      id="report-type"
                       className="form-select"
                       value={newItem.type}
                       onChange={(e) => setNewItem({...newItem, type: e.target.value})}
@@ -270,8 +319,9 @@ const LostFound = () => {
                   </div>
 
                   <div>
-                    <label className="form-label">Category</label>
+                    <label htmlFor="report-category" className="form-label">Category</label>
                     <select
+                      id="report-category"
                       className="form-select"
                       value={newItem.category}
                       onChange={(e) => setNewItem({...newItem, category: e.target.value})}
@@ -287,31 +337,39 @@ const LostFound = () => {
                 </div>
 
                 <div>
-                  <label className="form-label">Location</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Where was it lost/found?"
-                    className="form-input"
-                    value={newItem.location}
-                    onChange={(e) => setNewItem({...newItem, location: e.target.value})}
-                  />
+                  <label htmlFor="report-location" className="form-label">Location</label>
+                  <div className="relative">
+                    <MapPin className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-500" />
+                    <input
+                      id="report-location"
+                      type="text"
+                      required
+                      placeholder="Where was it lost/found?"
+                      className="form-input pl-10"
+                      value={newItem.location}
+                      onChange={(e) => setNewItem({...newItem, location: e.target.value})}
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="form-label">Contact information</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Email or phone number"
-                    className="form-input"
-                    value={newItem.contactInfo}
-                    onChange={(e) => setNewItem({...newItem, contactInfo: e.target.value})}
-                  />
+                  <label htmlFor="report-contact" className="form-label">Contact information</label>
+                  <div className="relative">
+                    <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-midnight-500" />
+                    <input
+                      id="report-contact"
+                      type="text"
+                      required
+                      placeholder="Email or phone number"
+                      className="form-input pl-10"
+                      value={newItem.contactInfo}
+                      onChange={(e) => setNewItem({...newItem, contactInfo: e.target.value})}
+                    />
+                  </div>
                 </div>
 
-                <div className="flex gap-3 pt-2">
-                  <button type="button" onClick={() => setShowModal(false)} className="btn-secondary flex-1">
+                <div className="flex flex-col-reverse gap-3 border-t border-midnight-900/10 pt-4 sm:flex-row">
+                  <button type="button" onClick={() => setShowModal(false)} className="btn-ghost flex-1">
                     Cancel
                   </button>
                   <button type="submit" className="btn-primary flex-1">

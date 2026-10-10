@@ -6,7 +6,16 @@ import { upcomingEventsShowcase } from '../../data/upcomingEventsShowcase'
 import SectionHeading from './SectionHeading'
 import CountdownTimer from './CountdownTimer'
 
+// Header surfaces cycle through the palette; the legacy `event.gradient`
+// strings in the showcase data are no longer used for colour.
+const HEADER_STYLES = [
+  { bg: 'bg-midnight-900 bg-dots-dark', icon: 'text-glow-400' },
+  { bg: 'bg-brand-200', icon: 'text-midnight-900' },
+  { bg: 'bg-glow-400', icon: 'text-midnight-900' },
+]
+
 const EventCard = ({ event, index }) => {
+  const header = HEADER_STYLES[index % HEADER_STYLES.length]
   const seatsFilled = Math.round(((event.totalSeats - event.seatsLeft) / event.totalSeats) * 100)
 
   return (
@@ -16,15 +25,15 @@ const EventCard = ({ event, index }) => {
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
       whileHover={{ y: -6 }}
-      className="snap-center shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl shadow-md hover:shadow-xl border border-gray-100 overflow-hidden transition-shadow duration-300"
+      className="snap-center shrink-0 w-[280px] sm:w-[320px] bg-surface-0 rounded-2xl border border-midnight-900/10 hover:border-midnight-900/30 hover:shadow-card-hover overflow-hidden transition-[box-shadow,border-color] duration-300"
     >
-      <div className={`relative h-36 bg-gradient-to-br ${event.gradient} flex items-end p-4`}>
-        <PartyPopper className="absolute top-4 right-4 w-6 h-6 text-white/70" />
+      <div className={`relative h-36 ${header.bg} flex items-end p-4 border-b border-midnight-900/10`}>
+        <PartyPopper className={`absolute top-4 right-4 w-6 h-6 ${header.icon}`} />
         <CountdownTimer target={event.date} />
       </div>
       <div className="p-5">
-        <h3 className="font-semibold text-gray-900 mb-3 leading-snug">{event.title}</h3>
-        <div className="space-y-1.5 text-sm text-gray-500 mb-4">
+        <h3 className="font-semibold text-midnight-900 mb-3 leading-snug">{event.title}</h3>
+        <div className="space-y-1.5 text-sm text-midnight-600 mb-4">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4" /> {new Date(event.date).toLocaleDateString(undefined, { dateStyle: 'medium' })}
           </div>
@@ -37,18 +46,18 @@ const EventCard = ({ event, index }) => {
         </div>
 
         <div className="mb-4">
-          <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+          <div className="flex items-center justify-between text-xs text-midnight-600 mb-1">
             <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5" /> {event.seatsLeft} seats left</span>
             <span>{seatsFilled}% full</span>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-1.5">
-            <div className={`h-1.5 rounded-full bg-gradient-to-r ${event.gradient}`} style={{ width: `${seatsFilled}%` }}></div>
+          <div className="w-full bg-brand-200 rounded-full h-1.5" role="progressbar" aria-valuenow={seatsFilled} aria-valuemin={0} aria-valuemax={100} aria-label="Seats filled">
+            <div className="h-1.5 rounded-full bg-midnight-900" style={{ width: `${seatsFilled}%` }}></div>
           </div>
         </div>
 
         <Link
           to="/events"
-          className="block text-center bg-gray-900 text-white rounded-full py-2.5 font-semibold text-sm hover:bg-gray-800 transition-colors duration-300"
+          className="btn-primary w-full"
         >
           Register
         </Link>
@@ -65,7 +74,7 @@ const EventsCarouselSection = () => {
   }
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 sm:py-28 bg-surface-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between mb-4">
           <SectionHeading
@@ -89,14 +98,14 @@ const EventsCarouselSection = () => {
           <div className="hidden sm:flex justify-center gap-3 mt-6">
             <button
               onClick={() => scroll(-1)}
-              className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
+              className="w-10 h-10 rounded-full border border-midnight-900/20 flex items-center justify-center text-midnight-900 hover:bg-glow-400 hover:border-midnight-900 transition-colors"
               aria-label="Scroll left"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={() => scroll(1)}
-              className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
+              className="w-10 h-10 rounded-full border border-midnight-900/20 flex items-center justify-center text-midnight-900 hover:bg-glow-400 hover:border-midnight-900 transition-colors"
               aria-label="Scroll right"
             >
               <ChevronRight className="w-5 h-5" />

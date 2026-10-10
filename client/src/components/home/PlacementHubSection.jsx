@@ -8,7 +8,7 @@ import LogoTile from './LogoTile'
 
 const PlacementHubSection = () => {
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 sm:py-28 bg-surface-100 border-y border-midnight-900/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Placement Hub"
@@ -25,26 +25,26 @@ const PlacementHubSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.08 }}
               whileHover={{ y: -6 }}
-              className="bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 p-6 transition-shadow duration-300"
+              className="flex flex-col bg-surface-0 rounded-2xl border border-midnight-900/10 hover:border-midnight-900/30 hover:shadow-card-hover p-6 transition-[box-shadow,border-color] duration-300"
             >
               <div className="flex items-center gap-4 mb-5">
                 <LogoTile label={company.name} gradient={company.gradient} size="lg" />
                 <div>
-                  <h3 className="font-bold text-lg text-gray-900">{company.name}</h3>
-                  <p className="text-gray-500 text-sm flex items-center gap-1">
+                  <h3 className="font-bold text-lg text-midnight-900">{company.name}</h3>
+                  <p className="text-midnight-600 text-sm flex items-center gap-1">
                     <Briefcase className="w-3.5 h-3.5" /> {company.role}
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-2 mb-6">
+              <div className="space-y-2 mb-6 border-t border-midnight-900/10 pt-4">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500 flex items-center gap-1.5"><IndianRupee className="w-4 h-4" /> Package</span>
-                  <span className="font-semibold text-gray-900">{company.package}</span>
+                  <span className="text-midnight-600 flex items-center gap-1.5"><IndianRupee className="w-4 h-4" /> Package</span>
+                  <span className="rounded-full bg-glow-400 px-2.5 py-0.5 font-semibold text-midnight-900">{company.package}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500 flex items-center gap-1.5"><CalendarClock className="w-4 h-4" /> Deadline</span>
-                  <span className="font-semibold text-gray-900">
+                  <span className="text-midnight-600 flex items-center gap-1.5"><CalendarClock className="w-4 h-4" /> Deadline</span>
+                  <span className="font-semibold text-midnight-900">
                     {new Date(company.deadline).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
                   </span>
                 </div>
@@ -52,7 +52,7 @@ const PlacementHubSection = () => {
 
               <Link
                 to="/placement-news"
-                className="inline-flex items-center justify-center gap-1.5 w-full bg-gray-900 text-white rounded-full py-2.5 font-semibold text-sm hover:bg-gray-800 transition-colors duration-300"
+                className="btn-primary mt-auto w-full"
               >
                 Apply Now <ArrowUpRight className="w-4 h-4" />
               </Link>

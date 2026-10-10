@@ -8,10 +8,10 @@ import SectionHeading from './SectionHeading'
 
 const AIFeaturesSection = () => {
   return (
-    <section className="py-20 bg-gradient-to-br from-midnight-950 via-midnight-900 to-brand-950 relative overflow-hidden">
+    <section className="py-20 sm:py-28 bg-brand-200 border-y border-midnight-900/10 relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 bg-dots mask-fade-b" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <SectionHeading
-          light
           eyebrow="Powered by AI"
           title="AI Features Built for Your Success"
           subtitle="From your resume to your interview, let AI help you every step of the way."
@@ -26,14 +26,14 @@ const AIFeaturesSection = () => {
           >
             <Link
               to="/resume-analyzer"
-              className="group block h-full bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl p-6 hover:shadow-2xl hover:shadow-brand-600/30 transition-all duration-300 hover:-translate-y-1"
+              className="group flex flex-col h-full bg-midnight-900 rounded-2xl p-6 hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1"
             >
-              <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center mb-4">
-                <FileText className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 rounded-xl bg-glow-400 flex items-center justify-center mb-4">
+                <FileText className="w-6 h-6 text-midnight-900" />
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Resume Analyzer</h3>
-              <p className="text-white/70 text-sm mb-4">Get AI-powered insights to improve your resume instantly.</p>
-              <span className="inline-flex items-center gap-1 text-white text-sm font-medium group-hover:gap-2 transition-all">
+              <h3 className="text-lg font-semibold text-surface-50 mb-2">Resume Analyzer</h3>
+              <p className="text-surface-50/70 text-sm mb-4">Get AI-powered insights to improve your resume instantly.</p>
+              <span className="mt-auto inline-flex items-center gap-1 self-start rounded-full bg-glow-400 px-3 py-1.5 text-midnight-900 text-sm font-semibold group-hover:gap-2 transition-all">
                 Try it now <ArrowRight className="w-4 h-4" />
               </span>
             </Link>
@@ -51,15 +51,15 @@ const AIFeaturesSection = () => {
               >
                 <button
                   onClick={() => toast('Coming soon!', { icon: '✨' })}
-                  className="group w-full text-left h-full bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1"
+                  className="group flex flex-col w-full text-left h-full bg-surface-0 border border-midnight-900/10 rounded-2xl p-6 hover:border-midnight-900/40 hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center mb-4">
-                    <Icon className="w-6 h-6 text-glow-400" />
+                  <div className="icon-tile w-12 h-12 mb-4 bg-brand-100">
+                    <Icon className="w-6 h-6" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-                  <p className="text-gray-400 text-sm mb-4">{feature.description}</p>
-                  <span className="inline-flex items-center gap-1 text-glow-400 text-sm font-medium group-hover:gap-2 transition-all">
-                    Coming soon <ArrowRight className="w-4 h-4" />
+                  <h3 className="text-lg font-semibold text-midnight-900 mb-2">{feature.title}</h3>
+                  <p className="text-midnight-600 text-sm mb-4">{feature.description}</p>
+                  <span className="mt-auto badge-outline self-start group-hover:gap-2 transition-all">
+                    Coming soon <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </button>
               </motion.div>

@@ -4,6 +4,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================================
+   Design tokens — mirrors of tailwind.config.js (single source of truth via
+   theme()), exposed as CSS variables for raw CSS, inline styles and SVG.
+   Typography is intentionally unchanged: Inter for body, Sora for display.
+   ========================================================================== */
+:root {
+  --color-brand-primary: theme('colors.brand.primary');
+  --color-brand-accent: theme('colors.brand.accent');
+  --color-brand-lilac: theme('colors.brand.lilac');
+  --color-neutral-background: theme('colors.neutral.background');
+  --color-surface-highlight: theme('colors.surface.highlight');
+  --color-surface-paper: theme('colors.surface.0');
+  --color-ink-muted: theme('colors.midnight.500');
+  --color-line: rgba(26, 26, 26, 0.1);
+
+  color-scheme: light;
+  scrollbar-color: var(--color-brand-primary) var(--color-neutral-background);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -16,96 +35,206 @@ html {
 
 body {
   font-family: 'Inter', sans-serif;
-  background-color: #f8f9fc;
-  color: #1a2140;
+  background-color: var(--color-neutral-background);
+  color: var(--color-brand-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 ::selection {
-  background: #d0caff;
-  color: #1d1350;
+  background: var(--color-brand-lilac);
+  color: var(--color-brand-primary);
 }
 
-/* Custom scrollbar */
+/* ---- Scrollbar ----------------------------------------------------------- */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #FCFFD7;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c6cee3;
-  border-radius: 999px;
-  border: 2px solid #f8f9fc;
+  background: #1A1A1A;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #96a3c4;
+  background: #33342F;
 }
 
-/* Consistent, visible keyboard focus without an ugly default browser ring */
+/* Consistent, visible keyboard focus: ink outline reads on cream, lilac and lime. */
 :focus-visible {
-  outline: 2px solid #6c53f0;
+  outline: 2px solid var(--color-brand-primary);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 6px;
+}
+
+.surface-panel-dark :focus-visible,
+.bg-midnight-900 :focus-visible,
+.bg-midnight-950 :focus-visible {
+  outline-color: var(--color-surface-highlight);
 }
 
 @layer components {
-  /* ---- Typography system --------------------------------------------- */
+  /* ---- Layout ----------------------------------------------------------- */
+  .page-container {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Internal pages: clears the fixed navbar and sets the shared background. */
+  .page-shell {
+    @apply min-h-screen bg-surface-50 pb-20 pt-28 sm:pt-32;
+  }
+
+  .section-divider {
+    @apply border-t border-midnight-900/10;
+  }
+
+  /* ---- Typography system ------------------------------------------------ */
   .text-display {
     @apply font-display font-bold tracking-tightest;
   }
 
   .eyebrow {
-    @apply inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide2 text-brand-600;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-midnight-900/15 bg-surface-0 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide2 text-midnight-800;
   }
 
-  /* ---- Surfaces --------------------------------------------------------
-     A single vocabulary for "raised panel" so cards stop being interchangeable
-     white rectangles. Pick the treatment that matches the content's weight. */
+  .eyebrow-dark {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.04] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide2 text-glow-400;
+  }
+
+  .link {
+    @apply font-semibold text-midnight-900 underline decoration-brand-300 decoration-2 underline-offset-4 transition-colors hover:decoration-midnight-900;
+  }
+
+  /* ---- Surfaces ----------------------------------------------------------
+     Flat paper cards with hairline borders. Pick the treatment that matches
+     the content's weight: paper (default), lilac (secondary / AI), lime
+     (highlight), dark (emphasis). */
   .surface-panel {
-    @apply bg-white border border-midnight-100/70 shadow-card rounded-2xl;
+    @apply rounded-2xl border border-midnight-900/10 bg-surface-0;
   }
 
   .surface-panel-dark {
-    @apply bg-midnight-850 border border-white/[0.06] shadow-card rounded-2xl text-white;
+    @apply rounded-2xl border border-midnight-900 bg-midnight-900 text-surface-50;
+  }
+
+  .surface-lilac {
+    @apply rounded-2xl border border-midnight-900/10 bg-brand-200;
+  }
+
+  .surface-lime {
+    @apply rounded-2xl border border-midnight-900/10 bg-glow-400;
   }
 
   .surface-glass {
-    @apply bg-white/70 backdrop-blur-xl border border-white/60 shadow-soft;
+    @apply border border-midnight-900/10 bg-surface-0/85 backdrop-blur-md;
   }
 
   .surface-glass-dark {
-    @apply bg-white/[0.06] backdrop-blur-xl border border-white/10;
+    @apply border border-white/10 bg-white/[0.05];
   }
 
-  /* ---- Buttons ---------------------------------------------------------
-     Kept as plain classes (not @apply-only components) so existing markup
-     using .btn-primary etc. anywhere still resolves; new UI should prefer
-     the <Button> component in components/common. */
+  .card-interactive {
+    @apply transition-all duration-300 hover:-translate-y-0.5 hover:border-midnight-900/30 hover:shadow-card-hover;
+  }
+
+  .icon-tile {
+    @apply flex flex-shrink-0 items-center justify-center rounded-xl border border-midnight-900/10 bg-brand-200 text-midnight-900;
+  }
+
+  .icon-tile-lime {
+    @apply flex flex-shrink-0 items-center justify-center rounded-xl border border-midnight-900/10 bg-glow-400 text-midnight-900;
+  }
+
+  .icon-tile-dark {
+    @apply flex flex-shrink-0 items-center justify-center rounded-xl bg-midnight-900 text-glow-400;
+  }
+
+  /* ---- Buttons -----------------------------------------------------------
+     primary = ink, secondary = lilac, accent = lime, ghost = outline. */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 active:translate-y-px disabled:pointer-events-none disabled:opacity-50;
+  }
+
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-glow transition-all duration-200 hover:bg-brand-700 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:pointer-events-none;
+    @apply btn border border-midnight-900 bg-midnight-900 text-surface-50 hover:bg-midnight-700;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-midnight-100 px-5 py-2.5 text-sm font-semibold text-midnight-800 transition-all duration-200 hover:bg-midnight-200 disabled:opacity-50 disabled:pointer-events-none;
+    @apply btn border border-midnight-900/10 bg-brand-200 text-midnight-900 hover:border-midnight-900/40 hover:bg-brand-300;
+  }
+
+  .btn-accent {
+    @apply btn border border-midnight-900 bg-glow-400 text-midnight-900 hover:bg-glow-500;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-midnight-200 bg-transparent px-5 py-2.5 text-sm font-semibold text-midnight-700 transition-all duration-200 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700;
+    @apply btn border border-midnight-900/20 bg-transparent text-midnight-900 hover:border-midnight-900 hover:bg-surface-0;
+  }
+
+  .btn-ghost-dark {
+    @apply btn border border-white/20 bg-transparent text-surface-50 hover:border-white/60 hover:bg-white/5;
   }
 
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-rose-700;
+    @apply btn border border-rose-700 bg-rose-700 text-white hover:bg-rose-800;
   }
 
-  /* ---- Forms ------------------------------------------------------------ */
+  .btn-icon {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-full text-midnight-600 transition-colors hover:bg-midnight-900/5 hover:text-midnight-900;
+  }
+
+  /* ---- Chips, tabs, filters ------------------------------------------- */
+  .chip {
+    @apply inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-midnight-900/15 bg-surface-0 px-3.5 py-1.5 text-sm font-medium text-midnight-600 transition-colors hover:border-midnight-900/40 hover:text-midnight-900;
+  }
+
+  .chip-active {
+    @apply chip border-midnight-900 bg-glow-400 text-midnight-900 hover:border-midnight-900;
+  }
+
+  .tab-list {
+    @apply inline-flex items-center gap-1 rounded-full border border-midnight-900/10 bg-surface-0 p-1;
+  }
+
+  .tab {
+    @apply inline-flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium text-midnight-500 transition-colors hover:text-midnight-900;
+  }
+
+  .tab-active {
+    @apply tab bg-midnight-900 text-surface-50 hover:text-surface-50;
+  }
+
+  /* ---- Badges ---------------------------------------------------------- */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide;
+  }
+  .badge-neutral { @apply badge border border-midnight-900/10 bg-midnight-100 text-midnight-700; }
+  .badge-ink     { @apply badge bg-midnight-900 text-surface-50; }
+  .badge-lilac   { @apply badge bg-brand-200 text-midnight-900; }
+  .badge-lime    { @apply badge border border-midnight-900/15 bg-glow-400 text-midnight-900; }
+  .badge-outline { @apply badge border border-midnight-900/20 text-midnight-700; }
+  .badge-success { @apply badge bg-emerald-100 text-emerald-800; }
+  .badge-warning { @apply badge bg-amber-100 text-amber-800; }
+  .badge-danger  { @apply badge bg-rose-100 text-rose-800; }
+
+  /* ---- Alerts ---------------------------------------------------------- */
+  .alert {
+    @apply flex items-start gap-3 rounded-xl border px-4 py-3 text-sm;
+  }
+  .alert-info    { @apply alert border-brand-300 bg-brand-100 text-midnight-900; }
+  .alert-success { @apply alert border-emerald-300 bg-emerald-50 text-emerald-900; }
+  .alert-warning { @apply alert border-amber-300 bg-amber-50 text-amber-900; }
+  .alert-error   { @apply alert border-rose-300 bg-rose-50 text-rose-900; }
+
+  /* ---- Forms ----------------------------------------------------------- */
   .form-input {
-    @apply w-full rounded-xl border border-midnight-200 bg-white px-3.5 py-2.5 text-sm text-midnight-800 placeholder-midnight-400 shadow-sm transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100;
+    @apply w-full rounded-xl border border-midnight-900/15 bg-surface-0 px-3.5 py-2.5 text-sm text-midnight-900 placeholder-midnight-400 transition-colors hover:border-midnight-900/30 focus:border-midnight-900 focus:outline-none focus:ring-4 focus:ring-brand-200;
   }
 
   .form-textarea {
@@ -113,11 +242,31 @@ body {
   }
 
   .form-select {
-    @apply form-input appearance-none pr-9;
+    @apply form-input cursor-pointer appearance-none bg-no-repeat pr-9;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%231A1A1A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.75rem center;
   }
 
   .form-label {
-    @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-midnight-500;
+    @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-midnight-600;
+  }
+
+  /* ---- Modals ---------------------------------------------------------- */
+  .modal-overlay {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-midnight-950/55 p-4 backdrop-blur-sm;
+  }
+
+  .modal-panel {
+    @apply max-h-[92vh] w-full overflow-y-auto rounded-2xl border border-midnight-900/10 bg-surface-0 shadow-float;
+  }
+
+  .modal-header {
+    @apply flex items-center justify-between border-b border-midnight-900/10 px-6 py-5;
+  }
+
+  /* ---- Loading --------------------------------------------------------- */
+  .skeleton {
+    @apply animate-pulse rounded-xl bg-midnight-900/[0.06];
   }
 }
 
@@ -126,28 +275,98 @@ body {
     background-image: theme('backgroundImage.grain');
   }
 
+  .bg-dots {
+    background-image: theme('backgroundImage.mesh-light');
+    background-size: 22px 22px;
+  }
+
+  .bg-dots-dark {
+    background-image: theme('backgroundImage.mesh-dark');
+    background-size: 22px 22px;
+  }
+
   .mask-fade-b {
     mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
   }
 
+  .mask-fade-x {
+    mask-image: linear-gradient(to right, transparent 0, black 6%, black 94%, transparent 100%);
+  }
+
+  /* Highlighter-pen emphasis — replaces the old indigo→teal gradient text. */
+  .marker {
+    background-image: linear-gradient(transparent 60%, theme('colors.glow.400') 60%, theme('colors.glow.400') 92%, transparent 92%);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    padding: 0 0.08em;
+  }
+
+  .marker-lilac {
+    background-image: linear-gradient(transparent 60%, theme('colors.brand.200') 60%, theme('colors.brand.200') 92%, transparent 92%);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    padding: 0 0.08em;
+  }
+
+  /* Kept for backwards compatibility — now renders as the marker treatment. */
   .text-gradient-brand {
-    background: linear-gradient(95deg, #6c53f0 0%, #8b78fb 45%, #14ccae 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    @apply marker;
   }
 
   .card-hover {
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
   }
   .card-hover:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 10px rgba(16, 19, 43, 0.06), 0 16px 40px -12px rgba(16, 19, 43, 0.18);
+    transform: translateY(-3px);
+    box-shadow: theme('boxShadow.card-hover');
   }
 
-  .animation-delay-1000 { animation-delay: 1s; }
-  .animation-delay-2000 { animation-delay: 2s; }
-  .animation-delay-4000 { animation-delay: 4s; }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Marquee — for horizontal showcases (clubs, highlights, capabilities).
+   Markup: .marquee > .animate-marquee > [content][content duplicate]
+   The track holds two identical copies, so translating by -50% loops seamlessly.
+   ========================================================================== */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
+}
+
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse 32s linear infinite;
+}
+
+.pause-on-hover:hover .animate-marquee,
+.pause-on-hover:hover .animate-marquee-reverse,
+.pause-on-hover:focus-within .animate-marquee,
+.pause-on-hover:focus-within .animate-marquee-reverse {
+  animation-play-state: paused;
+}
+
+.marquee {
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
 }
 
 /* Respect user motion preference: fall back to instant, no-motion state */
@@ -158,14 +377,27 @@ body {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+
+  /* Stop marquees outright and let people scroll the content manually. */
+  .animate-marquee,
+  .animate-marquee-reverse {
+    animation: none !important;
+    transform: none !important;
+  }
+  .marquee {
+    overflow-x: auto;
+  }
+  .marquee [data-marquee-duplicate] {
+    display: none;
+  }
 }
 
 /* Legacy loading spinner (still used by a couple of inline loading states) */
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid #e4e6f0;
-  border-top: 3px solid #6c53f0;
+  border: 3px solid rgba(26, 26, 26, 0.12);
+  border-top: 3px solid #1A1A1A;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }

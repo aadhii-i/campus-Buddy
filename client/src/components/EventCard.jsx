@@ -6,16 +6,18 @@ import { formatDate, formatTime, isToday, getDaysUntil } from '../utils/dateUtil
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
 
+// Categories map onto the palette (lilac / lime / ink / outline) rather than
+// a rainbow, so a grid of mixed events still reads as one system.
 const CATEGORY_STYLES = {
-  academic: 'bg-brand-50 text-brand-700',
-  cultural: 'bg-violet-50 text-violet-700',
-  sports: 'bg-emerald-50 text-emerald-700',
-  technical: 'bg-indigo-50 text-indigo-700',
-  workshop: 'bg-amber-50 text-amber-700',
-  seminar: 'bg-midnight-100 text-midnight-600',
-  competition: 'bg-rose-50 text-rose-700',
-  social: 'bg-pink-50 text-pink-700',
-  career: 'bg-glow-500/10 text-glow-600',
+  academic: 'bg-brand-200 text-midnight-900',
+  cultural: 'bg-brand-100 text-midnight-900 border border-brand-300',
+  sports: 'bg-glow-400 text-midnight-900 border border-midnight-900/15',
+  technical: 'bg-midnight-900 text-glow-400',
+  workshop: 'bg-glow-300 text-midnight-900 border border-midnight-900/15',
+  seminar: 'bg-midnight-100 text-midnight-700',
+  competition: 'bg-midnight-900 text-brand-200',
+  social: 'bg-brand-200 text-midnight-900',
+  career: 'bg-glow-400 text-midnight-900 border border-midnight-900/15',
 }
 
 const EventCard = memo(({ event, onUpdate }) => {
@@ -30,7 +32,7 @@ const EventCard = memo(({ event, onUpdate }) => {
   const isEventToday = isToday(event.date)
   const daysUntil = getDaysUntil(event.date)
 
-  const getCategoryStyle = (category) => CATEGORY_STYLES[category] || 'bg-midnight-100 text-midnight-600'
+  const getCategoryStyle = (category) => CATEGORY_STYLES[category] || 'bg-midnight-100 text-midnight-700'
 
   const handleRegistration = async () => {
     if (!user) {
@@ -56,7 +58,7 @@ const EventCard = memo(({ event, onUpdate }) => {
     <motion.div
       whileHover={{ y: -6 }}
       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-midnight-100 bg-white shadow-card transition-shadow duration-300 hover:shadow-card-hover"
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-midnight-900/10 bg-surface-0 transition-[box-shadow,border-color] duration-300 hover:border-midnight-900/30 hover:shadow-card-hover"
     >
       {/* Event Image / date-forward fallback header */}
       {event.images && event.images.length > 0 ? (
@@ -66,17 +68,17 @@ const EventCard = memo(({ event, onUpdate }) => {
             alt={event.title}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-black/0" />
           {isEventToday && !isPastEvent && (
-            <span className="absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-bold text-brand-700 shadow-sm">
+            <span className="badge-lime absolute left-3 top-3">
               Today
             </span>
           )}
         </div>
       ) : (
-        <div className="relative flex h-24 items-center justify-between bg-midnight-900 px-5">
-          <div className="text-white">
-            <p className="text-[11px] font-semibold uppercase tracking-wide2 text-white/50">
+        <div className="relative flex h-24 items-center justify-between overflow-hidden bg-midnight-900 px-5">
+          <div className="pointer-events-none absolute inset-0 bg-dots-dark" />
+          <div className="relative text-surface-50">
+            <p className="text-[11px] font-semibold uppercase tracking-wide2 text-brand-200">
               {new Date(event.date).toLocaleDateString(undefined, { month: 'short' })}
             </p>
             <p className="font-display text-3xl font-bold leading-none">
@@ -84,7 +86,7 @@ const EventCard = memo(({ event, onUpdate }) => {
             </p>
           </div>
           {!isPastEvent && (
-            <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-glow-400">
+            <span className="relative rounded-full bg-glow-400 px-2.5 py-1 text-[11px] font-semibold text-midnight-900">
               {daysUntil}
             </span>
           )}
@@ -94,62 +96,67 @@ const EventCard = memo(({ event, onUpdate }) => {
       <div className="flex flex-1 flex-col p-5">
         {/* Category Badge */}
         <div className="mb-3 flex items-center justify-between">
-          <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${getCategoryStyle(event.category)}`}>
+          <span className={`badge ${getCategoryStyle(event.category)}`}>
             {event.category.charAt(0).toUpperCase() + event.category.slice(1)}
           </span>
           {isPastEvent && (
-            <span className="rounded-full bg-midnight-100 px-2.5 py-1 text-[11px] font-medium text-midnight-500">
+            <span className="badge-outline">
               Past event
+            </span>
+          )}
+          {isRegistered && !isPastEvent && (
+            <span className="badge-ink">
+              Registered
             </span>
           )}
         </div>
 
-        <h3 className="mb-2.5 line-clamp-2 text-lg font-bold text-midnight-900">
+        <h3 className="mb-3 line-clamp-2 text-lg font-bold leading-snug text-midnight-900">
           {event.title}
         </h3>
 
         {/* Event Details */}
-        <div className="mb-3 space-y-1.5">
-          <div className="flex items-center text-sm text-midnight-500">
-            <Calendar className="mr-2 h-4 w-4 flex-shrink-0 text-midnight-400" />
+        <div className="mb-3 space-y-1.5 border-y border-midnight-900/10 py-3">
+          <div className="flex items-center text-sm text-midnight-600">
+            <Calendar className="mr-2 h-4 w-4 flex-shrink-0 text-midnight-500" />
             <span>{formatDate(event.date)}</span>
           </div>
 
-          <div className="flex items-center text-sm text-midnight-500">
-            <Clock className="mr-2 h-4 w-4 flex-shrink-0 text-midnight-400" />
+          <div className="flex items-center text-sm text-midnight-600">
+            <Clock className="mr-2 h-4 w-4 flex-shrink-0 text-midnight-500" />
             <span>{formatTime(event.time)}</span>
           </div>
 
-          <div className="flex items-center text-sm text-midnight-500">
-            <MapPin className="mr-2 h-4 w-4 flex-shrink-0 text-midnight-400" />
+          <div className="flex items-center text-sm text-midnight-600">
+            <MapPin className="mr-2 h-4 w-4 flex-shrink-0 text-midnight-500" />
             <span className="truncate">{event.location}</span>
           </div>
 
           {event.maxAttendees && (
-            <div className="flex items-center text-sm text-midnight-500">
-              <Users className="mr-2 h-4 w-4 flex-shrink-0 text-midnight-400" />
+            <div className="flex items-center text-sm text-midnight-600">
+              <Users className="mr-2 h-4 w-4 flex-shrink-0 text-midnight-500" />
               <span>
                 {event.currentAttendees || 0} / {event.maxAttendees} attendees
-                {isFull && <span className="ml-1 text-rose-600">(Full)</span>}
+                {isFull && <span className="ml-1 font-semibold text-rose-700">(Full)</span>}
               </span>
             </div>
           )}
         </div>
 
-        <p className="mb-4 line-clamp-2 text-sm text-midnight-500">
+        <p className="mb-4 line-clamp-2 text-sm text-midnight-600">
           {event.description}
         </p>
 
         {/* Organizer */}
         <div className="mb-4 flex items-center gap-2.5">
-          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand-50 text-sm font-semibold text-brand-600">
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand-200 text-sm font-semibold text-midnight-900">
             {event.organizer?.name?.charAt(0) || 'O'}
           </div>
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-midnight-800">
               {event.organizer?.name || 'Unknown Organizer'}
             </p>
-            <p className="truncate text-xs text-midnight-400">
+            <p className="truncate text-xs text-midnight-500">
               {event.organizer?.department}
             </p>
           </div>
@@ -159,12 +166,12 @@ const EventCard = memo(({ event, onUpdate }) => {
         {event.tags && event.tags.length > 0 && (
           <div className="mb-4 flex flex-wrap gap-1.5">
             {event.tags.slice(0, 3).map((tag, index) => (
-              <span key={index} className="rounded-md bg-midnight-50 px-2 py-1 text-xs text-midnight-500">
+              <span key={index} className="rounded-md bg-midnight-50 px-2 py-1 text-xs text-midnight-600">
                 #{tag}
               </span>
             ))}
             {event.tags.length > 3 && (
-              <span className="rounded-md bg-midnight-50 px-2 py-1 text-xs text-midnight-500">
+              <span className="rounded-md bg-midnight-50 px-2 py-1 text-xs text-midnight-600">
                 +{event.tags.length - 3}
               </span>
             )}
@@ -177,12 +184,12 @@ const EventCard = memo(({ event, onUpdate }) => {
             <button
               onClick={handleRegistration}
               disabled={!isRegistered && isFull}
-              className={`flex-1 rounded-full px-4 py-2.5 text-sm font-semibold transition-colors duration-200 ${
+              className={`flex-1 ${
                 isRegistered
-                  ? 'bg-rose-50 text-rose-700 hover:bg-rose-100'
+                  ? 'btn-ghost hover:!border-rose-700 hover:!text-rose-700'
                   : isFull
-                  ? 'cursor-not-allowed bg-midnight-100 text-midnight-400'
-                  : 'bg-brand-600 text-white hover:bg-brand-700'
+                  ? 'btn cursor-not-allowed border border-midnight-900/10 bg-midnight-100 text-midnight-500'
+                  : 'btn-primary'
               }`}
             >
               {isRegistered ? 'Unregister' : isFull ? 'Event full' : 'Register'}
@@ -191,7 +198,7 @@ const EventCard = memo(({ event, onUpdate }) => {
 
           <button
             onClick={() => { window.location.href = `/events/${event._id}` }}
-            className="flex items-center gap-1.5 rounded-full border border-midnight-200 px-4 py-2.5 text-sm font-medium text-midnight-600 transition-colors duration-200 hover:border-brand-300 hover:text-brand-700"
+            className="btn-ghost !px-4"
           >
             Details
             <ArrowUpRight className="h-3.5 w-3.5" />
