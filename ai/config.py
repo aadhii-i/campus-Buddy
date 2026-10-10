@@ -33,6 +33,20 @@ CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "50"))  # overlapping words betwe
 # --- Retrieval ---
 TOP_K = int(os.getenv("TOP_K", "5"))
 
+# --- LLM provider ---
+# "groq" or "gemini". Defaults to Groq whenever GROQ_API_KEY is set, so adding
+# the key is enough to switch; set LLM_PROVIDER=gemini to go back.
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+LLM_PROVIDER = (os.getenv("LLM_PROVIDER") or ("groq" if GROQ_API_KEY else "gemini")).strip().lower()
+
+# --- Groq (OpenAI-compatible chat completions API) ---
+GROQ_BASE_URL = os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+# Tried once when GROQ_MODEL keeps failing with a transient 429/503 — a
+# separate per-model rate-limit bucket on Groq.
+GROQ_FALLBACK_MODEL = os.getenv("GROQ_FALLBACK_MODEL", "openai/gpt-oss-20b")
+GROQ_TIMEOUT_MS = int(os.getenv("GROQ_TIMEOUT_MS", "30000"))
+
 # --- Gemini ---
 # gemini-1.5-* (retired Sept 2025) and gemini-2.0-flash (retired 2026) both now
 # 404 on the generateContent endpoint. gemini-3.6-flash is the current GA Flash
@@ -62,6 +76,22 @@ GEMINI_RETRY_BASE_DELAY = float(os.getenv("GEMINI_RETRY_BASE_DELAY", "1.0"))
 # (across all users' /analyze and /chat calls), so a burst of traffic can't
 # hammer the provider and trigger the very rate limit this is meant to avoid.
 MAX_GEMINI_CONCURRENCY = int(os.getenv("MAX_GEMINI_CONCURRENCY", "5"))
+# The retry/backoff/concurrency settings above (GEMINI_MAX_RETRIES, ...) apply
+# to whichever provider is active; their names predate Groq support.
+
+# --- Active provider (what the rest of the code reads) ---
+if LLM_PROVIDER == "groq":
+    LLM_API_KEY = GROQ_API_KEY
+    LLM_API_KEY_NAME = "GROQ_API_KEY"
+    LLM_MODEL = GROQ_MODEL
+    LLM_FALLBACK_MODEL = GROQ_FALLBACK_MODEL
+    LLM_TIMEOUT_MS = GROQ_TIMEOUT_MS
+else:
+    LLM_API_KEY = GEMINI_API_KEY
+    LLM_API_KEY_NAME = "GEMINI_API_KEY"
+    LLM_MODEL = GEMINI_MODEL
+    LLM_FALLBACK_MODEL = GEMINI_FALLBACK_MODEL
+    LLM_TIMEOUT_MS = GEMINI_TIMEOUT_MS
 
 # --- Server ---
 PORT = int(os.getenv("PORT", "8000"))

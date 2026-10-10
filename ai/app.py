@@ -78,14 +78,15 @@ def _resume_namespace(session_id: str) -> str:
 @app.on_event("startup")
 def _log_startup() -> None:
     log.info(
-        "startup: model=%s gemini_key=%s allowed_origins=%s upload_dir=%s",
-        config.GEMINI_MODEL,
-        "set" if config.GEMINI_API_KEY else "MISSING",
+        "startup: provider=%s model=%s api_key=%s allowed_origins=%s upload_dir=%s",
+        config.LLM_PROVIDER,
+        config.LLM_MODEL,
+        "set" if config.LLM_API_KEY else "MISSING",
         config.ALLOWED_ORIGINS,
         config.UPLOAD_DIR,
     )
-    if not config.GEMINI_API_KEY:
-        log.warning("GEMINI_API_KEY is not set — /analyze and /chat will fail until it is configured.")
+    if not config.LLM_API_KEY:
+        log.warning("%s is not set — /analyze and /chat will fail until it is configured.", config.LLM_API_KEY_NAME)
 
 
 @app.get("/health")
@@ -96,14 +97,18 @@ def health():
     return {
         "status": "ok",
         "service": "campus-buddy-ai",
-        "geminiConfigured": bool(config.GEMINI_API_KEY),
-        "model": config.GEMINI_MODEL,
+        "provider": config.LLM_PROVIDER,
+        "llmConfigured": bool(config.LLM_API_KEY),
+        # Kept for anything already reading the old field name.
+        "geminiConfigured": bool(config.LLM_API_KEY),
+        "model": config.LLM_MODEL,
     }
 
 
-@app.get("/gemini/health")
+@app.get("/llm/health")
+@app.get("/gemini/health")  # original path, kept for existing callers
 def gemini_health():
-    """Prove the AI service can actually reach the configured Gemini model with
+    """Prove the AI service can actually reach the configured LLM (Groq or Gemini) with
     a minimal generate-content call BEFORE anyone tries a real resume analysis
     (req #5). Lightweight — no PDF, no torch. Returns the real upstream error
     verbatim on failure so Render logs pinpoint key vs. model vs. quota.
@@ -118,43 +123,44 @@ def gemini_health():
 
     from services.gemini_retry import generate_content_with_retry
 
-    if not config.GEMINI_API_KEY:
-        raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not configured on the AI service.")
+    from services.llm_provider import make_client
 
-    from google import genai
-    from google.genai import types
+    if not config.LLM_API_KEY:
+        raise HTTPException(status_code=500, detail=f"{config.LLM_API_KEY_NAME} is not configured on the AI service.")
 
     started = time.monotonic()
+    client = None
     try:
-        client = genai.Client(
-            api_key=config.GEMINI_API_KEY,
-            http_options=types.HttpOptions(timeout=config.GEMINI_TIMEOUT_MS),
-        )
+        client = make_client()
         resp = generate_content_with_retry(
             client,
-            model=config.GEMINI_MODEL,
+            model=config.LLM_MODEL,
             contents="ping",
-            fallback_model=config.GEMINI_FALLBACK_MODEL,
+            fallback_model=config.LLM_FALLBACK_MODEL,
             log_context="health",
         )
         latency_ms = round((time.monotonic() - started) * 1000)
-        log.info("[AI] gemini/health ok model=%s latency=%dms", config.GEMINI_MODEL, latency_ms)
+        log.info("[AI] llm/health ok provider=%s model=%s latency=%dms", config.LLM_PROVIDER, config.LLM_MODEL, latency_ms)
         return {
             "status": "ok",
-            "model": config.GEMINI_MODEL,
+            "provider": config.LLM_PROVIDER,
+            "model": config.LLM_MODEL,
             "latencyMs": latency_ms,
             "sample": (resp.text or "")[:60],
         }
     except Exception as exc:  # noqa: BLE001 — surface the real cause
         latency_ms = round((time.monotonic() - started) * 1000)
         log.error(
-            "[AI] gemini/health FAILED model=%s latency=%dms %s: %s",
-            config.GEMINI_MODEL, latency_ms, type(exc).__name__, exc,
+            "[AI] llm/health FAILED provider=%s model=%s latency=%dms %s: %s",
+            config.LLM_PROVIDER, config.LLM_MODEL, latency_ms, type(exc).__name__, exc,
         )
         raise HTTPException(
             status_code=502,
-            detail=f"Gemini check failed ({type(exc).__name__}): {exc}",
+            detail=f"{config.LLM_PROVIDER} check failed ({type(exc).__name__}): {exc}",
         ) from exc
+    finally:
+        if client is not None:
+            client.close()
 
 
 @app.get("/roles")
@@ -286,14 +292,14 @@ def analyze_resume(payload: AnalyzeRequest):
         payload.session_id,
         payload.target_role,
         len(resume_text),
-        config.GEMINI_MODEL,
+        config.LLM_MODEL,
     )
 
     try:
         analyzer = get_resume_analyzer()
-        log.info("[AI] Gemini request started: session=%s model=%s", payload.session_id, config.GEMINI_MODEL)
+        log.info("[AI] LLM request started: session=%s model=%s", payload.session_id, config.LLM_MODEL)
         result = analyzer.analyze(resume_text, payload.target_role, request_id=payload.session_id)
-        log.info("[AI] Gemini response received: session=%s", payload.session_id)
+        log.info("[AI] LLM response received: session=%s", payload.session_id)
     except GeminiRateLimitedError as exc:
         # 429/RESOURCE_EXHAUSTED on every model tried. Genuinely rate-limited —
         # do NOT retry again here. A distinct code + status (429, not 502) lets
@@ -313,7 +319,7 @@ def analyze_resume(payload: AnalyzeRequest):
             detail={"code": "AI_TIMEOUT", "message": "The AI analysis took too long to respond. Please try again."},
         ) from exc
     except RuntimeError as exc:
-        # Missing GEMINI_API_KEY, or the Gemini API call itself failed for a
+        # Missing LLM API key, or the LLM API call itself failed for a
         # non-retryable reason (bad model, invalid key, upstream error). The
         # analyzer already logged the specific cause with the model name.
         log.error("[AI] analyze gemini/config error: session=%s %s", payload.session_id, exc)

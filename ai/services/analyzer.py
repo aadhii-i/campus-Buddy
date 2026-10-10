@@ -16,10 +16,8 @@ import re
 import threading
 from typing import Any, Dict, Optional
 
-from google import genai
-from google.genai import types
-
-from config import GEMINI_API_KEY, GEMINI_FALLBACK_MODEL, GEMINI_MODEL, GEMINI_TIMEOUT_MS
+from config import LLM_FALLBACK_MODEL, LLM_MODEL
+from services.llm_provider import json_config, make_client
 from services.gemini_retry import GeminiRateLimitedError, GeminiTimeoutError, generate_content_with_retry
 from services.roles import get_role_keywords
 
@@ -97,18 +95,10 @@ Resume text:
 
 class ResumeAnalyzer:
     def __init__(self):
-        if not GEMINI_API_KEY:
-            raise RuntimeError(
-                "GEMINI_API_KEY is not configured. Set it in ai/.env before analyzing resumes."
-            )
-        # google-genai SDK: one Client per key; the model is chosen per request.
-        self._client = genai.Client(
-            api_key=GEMINI_API_KEY,
-            http_options=types.HttpOptions(timeout=GEMINI_TIMEOUT_MS),
-        )
-        self._generate_config = types.GenerateContentConfig(
-            response_mime_type="application/json",
-        )
+        # Groq or Gemini, per config.LLM_PROVIDER. Raises RuntimeError if the
+        # active provider's API key is missing.
+        self._client = make_client()
+        self._generate_config = json_config()
 
     def analyze(self, resume_text: str, target_role: str, request_id: str = "") -> Dict[str, Any]:
         role_keywords = get_role_keywords(target_role)
@@ -121,10 +111,10 @@ class ResumeAnalyzer:
         try:
             response = generate_content_with_retry(
                 self._client,
-                model=GEMINI_MODEL,
+                model=LLM_MODEL,
                 contents=prompt,
                 config=self._generate_config,
-                fallback_model=GEMINI_FALLBACK_MODEL,
+                fallback_model=LLM_FALLBACK_MODEL,
                 log_context=f"analyze:{request_id}" if request_id else "analyze",
             )
         except (GeminiRateLimitedError, GeminiTimeoutError):
@@ -133,14 +123,14 @@ class ResumeAnalyzer:
             # as-is so app.py can map it to AI_RATE_LIMITED / AI_TIMEOUT
             # instead of collapsing it into a generic failure.
             raise
-        except Exception as exc:  # google.genai.errors.APIError and transport errors
+        except Exception as exc:  # provider API errors and transport errors
             # Log the real cause (bad model name, quota, key, network) so Render
             # logs show it instead of a bare 502.
             log.error(
-                "Gemini generate_content failed (model=%r): %s: %s",
-                GEMINI_MODEL, type(exc).__name__, exc,
+                "LLM generate_content failed (model=%r): %s: %s",
+                LLM_MODEL, type(exc).__name__, exc,
             )
-            raise RuntimeError(f"Gemini request failed ({type(exc).__name__}): {exc}") from exc
+            raise RuntimeError(f"AI request failed ({type(exc).__name__}): {exc}") from exc
 
         raw = self._extract_json(response.text)
         return self._normalize(raw, target_role)

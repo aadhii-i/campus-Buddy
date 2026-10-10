@@ -1,5 +1,9 @@
 """
-Retry/fallback wrapper around a single Gemini generate_content() call.
+Retry/fallback wrapper around a single LLM generate_content() call.
+
+Works for both providers in services.llm_provider (Groq and Gemini): both
+raise errors carrying an HTTP status in `.code`. The module and exception
+names predate Groq support and are kept so callers don't change.
 
 analyzer.py and llm.py each make exactly one such call; both need the same
 handling for transient failures, so it lives here once instead of being
@@ -27,7 +31,15 @@ import time
 from typing import Any, Optional
 
 import httpx
-from google.genai import errors as genai_errors
+
+import config as app_config
+from services.llm_provider import ProviderAPIError
+
+try:
+    from google.genai import errors as genai_errors
+    _GENAI_API_ERRORS = (genai_errors.APIError,)
+except ImportError:  # google-genai is only required when LLM_PROVIDER=gemini
+    _GENAI_API_ERRORS = ()
 
 from config import (
     GEMINI_MAX_RETRIES,
@@ -37,6 +49,9 @@ from config import (
 )
 
 log = logging.getLogger(__name__)
+
+# Errors that carry an HTTP status in `.code`, from either provider.
+API_ERRORS = (*_GENAI_API_ERRORS, ProviderAPIError)
 
 # Never block a single request for longer than this waiting between retries,
 # even if Google's own RetryInfo suggests longer — better to fail fast with a
@@ -59,10 +74,13 @@ class GeminiTimeoutError(RuntimeError):
     """The request(s) to Gemini timed out, even after bounded retries."""
 
 
-def _extract_retry_delay_seconds(exc: genai_errors.APIError) -> Optional[float]:
-    """Best-effort read of Google's own suggested wait (RetryInfo.retryDelay,
-    e.g. "34s") out of a 429 error body. Returns None if absent/unparseable —
-    callers fall back to their own exponential backoff in that case."""
+def _extract_retry_delay_seconds(exc: Exception) -> Optional[float]:
+    """Best-effort read of the provider's own suggested wait: Groq's
+    `retry-after` header, or Google's RetryInfo.retryDelay (e.g. "34s") in a
+    429 error body. Returns None if absent/unparseable — callers fall back to
+    their own exponential backoff in that case."""
+    if isinstance(exc, ProviderAPIError):
+        return exc.retry_after
     try:
         details = getattr(exc, "details", None)
         error_obj = details.get("error", details) if isinstance(details, dict) else {}
@@ -92,7 +110,7 @@ def _call_with_retries(client: Any, model: str, contents: Any, config: Any, tag:
             resp = client.models.generate_content(model=model, contents=contents, config=config)
             log.info("%s generate_content OK model=%r attempt=%d", tag, model, attempt)
             return resp
-        except genai_errors.APIError as exc:
+        except API_ERRORS as exc:
             status_code = getattr(exc, "code", None)
             if status_code == 429:
                 max_attempts = GEMINI_RATE_LIMIT_MAX_RETRIES
@@ -144,12 +162,12 @@ def generate_content_with_retry(
     `model`) before giving up. Bounded by MAX_GEMINI_CONCURRENCY across the
     whole process so a burst of requests can't itself trigger a rate limit.
     """
-    tag = f"[Gemini{f' {log_context}' if log_context else ''}]"
+    tag = f"[{app_config.LLM_PROVIDER.capitalize()}{f' {log_context}' if log_context else ''}]"
 
     with _concurrency_semaphore:
         try:
             return _call_with_retries(client, model, contents, config, tag)
-        except genai_errors.APIError as exc:
+        except API_ERRORS as exc:
             status_code = getattr(exc, "code", None)
             if status_code not in (429, 503):
                 raise  # non-retryable — no fallback, fail exactly as before
@@ -170,7 +188,7 @@ def generate_content_with_retry(
         )
         try:
             return _call_with_retries(client, fallback_model, contents, config, tag)
-        except genai_errors.APIError as exc:
+        except API_ERRORS as exc:
             fb_status = getattr(exc, "code", None)
             log.error("%s fallback model %r also failed status=%s: %s", tag, fallback_model, fb_status, exc)
             if fb_status == 429:

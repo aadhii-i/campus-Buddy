@@ -39,7 +39,7 @@ class RAGEngine:
 
     @property
     def llm(self) -> GeminiClient:
-        # Created lazily so a missing GEMINI_API_KEY only breaks answer(),
+        # Created lazily so a missing LLM API key only breaks answer(),
         # not every import of this module.
         if self._llm is None:
             self._llm = GeminiClient()

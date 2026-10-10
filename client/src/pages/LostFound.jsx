@@ -48,7 +48,8 @@ const LostFound = () => {
           location: 'Library - 2nd floor',
           contactInfo: 'john@example.com',
           createdAt: new Date().toISOString(),
-          user: { name: 'John Doe' }
+          user: { name: 'John Doe' },
+          images: [{ url: '/images/lost-iphone-13.png', caption: 'Lost blue iPhone 13' }]
         },
         {
           _id: '2',
@@ -59,7 +60,20 @@ const LostFound = () => {
           location: 'Main Gate',
           contactInfo: '9876543210',
           createdAt: new Date().toISOString(),
-          user: { name: 'Jane Smith' }
+          user: { name: 'Jane Smith' },
+          images: [{ url: '/images/found-brown-wallet.png', caption: 'Found brown wallet' }]
+        },
+        {
+          _id: '3',
+          title: 'Lost Textbook',
+          description: 'Engineering textbook with name written on the first page',
+          category: 'books',
+          type: 'lost',
+          location: 'Academic Block - Room 204',
+          contactInfo: 'student@example.com',
+          createdAt: new Date().toISOString(),
+          user: { name: 'Arjun Menon' },
+          images: [{ url: '/images/lost-textbook.png', caption: 'Lost textbook' }]
         }
       ]);
     } finally {
@@ -175,7 +189,7 @@ const LostFound = () => {
                     {imageUrl ? (
                       <img
                         src={imageUrl}
-                        alt={item.title}
+                        alt={firstImage?.caption || item.title}
                         loading="lazy"
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
