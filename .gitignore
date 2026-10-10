@@ -125,3 +125,4 @@ ai/uploads/*
 *.bak
 *.backup
 *.old
+my-project/
